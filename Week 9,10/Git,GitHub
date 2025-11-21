@@ -1,0 +1,301 @@
+
+
+### Version Control System?
+
+- Version control, also known as source control, is tracking and managing software code changes.
+
+Famous VCS:
+
+-  Git (Most Famous)
+- Apache SubVersion
+- Piper (Used by Google)
+
+
+NOTE - GitHub is not VCS.
+
+git cheatsheet - https://education.github.com/git-cheat-sheet-education.pdf
+piyush sheet - https://app.eraser.io/workspace/P96VaUsW5o0FXVOTDzHY
+video link - https://www.youtube.com/watch?v=RDxQEzXN8AU
+for practice or visulization - https://git-school.github.io/visualizing-git/
+
+##########################################################################################################################################################################################
+
+STEP - 1 install git in our local machine
+- you need to install git from official website
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+STEP - 2  Setting up Git Global Configuration
+1. set a name that is identifiable for version control
+
+sy: git config --global user.name “[firstname lastname]”
+ex: git config --global user.name "Vritant Koradiya”
+
+
+2. set an email address that will be associated with each history marker
+
+sy: git config --global user.email “[valid-email]”
+ex: git config --global user.email “vrutant@gmail.com”
+
+other :
+
+git config --global user.name -> for checing name configuration
+git config --global user.email -> for checing email configuration
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+STEP - 3 Setup & Init
+1. open the directory you want to working as a Vesrion Control.
+
+
+2. for start to tracking your version control or Adding Files to VCS
+   do/write, 
+   
+   git init 
+
+- repository = Project
+- after that git is Enable for that directory, now we can track changes
+- in file U means - untracked
+
+
+3. for tracking enable,
+   do/write, 
+   
+   git add filename.extension  ex. git add index.js
+                        or
+   git add .    -> for all file
+
+other:
+git diff -> show what added or removed, means show changes
+git rm <FILE_PATH> -> Removing Files from Version Control
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+STEP - 4  Commit
+what is ?
+
+
+
+- whenever we changes in our code we generally need to do commit
+
+sy: git commit -m "Your message"
+ex: git commit -m "this is an initial setup"
+
+other :
+git log -> we can see our all commits history
+git log --oneline   -> short form on oneline of all commits history.
+git show commit_unique_id  -> what changes is done in that commit  
+     ex. git show 6ac75a2
+     
+git blame file_name.ext/FILE_PATH  -> showing whole code with who changes including commit SHA, name, time
+git status - show modified file
+
+
+- every commit has an unique id (unique id called = SHA )
+
+NOTE: 
+- also make sure commits are always clean, which helps you to do better Version Control
+  like dont do whole code in one single commit do like work one one functionality then do commit same for other functionality      
+
+---------------------
+
+Staging Area ?
+when you change something after last commit then staging area will be empty, if you try to commit new changes then nothing happen because
+staging area is still empty, for adding all new changes in staging area we use git add . 
+
+how to add our files in staging area
+1. git add . or git add file_name.ext/FILE_PATH
+2. after that we can perform out commit
+
+
+so folw is, change(modified) something -> enter in staging area using git add -> commit 
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+STEP - 5  Reverting Back
+- if our new changes(which is commited) is not good or throw error so we can revert back to specific comit again
+
+for example our commit is A,B,C now c is thor error so we need to revert back to specific commit
+
+- HEAD -> last/latest commit
+- base node -> first commit
+
+1. transfer you HEAD to specific commit
+command-> git reset --hard commit_unique_id/SHA
+
+disadvantage: 
+- if we do then our other comit(which throught error) 
+  for example A,B,C,D,E,F then we change our HEAD to C then we will loose D,E,F 
+  
+  
+  
+  
+2. revert particular commit:
+   for example A,B,C,D,E,F then F is through error so we only revert F, means if in F commit we write mul = 0 * 10 so it throw error so when we apply this rule 
+   F commit are reverting back means mul = 0 * 10 will revert(remove) because we add this code
+   
+inshort - if you add something and revert them then i will remove ( ulta ho jayega )
+in gujrati - je commit hoy enu ultu kari nakhe
+                   - if you remove something in that commit then - this will add which you remove ( remove -> add )
+                   - if you add something in that commit then - this will remove what you add. ( add- remove )
+
+command->  git revert commit_unique_id/SHA  
+note : after using this you need to do again commit steps (like git add . -> git commit -m "message")
+    
+-----------------------------------------------------------------------------------------------------------------
+here git basic is completed
+
+
+##########################################################################################################################################################################################
+
+GitHub & Other :
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+Collaboration?
+-> to work with team here comes collaboration
+-> we need one centrel server to perform collboration 
+
+centrel server, git server = GitHub
+
+-----------------------------------------------------------------------------------------------------------------
+
+Setup a Git Server:
+
+step - 1. github.com -> Repositories -> give Name, public/private(where in public everyone can access or in private only other user can see which you give an access) 
+
+what git init does?
+-> it creates reposotory in our local machine not in github
+
+step - 2. after creating that repository have one link(which is automaticall generate when you create repo.) like git@github.com:VrutantKoradiya/gym_management_system.git
+
+1.now we need to tell our system's GIT to sync our local machine code to that Respository
+  comand-> git remote add unique_name link_of_repo  (by default we generally use unique name -> origin )
+  ex-> git remote add origin git@github.com:VrutantKoradiya/gym_management_system.git
+
+
+other:
+- git remote -v -> get list of all remotes
+- where can we find repo link : in "<> Code" button
+
+2. now we can push our all commit/changes to remote
+command: git push -u servername branchname 
+ex: git push -u origin main
+
+- now all commits & codes are available in UI(github)
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+Branching(important)?
+-> single track(railway track) - in this track commits are run
+
+ex, main branch has - A,B,C,D,E,F commits
+
+why important:
+here if you work on collabroation then you must to working on different branch
+
+for ex Y & Z user is doing collab then both need to work on the different branch,
+after completeing work we can merge our all changes to main branch
+here what happn if we have y user(branch: y) , z user(branch: z), for example y has 5 commit & z has 3 commit so when we merge this branch to main branch it create single commit for each branch 
+
+what happen when we merger?
+- 1 commit created(for y branch) or 1 commit created(for z branch)
+  then we can continue to the meain branch  
+
+why imp?
+- because if y&z woring on main branch y has 5 commit, z has 3 commit if there is a requirement to revrting y commit then it is very bullshit to revert all commit line by line,
+  so here branching comes, after merge we need to revert only one commit(in main branch) which is created when we merge Y user branch(so what happen - we revert only one main commit 
+  but it revert Y's all commit)
+  
+ 
+how to create branch - 
+1. git branch -b <branch_name>
+
+
+how to push?
+- git push --set-upstream origin branch_name (dont need to remember when you do git push(if you working on that new branch) it suggest this command)
+
+how to merge?
+1. from UI
+Pull Request -> New -> base:main <- compare:your_branch
+
+this changes is done on server not an local machine
+so what to do now : checkout to main branhc -> git pull  
+
+
+2. From CLI
+checkout to main branch -> then run git merge servername/branchname -> git push
+                                ex: git merge origin/Y    here y is branch name 
+
+
+working flow: 
+1. git branch -b "branch_name" -> git checkout  -> some changes  -> git add . -> git commit -> git push(chages is done on that new branch)
+
+other:
+git branch - list of all branch or highlight current working branch
+git checkout <branch_name>- switch to specific branch
+
+git checkout -b "branch_name" -  combination of branch creation or checout
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+normally we use merge:
+- we can't revert particular commit of Y branch because when we merge branch, it create 1 commit to main which containing all Y branch commit,so we can revert all commits of Y
+  branch
+
+but we can use merge & rebase while doing branching flow
+- so rebasing is transfer all Y branch commit to Main branch so we can revert particular Y branch's commit
+
+command: git rebase branch_name
+ex: git rebase Y (not write main)
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+Stashing ?
+generally when you do some changes in you locak machine & someone also change something on remote server, you now if you do git pull then it throw error like 
+"you cant pull because you have some unstages changes" now we can do this git add . but we dont want to make those local changes in tracking so here stash comes
+
+flow :
+
+changes in remote or changes in local -> git stash(move you local changes in other directory) -> git pull(geting remote changes) -> git stash apply(get back local changes)
+
+so after that you can pull remote changes without adding your changes in staging area or get those local changes back by git stash apply
+
+
+
+
+
+
+
+
+my question to ask to chatgpt
+1. what is U,A,M in file while using git
+2. what is commit ? in simple & shoert description
+3. how to use multiple remotes/origins
+4. SSH Key concept(authentication process), wha if my repo is public(any other user can esaily push?), what if my repo is private or i want to add collaborater in that(any 
+   other user can  esaily push?)
+5. learn more about branch
+
+
+
+
+
+
+
+
+
+
+
+
+

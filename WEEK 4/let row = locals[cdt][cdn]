@@ -1,0 +1,122 @@
+what is "let row = locals[cdt][cdn]" ?
+
+
+▶ What is locals?
+locals is a special object in Frappe’s client-side scripting that holds all the current form data.
+It’s like a container where every doctype and its rows are stored while the form is open. 
+Using locals[cdt][cdn], you can directly access the specific child row document (all its fields are available).
+
+
+
+
+example usage -
+
+frappe.ui.form.on('Child Student Marks', {
+    marks: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if (row.marks < 0) {
+            frappe.throw("Negative marks are not allowed");
+        }
+    }
+});
+
+
+
+What are cdt and cdn?
+cdt → Child DocType name.cdn → Child DocName (a unique identifier for that particular row).
+So, locals[cdt][cdn] accesses the specific row in the child table you're working with.
+
+
+
+
+question : in example i not set child doctype and docname ..
+
+answer:
+
+▶ Why you don’t need to manually set cdt and cdn:
+Frappe passes them automatically!
+When you write a client script like this, Frappe itself sends the correct cdt and cdn as arguments.
+
+
+It knows:
+cdt: which child doctype the event is for (Student Marks in this case).
+cdn: the identifier for the specific row being edited.
+You don't have to define them yourself
+The system handles it, so you just use them to access the row you're working on.
+
+
+
+
+
+
+
+▶ Example flow:
+
+You're editing a Student form that has a child table student_marks.
+You update the marks field in one row.
+Frappe triggers the marks event handler.
+
+It passes:
+frm: the whole form object.
+cdt: "Student Marks" — the child doctype.
+cdn: "row_1a2b3c" — the unique row ID.
+
+You access the row via locals[cdt][cdn] → this gives you the current row’s data.
+
+
+
+
+
+
+
+
+
+
+
+✅ Important Notes:
+This works only if you target the child doctype in your script registration:
+
+frappe.ui.form.on('Child Student Marks', {  // <-- child doctype name here
+    marks: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];    // <-- cdt and cdn are passed by Frappe
+        if (row.marks < 0) {
+            frappe.throw("Negative marks are not allowed");
+        }
+    }
+});
+
+If you mistakenly put the parent doctype’s name instead of the child one, Frappe won't pass these arguments correctly, and the code won't work.
+
+
+
+
+
+
+question : is this code i need to write in side parent doc file, child doc file or 
+        -> i can write anywhere just i need to focus on frappe.ui.form.on(Child Student Marks)
+          
+answer :
+You can write this code in the parent doctype’s client script, or you can write it globally as a Client Script targeting the child doctype.
+
+
+What’s important is:
+➡ You must specify the correct doctype name in frappe.ui.form.on(), in this case 'Child Student Marks', because that’s how Frappe knows which form or child table this handler applies to. 
+
+
+
+       
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          

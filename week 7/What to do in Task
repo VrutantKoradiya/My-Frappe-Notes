@@ -1,0 +1,40 @@
+
+1. Task: Student List View Showcase Status Field using js file and customer list view add one button
+-> show status in list view using js file . || add one button to customer list view which give message somethig.
+
+
+2. Task: Write scheduler job for daily basis at 2 pm for get all customer records and check any cutomer group id squence is break or not 
+   if break then resolve them and update that all sequence id
+-> not understand   
+ 
+3. Task : Write Customer Doctype Event When Save Customer Doctype then showcase popup message customer detials update when primary address is selected
+-> when primary address field is filled show that field data on pop up message
+
+
+4. 
+Task 1: Doctype Events
+
+Task Description:
+Doctype: Sales Order
+Event: before_save
+Requirement: Create a new app and write a script that automatically sets a custom field called discount_percentage to 5% before saving any Sales Order.
+
+-> just add filed & data %5 on before_save
+
+
+
+5. Task 2: Overriding a Class
+Task Description:
+Doctype: Purchase Order
+Requirement: Create a custom class that extends the core Purchase Order class. Add a custom validation to check if a custom field called expected_delivery_date is set. If not, raise an error
+
+-> if expected_deleivery field is not set then show an error popup
+
+
+
+6. Task 3: Overriding a Whitelisted Method
+Task Description:
+Doctype: Sales Invoice
+Requirement: Override the core whitelisted method make_delivery_note to add a special_note field. The special_note should be set to “Thank you for your business!” if not already set.	
+
+-> override make_delivery_note , add a special_note field ->  set -> special_note should be set to “Thank you for your business!” if not already set.

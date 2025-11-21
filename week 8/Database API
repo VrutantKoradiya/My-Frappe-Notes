@@ -1,0 +1,1158 @@
+
+Database API ::::::::::::::::::::::::::::
+
+what need to learn from this all methods :  ( create chagpt chat like REST API helper and find this question)
+
+1. all options of insert 
+
+
+#############################################################################################################################################################################################
+
+
+
+1️⃣ frappe.db.get_list
+used to fetch a list of records from a particular doctype table. Think of it as a simple SELECT query wrapper in Frappe.
+
+- Automatically applies user permissions, so you only get records the session user can see.
+- By default, it returns a list of dicts with field data.
+    - If fields is not provided, it returns only the document names.
+- You can use pluck to get a single field as a list.
+- Aliased as frappe.get_list (both work the same).
+
+Important notes:
+
+- Filters can be simple ({'field': value}), conditional (['field','>','value']), or range (between).
+- You can sort (order_by), paginate (start & page_length), or group (group_by).
+- Use as_list=True to get tuples instead of dicts.
+
+------------------------------------------------------------------
+
+🧠 Syntax :
+
+frappe.db.get_list(
+    doctype,          # name of the DocType
+    filters=None,     # dictionary or list for filtering records
+    or_filters=None,  # optional OR conditions
+    fields=None,      # list of fields to return
+    order_by=None,    # string for sorting
+    group_by=None,    # string for GROUP BY
+    start=0,          # starting index for pagination
+    page_length=20,   # number of records to return
+    pluck=None,       # single field to return as list
+    as_list=False     # return list of tuples instead of dicts
+)
+
+
+
+
+#############################################################################################################################################################################################
+
+
+
+2️⃣ frappe.db.get_all
+
+frappe.db.get_all is very similar to frappe.db.get_list with one key difference:
+- It fetches all records from the doctype without checking user permissions.
+- This is useful when you need complete data access, regardless of the session user’s roles.
+- Aliased as frappe.get_all (both work the same).
+- Otherwise, all other features are the same as get_list: filters, fields, order, group_by, pagination, pluck, as_list.
+
+Important notes:
+⚠️ Because it ignores permissions, use carefully in production!
+Filters, sorting, grouping, and plucking work exactly the same as get_list.
+
+--------------------------------------------------------------------
+
+🧠 Syntax :
+
+frappe.db.get_all(
+    doctype,          # name of the DocType
+    filters=None,     # dictionary or list for filtering records
+    or_filters=None,  # optional OR conditions
+    fields=None,      # list of fields to return
+    order_by=None,    # string for sorting
+    group_by=None,    # string for GROUP BY
+    start=0,          # starting index for pagination
+    page_length=0,    # number of records to return, 0 = all
+    pluck=None,       # single field to return as list
+    as_list=False     # return list of tuples instead of dicts
+)
+
+
+
+#############################################################################################################################################################################################
+
+Main Difference: get_list vs get_all
+
+frappe.db.get_list → Returns records respecting user permissions. ✅
+frappe.db.get_all → Returns all records ignoring permissions. ❌
+
+Both support filters, fields, pluck, order_by, group_by, pagination.
+
+
+#############################################################################################################################################################################################
+
+3️⃣ frappe.db.get_value
+used to fetch value(s) of a specific field (or multiple fields) from a document in a doctype.
+
+- Can fetch a single value or multiple values.
+- Can fetch using document name or filters.
+- Can return result as a tuple/list (default) or as a dictionary (as_dict=1).
+- Aliased as frappe.get_value and frappe.db.get_values — all work the same.
+
+Important notes:
+
+- When using filters, it returns the first matching record only.
+- Very useful for quick lookups instead of fetching the whole document.
+
+--------------------------------------------------------------------
+
+🧠 Syntax
+
+# Using document name
+value = frappe.db.get_value(doctype, name, fieldname)
+
+# Using filters
+value = frappe.db.get_value(doctype, filters, fieldname)
+
+# Multiple fields
+values = frappe.db.get_value(doctype, name, [field1, field2])
+
+# Return as dictionary
+values_dict = frappe.db.get_value(doctype, name, [field1, field2], as_dict=1)
+
+
+##########################################################################################################################################################################################
+
+
+4️⃣ frappe.db.get_single_value
+
+frappe.db.get_single_value is a shortcut to fetch a field value from a Single DocType.
+
+- Single DocTypes are special doctypes that store only one record (like System Settings, Website Settings, etc.).
+- Returns the value of the specified field directly.
+- Simpler than get_value because you don’t need to specify the name or filters — Single DocTypes always have exactly one record.
+
+
+Important notes:
+
+- Only works on Single DocTypes.
+- Use it when you want a quick value from system configuration.
+
+
+
+
+🧠 Syntax
+
+value = frappe.db.get_single_value(doctype, fieldname)
+
+Simple meaning: Give it the Single DocType and field, it returns the value directly.
+
+
+##########################################################################################################################################################################################
+
+
+
+5️⃣ frappe.db.set_value
+used to update a field (or multiple fields) in a document directly in the database.
+
+
+- Does not call ORM triggers like validate or on_update. ✅
+- Updates the modified timestamp by default (unless update_modified=False).
+- Aliased as frappe.db.update.
+
+Useful for:
+
+- Updating hidden fields
+- Quick updates without running the full document lifecycle
+
+--------------------------------------------------------------------
+
+So if you try to call frappe.db.set_value inside a validate event, it will work, but:
+- The validate of the target document you’re updating will not run.
+- Only the field value will be updated in the DB.
+- modified timestamp will be updated by default (unless update_modified=False).
+
+--------------------------------------------------------------------
+
+Important notes:
+- ⚠️ Because it bypasses triggers, use carefully — you might skip validations.
+- Can update single field or multiple fields at once.
+
+
+
+🧠 Syntax :
+
+# Update a single field
+frappe.db.set_value(doctype, name, fieldname, value, update_modified=True)
+
+# Update multiple fields
+frappe.db.set_value(doctype, name, {field1: value1, field2: value2}, update_modified=True)
+
+
+##########################################################################################################################################################################################
+
+6️⃣ frappe.db.exists
+ used to check whether a document exists in a doctype.
+
+- Returns True if a matching document exists, otherwise False.
+
+Can check by:
+1. Doctype and document name
+2. Doctype and filter dict
+3. Filter dict including doctype key
+
+- Very useful for validating records before creating or updating.
+- Optional: cache=True to speed up repeated existence checks.
+
+
+Important notes:
+- ⚠️ Only checks existence, it does not fetch data.
+- Returns Boolean (True/False).
+
+
+
+🧠 Syntax :
+
+# Using doctype and document name
+exists = frappe.db.exists(doctype, name, cache=False)
+
+# Using doctype and filter dictionary
+exists = frappe.db.exists(doctype, filters)
+
+# Using filter dictionary including doctype
+exists = frappe.db.exists({"doctype": doctype, "field": value})
+
+
+##########################################################################################################################################################################################
+
+7️⃣ frappe.db.count
+used to count the number of records in a doctype.
+
+- Returns an integer representing the total matching records.
+- You can optionally provide filters to count only specific records.
+- Very useful for reports, dashboards, or validations.
+
+
+Important notes:
+
+- If no filters are provided, it counts all records in the doctype.
+- Only returns the count, not the records themselves.
+
+
+🧠 Syntax :
+
+# Count all records in a doctype
+total = frappe.db.count(doctype)
+
+# Count records with filters
+total_filtered = frappe.db.count(doctype, filters)
+
+
+##########################################################################################################################################################################################
+
+
+8️⃣ frappe.db.delete
+used to delete records directly from the database table.
+
+- It executes a DELETE SQL query (DML command).
+- It can be rolled back if something goes wrong in the same transaction.
+
+- You can delete:
+      - Specific records using filters, or
+      - Specific records using filters, or
+
+
+Important Note ⚠️:
+
+- This method bypasses ORM triggers (validate, on_update, before_delete, etc.).
+- So, always use it carefully — it directly affects the database.
+
+
+🧠 Syntax :
+
+frappe.db.delete(doctype, filters=None)
+Simple meaning: Give the Doctype name and (optional) filters — it deletes all matching records.
+
+- If filters are not given → all records will be deleted! 😨
+
+💡 Tips:
+
+- Safe usage → Always pass filters to avoid deleting everything.
+- After deletion, if you’re in a transaction, you can call frappe.db.rollback() to undo.
+- This method can also delete from custom/internal tables (like __Test Table). -> frappe.db.delete("__Test Table")
+
+
+
+--------------------------------------------------------------------
+
+
+
+what is meaning of this : This method can also delete from custom/internal tables (like __Test Table)
+
+- In Frappe, every Doctype is stored in a database table like this - tab<Doctype Name> ex. Customer → tabCustomer, Database API → tabDatabase API
+
+- But sometimes, Frappe also creates or uses internal tables, which are not linked to a specific Doctype, usually for testing, logs, or internal framework usage.
+  These internal tables always start with double underscore (__).
+
+ex :
+__Test Table
+__UserCache
+__CustomTable
+
+✅ Means →
+frappe.db.delete() can be used not only on normal doctypes but also directly on internal tables (whose names start with __).
+
+
+⚠️ Important Note:
+
+- Internal tables don’t have Doctype logic → so no validation or permission checks.
+- Be careful — if you delete from an internal table that Frappe relies on, it can cause system issues.
+
+
+
+
+##########################################################################################################################################################################################
+
+
+9️⃣ frappe.db.truncate
+used to completely empty a table in the database — it deletes all rows instantly.
+
+- It executes a DDL (Data Definition Language) command → TRUNCATE TABLE.
+- It is much faster than frappe.db.delete() when you need to remove everything.
+- ⚠️ It cannot be rolled back — once executed, data is gone permanently.
+- It also triggers a commit automatically before running, ensuring the truncate happens cleanly.
+
+
+🧠 Syntax :
+
+frappe.db.truncate(doctype)
+Simple meaning: Give a doctype name or internal table name — it will wipe out all records from that table.
+
+
+⚠️ Important Notes / Danger Zone 🚨
+
+- 🧱 TRUNCATE = DDL Command → not reversible, cannot rollback.
+- 🧠 Runs faster than DELETE because it doesn’t check each row — it just resets the whole table.
+- 🕒 Use only when you are sure you want to clear all data (e.g., for logs, temporary tables, testing).
+- 🔒 Permissions or triggers (like validate, on_update, before_delete) are not applied.
+
+
+##########################################################################################################################################################################################
+
+diff b/w delete vs truncate :
+
+| Method                 | Type | Rollback Possible  | Affects Each Row  | Speed          | Use Case                |
+| :--------------------- | :--- | :----------------  | :---------------  | :-----------   | :---------------------- |
+| `frappe.db.delete()`   | DML  | ✅ Yes             | ✅ Yes            | ⚡ Slow        | Delete selected records |
+| `frappe.db.truncate()` | DDL  | ❌ No              | ❌ No             | ⚡⚡ Very Fast | Clear entire table      |
+
+
+So in short, brother 👇
+🧠 delete → safe & rollbackable
+🔥 truncate → permanent & very fast
+
+
+##########################################################################################################################################################################################
+
+🔟 frappe.db.commit - 
+
+used to save (commit) all the database changes made during the current transaction.
+
+- It executes an SQL COMMIT statement.
+- Once committed, all previous INSERT, UPDATE, or DELETE actions become permanent.
+- Until you commit, those changes exist only temporarily in memory (transaction buffer).
+
+🧠 In simple words → it’s like pressing “Save” after making several database changes.
+
+
+
+🧩 When to use:
+Normally, Frappe automatically handles commits after requests, jobs, or events.
+But you may manually call it when you’re doing custom DB operations in scripts or background jobs that must be saved immediately.
+
+
+🧠 Syntax :
+
+frappe.db.commit()
+Simple meaning: : Save all pending database changes permanently.
+
+
+
+⚠️ Important Notes:
+
+- After commit(), you cannot rollback those changes.
+- If your script fails before commit, changes will be automatically rolled back by Frappe.
+- Avoid unnecessary manual commits — let Frappe handle it unless you’re doing bulk DB operations or custom scripts.
+
+
+
+💡 In short:
+
+- ✅ Saves changes permanently
+- 🧠 Usually not needed manually
+- ⚠️ Use carefully during custom DB manipulations
+
+
+
+##########################################################################################################################################################################################
+
+
+1️⃣1️⃣ frappe.db.savepoint
+used to create a temporary checkpoint (called a savepoint) within a database transaction.
+
+- Think of it like a “mini backup point” — if something goes wrong later, you can roll back only to that point instead of undoing everything.
+- Used when you want partial rollback control inside a transaction.
+
+🧠 Simple meaning: 👉 “Remember this position in my database changes — I might come back here if needed.”
+
+
+
+🧠 Syntax : 
+
+frappe.db.savepoint(save_point_name)
+here, save_point_name → any string (identifier for the savepoint)
+
+
+
+⚙️ How it works (simple explanation):
+
+- When you call savepoint('point1') — Frappe marks the current DB state.
+
+- If later you call frappe.db.rollback('point1'),
+  → it will undo all changes done after that savepoint, but keep older ones safe.
+  
+  
+  
+  
+💡 Tip:
+
+- Savepoints are very useful inside large or complex transactions, where you want to rollback part of your changes without losing everything.
+- After committing (frappe.db.commit()), all savepoints are cleared. 
+
+
+⚠️ Important:
+
+- Savepoints only work inside a single transaction.
+- They don’t persist once the transaction is committed or rolled back fully.
+
+
+
+In short 🧠
+
+- savepoint() → sets a checkpoint inside your transaction
+- rollback('name') → reverts changes done after that checkpoint only
+
+
+##########################################################################################################################################################################################
+
+
+1️⃣2️⃣ frappe.db.rollback
+used to undo (revert) all or part of the current database transaction.
+
+- It executes the SQL command ROLLBACK.
+- All uncommitted changes (INSERT, UPDATE, DELETE, etc.) made after the last commit or savepoint are discarded.
+- It’s like pressing “Undo” for your database actions in that transaction.
+
+🧠 Simple meaning: “Cancel all recent database changes that aren’t yet committed.”
+
+
+
+
+🧠 Syntax :
+
+# rollback entire transaction
+frappe.db.rollback()
+
+# rollback to a specific savepoint
+frappe.db.rollback(save_point="save_point_name")
+
+
+⚙️ How it works (simple logic):
+
+- If no save_point is given → rolls back entire transaction (all changes since last commit).
+- If save_point is given → rolls back only the part after that savepoint, earlier actions remain safe.
+
+
+
+⚠️ Important Notes / Behaviour:
+
+- Once you rollback, all uncommitted changes are gone — not recoverable.
+
+- Frappe automatically runs rollback when:
+      - A web request (POST/PUT) throws an error or exception.
+
+- Rollback does not undo:
+      - File system changes (like uploaded files)
+      - Custom external operations
+
+
+
+💡 Tip:
+
+- Use rollback() for safety in scripts when you want to stop and undo halfway.
+- Use with savepoint for partial safety instead of losing everything.
+
+🧠 In short summary:
+
+| Command                                 | Action                          | Scope            | Can be Partial? | Undo Filesystem? |
+| :-------------------------------------- | :------------------------------ | :--------------- | :-------------- | :--------------- |
+| `frappe.db.rollback()`                  | Undo all uncommitted DB changes | Full Transaction | ❌ No            | ❌ No             |
+| `frappe.db.rollback(save_point='name')` | Undo from a specific point      | Partial          | ✅ Yes           | ❌ No             |
+
+
+
+
+##########################################################################################################################################################################################
+
+
+1️⃣3️⃣ frappe.db.sql
+used to execute raw SQL queries directly on the database.
+
+- It gives you full control for complex operations, like multi-table joins or custom reports.
+- You can write any SQL (SELECT, INSERT, UPDATE, DELETE, etc.).
+- You can also pass parameters safely using the values argument (to prevent SQL injection)
+
+🧠 Simple meaning:  Run your own SQL query directly from Python — like writing SQL in MySQL Workbench, but inside Frappe.
+
+
+
+🧠 Syntax :
+
+frappe.db.sql(query, values=None, as_dict=False)
+
+| Parameter | Description                                                               |
+| --------- | ------------------------------------------------------------------------- |
+| `query`   | SQL query string (can be multiline)                                       |
+| `values`  | Dictionary or list of parameters to safely inject                         |
+| `as_dict` | If `True`, returns results as list of dictionaries; if `False`, as tuples |
+
+
+⚠️ Important Notes / Warnings 🚨
+
+- frappe.db.sql() bypasses all ORM and Frappe permission checks.
+- It also skips:
+    - Triggers (validate, on_update, etc.)
+    - Role-based access controls
+    - Field-level restrictions
+- So always use it only when ORM methods (like frappe.db.get_list) are not enough.
+
+
+💡 Best Practices:
+✅ Prefer ORM methods (get_list, get_all, get_value, etc.) whenever possible.
+✅ Use values for variables to prevent SQL injection.
+✅ Use as_dict=True for clean, readable output.
+
+
+🧠 In short summary:
+
+| Feature              | frappe.db.sql                            |
+| :------------------- | :--------------------------------------- |
+| Purpose              | Run raw SQL queries                      |
+| Bypasses Permissions | ✅ Yes                                   |
+| ORM Triggers Run     | ❌ No                                    |
+| Output Type          | Tuple (default) or Dict (`as_dict=True`) |
+| Use Case             | Complex queries, joins, reports          |
+
+
+
+##########################################################################################################################################################################################
+
+1️⃣4️⃣ frappe.db.multisql
+used when your app needs to support multiple database engines (like MariaDB and PostgreSQL).
+
+- It allows you to write both versions of the same SQL query — one for MariaDB and one for PostgreSQL — and Frappe will automatically run the correct 
+  one based on which database your system is using.
+
+
+🧠 Simple Meaning:
+- Use this when a query works differently in MariaDB and PostgreSQL.
+- Frappe will choose automatically the correct version of your query.
+
+
+🧩 Syntax:
+
+frappe.db.multisql({
+    "mariadb": "<MariaDB specific query>",
+    "postgres": "<PostgreSQL specific query>"
+})
+
+--------------------------------------------------------------------
+
+💻 Example:
+
+frappe.db.multisql({
+    "mariadb": "UPDATE `tabStudent` SET status='Active' WHERE age < 20",
+    "postgres": 'UPDATE "tabStudent" SET status=\'Active\' WHERE age < 20'
+})
+
+
+👉 Here both queries do the same thing —
+they just differ in syntax (MariaDB uses backticks ``, PostgreSQL uses double quotes "").
+
+--------------------------------------------------------------------
+
+⚙️ Real World Use Case:
+- Let’s say your custom app will be used by people on both MariaDB (default in ERPNext) and PostgreSQL (new support).
+- Some SQL syntax (like quoting table names, date functions, or JSON functions) changes between databases.
+- Instead of writing if-else logic —
+- frappe.db.multisql() will automatically handle it for you.
+
+
+💡 Best Practice:
+
+- Use this only when your SQL query syntax is database-dependent.
+- Otherwise, use frappe.db.sql() — it's simpler.
+- You can also use Frappe ORM methods (get_list, get_all) to avoid database-specific code altogether.
+
+
+🧠 Summary Table:
+
+| Feature      | Description                                                 |
+| ------------ | ----------------------------------------------------------- |
+| Purpose      | Run DB-specific SQL queries (MariaDB/Postgres)              |
+| Parameters   | Dict with keys `"mariadb"` and `"postgres"`                 |
+| Auto-Selects | Query for current DB engine                                 |
+| Use Case     | Cross-database compatibility                                |
+| Example      | `frappe.db.multisql({'mariadb': '...', 'postgres': '...'})` |
+
+
+🪄 In short:
+✅ frappe.db.sql() → one query for one DB
+✅ frappe.db.multisql() → two queries, Frappe chooses based on DB type
+
+
+
+##########################################################################################################################################################################################
+
+
+1️⃣5️⃣ frappe.db.rename_table
+used to rename a table directly at the database level using SQL.
+
+- It changes the table name from the old name to the new name.
+
+🧠 Simple Meaning: It’s like running RENAME TABLE old_name TO new_name; directly in the database.
+
+
+
+🧩 Syntax:
+frappe.db.rename_table(old_name, new_name)
+
+--------------------------------------------------------------------
+
+💻 Example:
+frappe.db.rename_table("__internal_cache", "__temporary_cache")
+frappe.db.rename_table("todo", "ToDo")
+
+✅ The first example renames an internal/custom table (__internal_cache → __temporary_cache).
+⚠️ The second renames the actual DocType table (tabToDo) — which can break links and metadata in Frappe, so avoid it unless you really know what you’re doing.
+
+--------------------------------------------------------------------
+
+🚫 Important Warning (s):
+
+- Don’t use this for DocType tables → use frappe.rename_doc() instead. That method safely updates all references, links, and metadata.
+- frappe.db.rename_table() only changes the database table name, not Frappe’s internal records or DocType names.
+
+
+💡 Real World Use Case:
+
+- When you have custom/internal tables (like temporary logs or caches) and you want to rename them safely.
+- For system-level scripts or migrations — not for normal business doctypes.
+
+
+🧠 Summary Table
+
+| Feature      | Description                                         |
+| ------------ | --------------------------------------------------- |
+| Purpose      | Rename an SQL table directly                        |
+| Syntax       | `frappe.db.rename_table(old_name, new_name)`        |
+| Safe for     | Internal or custom tables (`__temp`, `__cache`)     |
+| Not Safe for | DocType tables like `tabToDo`, `tabTask`            |
+| Alternative  | Use `frappe.rename_doc()` for DocTypes              |
+| Example      | `frappe.db.rename_table("__cache", "__temp_cache")` |
+
+
+🪄 In short:
+✅ Use for internal/custom tables
+🚫 Don’t use for Doctype tables → use frappe.rename_doc() instead
+
+
+##########################################################################################################################################################################################
+
+
+1️⃣6️⃣ frappe.db.describe
+
+- returns the table structure (schema) of a given DocType.
+- It tells you all the columns, data types, and properties inside that table.
+
+
+🧠 Simple Meaning:
+👉 It’s like running this SQL: DESC tabDoctypeName; It shows what fields exist in that table.
+
+
+🧩 Syntax:
+frappe.db.describe(doctype)
+
+
+🧠 Output:
+It will return a tuple containing info for each column, such as:
+(field_name, data_type, nullable, key, default, extra)
+
+like, 
+(
+  ('name', 'varchar(140)', 'NO', 'PRI', None, ''),
+  ('owner', 'varchar(140)', 'YES', '', None, ''),
+  ('creation', 'datetime', 'YES', '', None, '')
+)
+
+
+💡 Use Case:
+
+- To inspect what columns exist in a table.
+- Useful for debugging, migrations, or custom SQL queries.
+
+
+
+🧠 Summary Table
+
+| Feature    | Description                  |
+| ---------- | ---------------------------- |
+| Purpose    | Get database table structure |
+| Returns    | Tuple containing field info  |
+| Works On   | Any DocType                  |
+| Similar To | `DESC tabDoctypeName` in SQL |
+| Example    | `frappe.db.describe("Task")` |
+
+
+🪄 In short:
+✅ Returns table structure of a DocType (like SQL DESC)
+
+
+
+##########################################################################################################################################################################################
+
+
+
+
+1️⃣7️⃣ frappe.db.change_column_type
+used to change the data type of a column in a DocType table.
+
+
+- It executes a SQL ALTER TABLE command to modify the column’s type.
+- Useful during migrations or schema updates when a field type needs to be changed (e.g., INT → FLOAT, VARCHAR(100) → TEXT).
+
+🧠 Simple Meaning: 
+👉 Change a column’s type directly in the database table.
+
+
+
+🧩 Syntax:
+frappe.db.change_column_type(doctype, column_name, new_type)
+
+
+doctype → The DocType whose table you want to modify
+column_name → The field/column to change
+new_type → The new SQL data type (like INT, VARCHAR(200), TEXT, etc.)
+
+
+--------------------------------------------------------------------
+
+💻 Example:
+
+# Change 'number' field in Database API to FLOAT
+
+frappe.db.change_column_type('Database API', 'number', 'FLOAT')
+
+print("#"*50)
+print("\n"*10)
+print("Column 'number' type changed to FLOAT successfully.")
+print("\n"*10)
+print("#"*50)
+
+--------------------------------------------------------------------
+
+
+⚠️ Important Notes:
+
+- This directly modifies the table structure, so use carefully.
+- It bypasses ORM validation — Frappe won’t check or update DocType metadata.
+- Changing types may fail if existing data is incompatible with the new type.
+
+
+💡 Use Case:
+
+- Migrating fields to larger types (VARCHAR → TEXT)
+- Converting numbers to decimals for calculations (INT → FLOAT)
+- Adjusting database schema without creating a new field
+
+
+🧠 Summary Table
+
+| Feature   | Description                                               |
+| --------- | --------------------------------------------------------- |
+| Purpose   | Change the data type of a column                          |
+| Syntax    | `frappe.db.change_column_type(doctype, column, new_type)` |
+| Works On  | Any DocType table                                         |
+| Important | Bypasses ORM, may fail if data incompatible               |
+| Example   | Change `number` from INT to FLOAT                         |
+
+
+🪄 In short:
+✅ Directly changes column type in DB table
+⚠️ Use with caution — ensure data is compatible with new type
+
+
+
+
+##########################################################################################################################################################################################
+
+
+
+1️⃣8️⃣ frappe.db.add_index
+used to create a database index on one or more fields of a DocType table.
+
+- Indexes speed up search and query operations on those fields.
+- Without indexes, queries on large tables can be slow.
+- You can specify custom index names.
+- ⚠️ For TEXT or BLOB fields, you must give a fixed length (field_name(length)) to create an index.
+
+
+🧠 Simple Meaning:
+👉 Make certain fields searchable faster in the database.
+
+
+🧩 Syntax:
+frappe.db.add_index(doctype, fields, index_name)
+
+doctype → DocType to add the index to
+fields → List of fields to index (for TEXT/BLOB fields, add length like "field(100)")
+index_name → Optional name of the index
+
+--------------------------------------------------------------------
+
+💻 Example:
+
+
+1st
+# Add index on 'name1' and 'check' fields in Database API
+frappe.db.add_index('Database API', ['name1', 'check'], 'idx_name1_check')
+
+print("#"*50)
+print("\n"*10)
+print("Index 'idx_name1_check' created successfully on 'Database API'.")
+print("\n"*10)
+print("#"*50)
+
+
+2nd.
+# Example with TEXT field:
+
+# Add index on first 50 charc of a TEXT field 'description'
+frappe.db.add_index('Database API', ['description(50)'], 'idx_description_50')
+
+--------------------------------------------------------------------
+
+⚠️ Important Notes:
+
+- Adding an index can increase storage slightly.
+- Indexes improve query speed but can slow down insert/update operations on the indexed fields.
+- Use indexes on fields that are frequently filtered or sorted in queries.
+
+
+🧠 Summary Table
+
+| Feature      | Description                                                |
+| ------------ | ---------------------------------------------------------- |
+| Purpose      | Create a database index on fields                          |
+| Syntax       | `frappe.db.add_index(doctype, fields, index_name)`         |
+| Works On     | Any DocType table                                          |
+| Special Rule | TEXT/BLOB fields need fixed length                         |
+| Example      | Index on `['name1','check']` with name `'idx_name1_check'` |
+
+
+🪄 In short:
+✅ Speeds up queries on specified fields
+⚠️ Use thoughtfully — too many indexes can slow inserts/updates
+
+
+- Indexes are not new columns. They are database structures that help speed up queries.
+
+
+
+##########################################################################################################################################################################################
+
+
+1️⃣9️⃣ frappe.db.add_unique
+used to create a UNIQUE constraint on one or more fields in a DocType table.
+
+- Ensures that no two records can have the same value(s) for the specified field(s).
+- Helps maintain data integrity.
+- You can optionally provide a custom constraint name.
+
+
+🧠 Simple meaning:
+👉 Make one or more fields unique so duplicates are not allowed.
+
+
+🧩 Syntax :
+frappe.db.add_unique(doctype, fields, constraint_name=None)
+
+doctype → DocType whose table you want to enforce uniqueness on
+fields → List of field names to make unique
+constraint_name → Optional custom name for the unique constraint
+
+
+--------------------------------------------------------------------
+
+💻 Example
+
+1. Single field unique constraint
+
+frappe.db.add_unique('Database API', ['name1'])
+
+print("#"*50)
+print("\n"*10)
+print("Unique constraint added on 'name1' in Database API.")
+print("\n"*10)
+print("#"*50)
+
+
+2. Multiple fields unique constraint
+
+frappe.db.add_unique('Database API', ['name1', 'number'], 'unique_name1_number')
+
+print("#"*50)
+print("\n"*10)
+print("Unique constraint 'unique_name1_number' added on 'name1' and 'number'.")
+print("\n"*10)
+print("#"*50)
+
+--------------------------------------------------------------------
+
+
+⚠️ Important Notes:
+
+- Existing duplicate records must be removed before adding a unique constraint.
+- The database will prevent inserts or updates that violate the constraint.
+- Useful for fields like codes, email addresses, or combination of fields that must remain unique.
+
+
+🧠 Summary Table
+
+| Feature  | Description                                                   |
+| -------- | ------------------------------------------------------------- |
+| Purpose  | Enforce uniqueness of one or more fields                      |
+| Syntax   | `frappe.db.add_unique(doctype, fields, constraint_name=None)` |
+| Works On | Any DocType table                                             |
+| Optional | Custom constraint name                                        |
+| Example  | `add_unique('Database API', ['name1','number'])`              |
+
+
+🪄 In short:
+✅ Ensures no duplicates for given field(s)
+⚠️ Clean existing duplicates before applying constraint
+
+
+--------------------------------------------------------------------
+
+Deep Understand :::::::::
+
+DocType: Student
+Fields: roll_number, class, name
+You want to make sure no two students in the same class have the same roll number.
+
+
+| name  | class | roll_number |
+| ----- | ----- | ----------- |
+| Alice | 10    | 01          |
+| Bob   | 10    | 02          |
+| Carol | 10    | 01          |
+
+
+❌ Problem: Carol has same roll_number as Alice — not allowed!
+
+
+
+now we do :
+frappe.db.add_unique("Student", ["class", "roll_number"], "unique_class_roll")
+
+
+Frappe generates SQL to add a UNIQUE constraint:
+    
+    ALTER TABLE `tabStudent`
+    ADD CONSTRAINT `unique_class_roll` UNIQUE (`class`, `roll_number`);
+
+now , If anyone tries to insert or update a record with a class + roll_number combination that already exists, the database will reject it.
+
+
+question : but here you use also class, so i think class also must be unique am i right or not in 
+           frappe.db.add_unique("Student", ["class", "roll_number"], "unique_class_roll") 
+           means class 10 now not work need to be unique
+           
+Answer :
+
+✅ What it really means behind the scenes:
+
+- The combination of class + roll_number must be unique.
+- Not each field individually, only the pair together.
+
+valid :
+
+| name  | class | roll_number |                                                  |
+| ----- | ----- | ----------- | ------------------------------------------------ |
+| Alice | 10    | 01          | ✅ OK                                             |
+| Bob   | 10    | 02          | ✅ OK                                             |
+| Carol | 11    | 01          | ✅ OK → different class, same roll_number allowed |
+| Dave  | 10    | 01          | ❌ Not allowed → same class AND same roll_number  |
+
+
+Explanation:
+- The database checks both fields together: (class, roll_number).
+- You can have the same roll_number in different classes — that’s fine.
+- You cannot have the same roll_number in the same class — that’s what the unique constraint prevents.
+
+
+💡 In short:
+
+frappe.db.add_unique("Student", ["class", "roll_number"]) → unique combination
+If you want each field individually unique, you would need two separate unique constraints:
+
+frappe.db.add_unique("Student", ["class"], "unique_class")
+frappe.db.add_unique("Student", ["roll_number"], "unique_roll")
+
+
+-------------------------------------------------------------------- 
+
+- constraint_name is not a new field in the table.
+- The database creates a UNIQUE constraint internally.
+- The constraint has a name (unique_class_roll) so the database can reference it (like for dropping it later).
+- It does not add a new column — the table columns remain the same (class and roll_number).
+
+
+
+Think of it like putting a security label on certain columns:
+- Columns: class, roll_number → actual data
+- Constraint: unique_class_roll → just a rule attached to these columns that says “cannot duplicate this combination”
+- No extra data is stored in the table itself.
+
+
+So in short:
+
+✅ constraint_name = label for the UNIQUE rule
+❌ Not a new field in the table
+
+
+
+##########################################################################################################################################################################################
+
+
+Database transaction hooks  ::::::
+
+visit the chat(Database API) & read, if you faced any question then learn on that chat with new prompt dont update because it earse it new chat after updatable chat.
+
+
+
+
+##########################################################################################################################################################################################
+
+
+
+Database transaction model  :::::: also you can read chat. called Database API
+
+
+📘 Definition / Purpose:
+- Frappe provides a built-in transaction model that automatically handles commits and rollbacks in most cases, so you usually don’t need to manually use SQL COMMIT or ROLLBACK.
+
+- Ensures data consistency
+- Reduces risk of leaving partial updates in the database
+
+
+🧠 Simple Meaning:
+👉 Frappe automatically decides when to commit or rollback your database changes depending on the type of operation (web request, background job, patch, or test).
+
+
+
+🔹 How it works :
+
+
+1️⃣ Web Requests
+- POST / PUT requests → changes committed at end of successful request
+- GET requests → do not commit automatically
+- Uncaught exceptions → transaction is rolled back
+- frappe.call → POST by default
+
+ex.
+
+# Web POST request updates a Task
+frappe.get_doc("Task", "TASK0001").update({"status": "Completed"}).save()
+# If no exception → commit happens automatically
+# If exception → rollback
+
+-------------------------------------------------------------------- 
+
+2️⃣ Background / Scheduled Jobs
+- Transaction committed after successful job
+- Uncaught exception → rollback
+
+ex.
+
+@frappe.whitelist()
+def background_task():
+    frappe.get_doc("Task", "TASK0001").update({"status": "Completed"}).save()
+    # commit happens automatically if no exception
+
+--------------------------------------------------------------------
+
+3️⃣ Patches
+execute() function commits automatically if successful
+Exception → rollback
+
+ex.
+
+def execute():
+    frappe.db.set_value("Task", "TASK0001", "status", "Completed")
+    # commit happens after patch runs successfully
+
+
+
+--------------------------------------------------------------------
+
+4️⃣ Unit Tests
+- Transaction committed after one test module finishes
+- Committed again after all tests finish
+- Exception → test runner exits → rollback
+
+--------------------------------------------------------------------
+
+⚠️ Important Notes 
+- If you catch exceptions manually, Frappe cannot detect failures, so you are responsible for manually rolling back:
+
+try:
+    frappe.get_doc("Task", "TASK0001").delete()
+except Exception as e:
+    frappe.db.rollback()  # must rollback manually
+
+
+Frappe’s automatic transaction handling only works for uncaught exceptions.
+
+
+
+🪄 In short:
+✅ Frappe automatically commits or rolls back based on operation type
+✅ POST/PUT web requests, background jobs, patches, and tests → auto transaction handling
+⚠️ If you catch exceptions, you must rollback manually
+
+
+
+
+
+
+
+
+
+
+
+
+
+

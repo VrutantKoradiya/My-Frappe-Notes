@@ -1,0 +1,36 @@
+
+
+WorkFlow :::::::::::
+
+- A Workflow is used to control the approval process or status transition of a document (DocType).
+- It defines who can change a document from one state to another (like Draft → Approved → Rejected).
+
+
+
+⚙️ Real-world Example
+
+Let’s say you have a Leave Application doctype.
+
+You want this flow:
+Draft → Pending Approval → Approved / Rejected
+
+
+🔹 Result
+Now, users will see workflow action buttons like “Submit for Approval”, “Approve”, or “Reject” depending on their role.
+
+
+so, 
+Workflow = a defined set of states + allowed transitions + who can perform them.
+or
+Workflow = States + Actions + Transitions + Roles.
+
+
+How to create : 
+1. Search WorkFLow List -> New - > Fille fields like name & doctype name
+2. now you can add different states for the doctype
+3. now you can add different Action/Transition Rules for the Doctype.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+

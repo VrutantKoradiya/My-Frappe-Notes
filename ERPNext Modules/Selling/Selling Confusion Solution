@@ -1,0 +1,95 @@
+
+
+1. when i create production plan BOM get automated linked then i select get raw materials raw material will get automatically then how this comes it all inside BOM becuase professior is doesn't tell anything about BOM till now i think he will say but please clear my confusion
+
+Ans.
+
+⚙️ Step 1: BOM (Bill of Materials)
+A BOM is the foundation of everything in manufacturing.
+
+It defines:
+- The finished item (the product you’ll make)
+- The raw materials needed
+- The quantities of each raw material
+
+Optional: operations, workstations, and costs
+
+
+🧩 Step 2: Production Plan → BOM linkage
+When you create a Production Plan, you select:
+- The items to manufacture
+- The quantity to produce
+- Optionally, the sales orders to fulfill
+
+When you click “Get Items from BOM”, ERPNext:
+- Looks up the default BOM for each production item (from the Item master or you manually select it).
+-  Links that BOM to the Production Plan record (in child table Production Plan Item).
+- Multiplies the BOM raw materials by the quantity to produce to calculate total material requirements.
+
+Step 3: Get Raw Materials (the magic button)
+
+Step 4: Downstream Effects
+- From the Production Plan, you can then:
+- Create Material Requests (for purchase/transfer)
+- Create Work Orders
+- Both will carry forward those raw materials and BOM links.
+
+real workflow :
+
+| Step                      | Action                                  | Where the data comes from                      |
+| ------------------------- | --------------------------------------- | ---------------------------------------------- |
+| Create BOM                | Define finished product + raw materials | `tabBOM` + `tabBOM Item`                       |
+| Create Production Plan    | Link item → default BOM                 | `Production Plan Item` child table             |
+| Click "Get Raw Materials" | Pulls from BOM using backend function   | `get_bom_items_as_dict()`                      |
+| Materials show up         | Summed + merged list of all RM          | `Production Plan Material Request` child table |
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Create Material Requests (for purchase/transfer), now after creating material request according to my reason but my quetion is after creating material request for that i must i should/ must create purchase order or not ?
+
+
+Ans. 
+
+1️⃣ What is a “Material Request” in ERPNext?
+
+A Material Request is just a request document — it doesn’t actually buy or transfer anything yet.
+It tells the system what materials you need, how much, and why.
+
+
+
+There are different types of Material Requests:
+
+| Type                  | Used For                                        | Typical Source                               |
+| --------------------- | ----------------------------------------------- | -------------------------------------------- |
+| **Purchase**          | You need to *buy* materials from a supplier     | When raw material is not in stock            |
+| **Material Transfer** | You need to *move* materials between warehouses | When stock exists in another warehouse       |
+| **Manufacture**       | You want to *make* finished goods               | Generated from Production Plan or Work Order |
+| **Customer Provided** | Customer supplies materials                     | Used in subcontracting cases                 |
+
+
+
+2️⃣ In the Production Plan context
+
+When you click “Create Material Request” from the Production Plan, ERPNext looks at your Stock Availability and automatically decides which type to create.
+
+So if:
+- The system finds stock not available, it creates Material Request (Purchase).
+- If stock exists in another warehouse, it can create Material Request (Transfer).
+- If it’s a make-to-order scenario, it can create Material Request (Manufacture).
+
+3️⃣ When do you need to create a Purchase Order?
+| Scenario                                  | Action                                                                              |
+| ----------------------------------------- | ----------------------------------------------------------------------------------- |
+| ❌ Raw materials already in same warehouse | ➤ No **Purchase Order** — directly make **Work Order** or **Transfer** if needed    |
+| ⚙️ Stock in another warehouse             | ➤ Create **Material Request (Transfer)** → then **Stock Entry (Material Transfer)** |
+| ✅ No raw materials in any warehouse       | ➤ Create **Material Request (Purchase)** → convert to **Purchase Order**            |
+
+
+
+
+
+
+
+

@@ -1,0 +1,182 @@
+
+Configurable Scheduler Events  ::::: same definition as scheduled job
+-> Configurable Scheduler Events functionality in Frappe exists to make scheduler jobs dynamic, flexible, and manageable from the UI, instead of hardcoding them in hooks.py
+
+
+Here’s why you’d use it:
+
+1. Dynamic Scheduling
+You can create, edit, or remove jobs without touching code.
+Example: Change a job’s frequency from hourly → daily via UI or database.
+
+2. No bench migrate Required
+With hooks.py, every change requires code edit + bench migrate.
+Configurable Scheduler stores jobs in the database, so changes take effect immediately.
+
+3. Multi-Tenant or Site-Specific Jobs
+Each site can have different jobs or timings without changing the app code.
+Useful for apps used across multiple sites with different requirements.
+
+4. Supports Cron and Intervals
+Works with Hourly, Daily, Weekly, Monthly schedules and cron expressions.
+You can run heavy tasks using _long jobs or custom cron patterns.
+
+5. Manage Jobs from UI
+Admins can enable/disable jobs, update cron, or see logs.
+No developer intervention needed for small changes.
+
+
+
+simple example : 
+
+# Create `Scheduler Event` record
+sch_eve = frappe.new_doc("Scheduler Event")
+sch_eve.scheduled_against = "Process Payment Reconciliation"
+sch_eve.save()
+
+# Create `Scheduled Job Type`
+job = frappe.new_doc("Scheduled Job Type")
+job.frequency = "Cron"
+job.scheduler_event = sch_eve.name
+job.cron_format = "0/5 * * * *"     # runs every five minutes
+job.save()
+
+
+
+another example : where add record after 1 min then delete event .... means add record after 1 min then stop , not add another record after agin 1 min
+
+method - 
+import frappe
+from datetime import datetime
+
+def add_student_record_once():
+    # Create a new Student record
+    student = frappe.new_doc("Student")
+    student.student_name = "John Doe"
+    student.age = 18
+    student.grade = "12th"
+    student.save()
+    frappe.db.commit()
+    print("Student added once!")
+
+    # Delete the Scheduled Job Type so it doesn't run again
+    job_name = frappe.db.get_value("Scheduled Job Type", {"method": "my_app.tasks.add_student_record_once"})
+    if job_name:
+        frappe.delete_doc("Scheduled Job Type", job_name)
+        frappe.db.commit()
+        print("Scheduled job deleted after execution")
+
+
+schedule - 
+# Create Scheduler Event
+sch_eve = frappe.new_doc("Scheduler Event")
+sch_eve.scheduled_against = "Add Student Record Once"
+sch_eve.save()
+
+# Create Scheduled Job Type
+job = frappe.new_doc("Scheduled Job Type")
+job.frequency = "Cron"
+job.scheduler_event = sch_eve.name
+job.method = "my_app.tasks.add_student_record_once"
+
+# Run 1 minute from now using cron: current minute + 1
+from datetime import datetime, timedelta
+
+minute = (datetime.now() + timedelta(minutes=1)).minute
+hour = datetime.now().hour
+job.cron_format = f"{minute} {hour} * * *"
+job.save()
+
+
+
+
+
+
+
+
+
+
+1. Scheduler Event (DocType)
+What it is: The DocType that represents a scheduled task’s “purpose” or “label”.
+Can you change it? ❌ No — it is a DocType in Frappe. You cannot rename "Scheduler Event" unless you create a completely new DocType.
+
+
+
+2. scheduled_against (field in Scheduler Event)
+What it is: A field in the Scheduler Event DocType. Usually used to give a description of the job, e.g., "Process Payment Reconciliation".
+
+Can you change it?
+✅ You can change the value (the string describing the job).
+❌ You cannot rename the field (scheduled_against) because Frappe expects this field to exist.
+
+Example:
+sch_eve.scheduled_against = "Add Student Record"  # value can change
+
+
+
+3. Scheduled Job Type (DocType)
+What it is: The DocType that stores how and when the job runs (frequency, cron, etc.) and links to a Scheduler Event.
+Can you change it? ❌ No — this is fixed in Frappe.
+
+
+
+4. frequency (field in Scheduled Job Type)
+What it is: Determines how often the job runs. Possible values:
+
+Value	Meaning
+All	Runs every scheduler tick (every few seconds)
+Hourly	Runs every hour
+Hourly Long	Runs every hour, but in a long-running worker
+Daily	Runs daily
+Daily Long	Runs daily in a long-running worker
+Weekly	Runs weekly
+Weekly Long	Runs weekly in a long-running worker
+Monthly	Runs monthly
+Monthly Long	Runs monthly in a long-running worker
+Cron	Runs according to the cron pattern
+
+Can you change it?
+✅ Yes, the value of this field can be set per job.
+❌ The field name frequency cannot be changed.
+
+
+
+
+
+5. scheduler_event (field in Scheduled Job Type)
+What it is: Links the Scheduled Job Type to a Scheduler Event.
+
+
+Can you change it?
+✅ You can assign it to a different Scheduler Event if needed.
+❌ You cannot rename the field scheduler_event.
+
+What sch_eve.name is ?
+
+When you do:
+sch_eve = frappe.new_doc("Scheduler Event")
+sch_eve.scheduled_against = "Add Student Record"
+sch_eve.save()
+
+Frappe automatically assigns a unique name to this document in the database.
+sch_eve.name holds this unique identifier.
+
+This is what you use to link this Scheduler Event to a Scheduled Job Type:
+job.scheduler_event = sch_eve.name
+
+
+
+
+
+6. cron_format (field in Scheduled Job Type)
+What it is: The cron expression that defines exact times when the job runs. Only used if frequency = "Cron".
+
+Can you change it?
+✅ Yes, you can change the cron pattern (e.g., "*/5 * * * *" for every 5 minutes).
+❌ You cannot rename the field cron_format.
+
+
+
+
+so basically : 
+Scheduler Event & Scheduled Job Type is DocType for schedule an event .... 

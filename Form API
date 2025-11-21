@@ -1,0 +1,676 @@
+Form API :::::::::::::::::::::::::::::::::::::::::::::::::
+
+here only syntax & info are available example is on code
+
+1 . frm.set_value >>>>>>>>>>>>>>>>>>
+
+frm.set_value is used to set a field’s value programmatically.
+
+frm.set_value(fieldname, value);
+
+###########################################################################################################################################################################################
+
+
+2. frm.refresh >>>>>>>>>>>>>>>>
+frm.refresh() is used when you want to reload the form from the server so the UI shows the latest document state.
+
+What happens when you call frm.refresh() >
+Pulls the latest data from the server (database).
+Updates all field values in the form.
+Triggers the following events in order: before_load, onload, refresh, timeline_refresh, onload_post_render
+
+
+⚡ Difference between frm.refresh_field and frm.refresh:
+frm.refresh_field("fieldname") → refreshes only one field (or a few fields).
+frm.refresh() → refreshes the entire form (all fields, sections, child tables, timeline, etc.).
+
+
+###########################################################################################################################################################################################
+
+
+3. frm.save  >>>>>>>>
+frm.save() is a programmatic way to save a document from the client-side.
+
+🔹 What happens when you call frm.save()?
+It’s the same as clicking the Save button on the form.
+
+The following events run in sequence:
+validate, before_save, after_save, timeline_refresh, refresh
+
+👉 If the document is in a state where it can be submitted, cancelled, or updated, then those relevant flows will also trigger.
+
+
+
+###########################################################################################################################################################################################
+
+
+4. frm.enable_save / frm.disable_save >>>>>>>>>>
+In Frappe, you can control whether the Save button is clickable using these methods
+
+frm.disable_save();  // disables the Save button
+frm.enable_save();   // enables the Save button
+
+
+###########################################################################################################################################################################################
+
+
+5. frm.email_doc >>>>>>>>>>
+frm.email_doc() is used to open the Email dialog for the current document so you can send it via email directly from the form.
+
+// open email dialog with some message
+frm.email_doc(`Hello ${frm.doc.customer_name}`);
+
+// open email dialog
+frm.email_doc();
+
+###########################################################################################################################################################################################
+
+6. frm.reload_doc >>>>>>>>
+frm.reload_doc() is used when you want to reload the entire document from the server and automatically refresh the form.
+
+###########################################################################################################################################################################################
+
+7. frm.refresh_field >>>>>>>>>
+frm.refresh_field() is used to refresh a single field or a list of fields on the form so that any changes (from client-side or server-side) 
+are reflected immediately without refreshing the whole form.
+
+
+frm.refresh_field("fieldname");         // refresh one field
+frm.refresh_field(["field1", "field2"]); // refresh multiple fields
+
+###########################################################################################################################################################################################
+
+8. frm.is_dirty >>>>>>>>>>
+frm.is_dirty() is used to check whether the form has unsaved changes. It returns a boolean:
+
+true → the user has changed something and it’s not saved.
+false → nothing has changed since the last save.
+
+if (frm.is_dirty()) {
+    // Do something if the form has unsaved changes
+}
+
+
+###########################################################################################################################################################################################
+
+9. frm.dirty >>>>>>>>
+frm.dirty() is used to manually mark a form as “dirty”, meaning it has unsaved changes. This triggers the “Not Saved” indicator 
+in the form view (the little blue dot next to the Save button).
+
+
+Calling save() without setting the form dirty will trigger a "No changes in document" toast.
+solution : use frm.dirty() to reduce or avoid the “No changes in document” toast when you programmatically change fields before calling frm.save().
+
+
+
+###########################################################################################################################################################################################
+
+
+10. frm.is_new  >>>>>>>>>
+Check if the form is new and is not saved yet.
+
+if (frm.is_new()) {
+    // Do something for new documents
+}
+
+
+###########################################################################################################################################################################################
+
+
+11. frm.set_intro >>>>>>>>>>>
+frm.set_intro() is used to display a message at the top of the form, usually to give users some instructions or information. You can also set a color for the message.
+
+
+frm.set_intro(message, color);
+
+message → the text you want to show (required)
+color → optional, one of 'blue', 'red', 'orange', 'green', 'yellow' (default is 'blue')
+
+###########################################################################################################################################################################################
+
+
+12. frm.add_custom_button  >>>>>>>>>>>>>
+is used to add a custom button to the form toolbar (the top-right area of the form). It’s an alias for page.add_inner_button().
+
+frm.add_custom_button(label, function, group);
+
+label → text displayed on the button (required)
+function → the callback executed when the button is clicked (required)
+group → optional, if provided the button goes into a dropdown menu under that group
+
+
+###########################################################################################################################################################################################
+
+
+13. frm.change_custom_button_type  >>>>>>>>>>>
+is used to change the style (type) of a custom button that you previously added with frm.add_custom_button().
+
+frm.change_custom_button_type(label, group, type);
+
+label → the text of the button you want to change (required)
+type → the new button type, e.g., 'primary', 'secondary', 'danger' (required)
+group → optional, if the button is inside a dropdown group
+
+note: if you dont have group type then type null because without null it will not work(in short all argument mst be passed)
+
+
+###########################################################################################################################################################################################
+
+
+14. frm.remove_custom_button  >>>>>>>>>>>>
+is used to remove a custom button that you previously added with frm.add_custom_button().
+
+frm.remove_custom_button(label, group);
+
+label → the text of the button you want to remove (required)
+group → optional, if the button is inside a dropdown group
+
+
+###########################################################################################################################################################################################
+
+
+15. frm.set_df_property >>>>>>>>>>>>
+frm.set_df_property() is used to change a property of a field dynamically, like making it read-only, required, hidden, etc., 
+and it automatically refreshes the field so the change is visible on the form.
+
+frm.set_df_property(fieldname, property, value);
+
+
+fieldname → the field you want to modify
+property → the docfield property (fieldtype, reqd, read_only, hidden, options, etc.)
+value → the new value (string, boolean, array, or number, depending on the property)
+
+
+here different use cases : 
+1️⃣ Change field type - frm.set_df_property('description', 'fieldtype', 'Text');
+2️⃣ Set field options - frm.set_df_property('status', 'options', ['Open', 'Closed']);
+3️⃣ Set a field as mandatory - frm.set_df_property('title', 'reqd', 1);     You can also use true instead of 1
+4️⃣ Set a field as read-only - frm.set_df_property('status', 'read_only', 1);
+
+
+
+###########################################################################################################################################################################################
+
+16. frm.toggle_enable >>>>>>>>>>>>>>>>>>>
+
+is used to enable or disable fields dynamically (i.e., make them editable or read-only) based on a condition. 
+It is different from set_df_property because it handles dynamic enable/disable logic rather than permanently changing the field’s property.
+
+frm.toggle_enable(fieldname, condition);
+
+fieldname → a single field or an array of fields
+condition → boolean:
+   true → field is enabled (editable)
+   false → field is disabled (read-only)
+
+###########################################################################################################################################################################################
+
+
+17. frm.toggle_reqd >>>>>>>>>>>>
+is used to dynamically make a field mandatory or optional based on a condition.
+It’s similar to toggle_enable, but instead of enabling/disabling, it controls whether the field must be filled before saving.
+
+fieldname → a single field or an array of fields
+condition → boolean:
+   true → field becomes mandatory
+   false → field becomes optional
+   
+###########################################################################################################################################################################################   
+   
+   
+18. frm.toggle_display >>>>>>>>>>>
+is used to show or hide fields dynamically based on a condition. 
+It’s a convenient way to control the visibility of fields without changing their underlying properties permanently.   
+
+frm.toggle_display(fieldname, condition);
+
+ieldname → single field or an array of fields
+condition → boolean:
+  true → field is visible
+  false → field is hidden
+
+
+###########################################################################################################################################################################################
+
+
+19. frm.set_query >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+frm.set_query() is used to filter the options of a Link field, so the user only sees the records that match certain conditions. 
+This is very useful when you want to restrict choices dynamically.
+
+
+frm.set_query(fieldname, function() {
+    return {
+        filters: {
+            key1: value1,
+            key2: value2
+        }
+    };
+});
+
+or
+
+Syntax for set_query in Child Table :
+frm.set_query('field_in_child_which_is_link', 'child_table_fieldname_which_is_specified_in_parent', () => {
+    return {
+        filters: {
+            key: value
+        }
+    }
+});
+
+
+
+fieldname → the Link field you want to filter
+function → returns an object with filters (or query in advanced cases)
+filters → key-value pairs used to filter the records
+
+💡 Important
+Call frm.set_query() in setup or onload, not refresh, so the filter is applied before the field renders.
+This only works for Link fields. 
+
+
+🤔️ case 1: 
+
+frm.set_query('item_code', 'items', () => {
+    return {
+        filters: {
+            item_group: 'Products'
+        }
+    }
+});
+
+
+item_code → Link field in a Child Table
+items → name of the Child Table field
+filters → only show items whose item_group whcih is "Products"
+Effect: When adding rows to the items table, the item_code dropdown only shows products, not services or other items.
+
+
+🔹 Step 1: Understand the Structure
+
+In Frappe/ERPNext, a Child Table is like a mini Doctype inside your main Doctype.
+Example:
+
+Parent Doctype → Sales Invoice
+Has a child table field → items
+Each row in items is based on Child Doctype → Sales Invoice Item
+
+That Child Doctype has fields like:
+item_code (Link → Item)
+qty (Float)
+rate (Currency)
+
+So when you add rows to the child table, you are actually creating rows of another Doctype.
+
+🔹 Step 2: Problem
+
+Normally, the item_code dropdown in the items table will show all items from the Item Doctype.
+
+But sometimes we want to restrict choices.
+👉 Example: only show items that belong to Item Group = "Products" (not Services, Assets, etc.).
+
+
+
+🤔️ case 2: 
+Sometimes, we need more complex filtering logic that can’t be written in simple key–value filters.
+So instead of giving filters, we give a custom method path.
+
+sy:
+frm.set_query('fieldname', () => {
+    return {
+        query: 'dotted.path.to.custom.custom_query',
+        filters: {
+            field1: 'value1'
+        }
+    }
+});
+
+
+fieldname → the Link field in the form (e.g. customer)
+query → the full dotted path of your Python method (server-side)
+filters → key-value data passed to your Python method
+
+ex : 
+
+py code - 
+
+@frappe.whitelist() <------ must
+def get_customers_in_india(doctype, txt, searchfield, start, page_len, filters):
+    customers = frappe.get_all(
+        "Customer",
+        filters={"territory": "India"},
+        fields=["name", "customer_name"],
+        start=start,
+        page_length=page_len
+    )
+    return [(c.name, c.customer_name) for c in customers]
+    
+
+js code - 
+frm.set_query("customer", () => {
+    return {
+        query: "my_app.api.get_customers_in_india"
+    };
+});
+here , We didn’t pass filters from JS because the filter condition is already hardcoded in Python:    
+
+so in this case  method signature must be like this which one we used in above example
+like alsi in below
+def custom_query(doctype, txt, searchfield, start, page_len, filters):
+    # your logic
+    return filtered_list
+    
+###########################################################################################################################################################################################    
+    
+20. frm.add_child >>>>>>>>>>>>>>>>>>>>>>>
+is used to add a new row to a child table (Table field) in a form. You can also pre-fill values for that row while adding it.
+
+let row = frm.add_child("child_table_fieldname", {
+    field1: value1,
+    field2: value2
+});
+
+child_table_fieldname → the fieldname of your Table (Child Table) which is specified in parent DocType
+Object {...} → optional, set default values for fields in the new row
+Returns the new row object so you can modify it if needed
+
+
+After adding a row, you usually call ----->   frm.refresh_field("child_table_fieldname");  to refresh the table in the UI.
+
+
+
+
+###########################################################################################################################################################################################
+
+
+
+
+21. frm.call() >>>>>>>>>>>>>>>>>>>>
+frm.call() is a client-side way to call a server-side Python method directly from the form.
+
+frm.call({
+    method: "dotted.path.to.python.method",
+    args: {
+        arg1: value1,
+        arg2: value2
+    },
+    callback: function(r) {
+        if(r.message){
+            console.log(r.message);
+        }
+    }
+});
+
+method → full dotted path to your Python function (must be whitelisted)
+args → key-value pairs sent as parameters to the Python function
+callback → optional, runs after server responds; r.message contains the return value
+
+###########################################################################################################################################################################################
+
+22. frm.trigger >>>>>>>>>>>>>>>>
+is used to manually trigger a form event as if it had happened naturally.
+
+frm.trigger("event_name");
+event_name → the name of the event you want to trigger (e.g., "validate", "before_save", "custom_event")
+
+Runs the function defined for that event in your form script
+
+###########################################################################################################################################################################################
+
+
+23. frm.get_selected  >>>>>>>>>>>>>>>>>>>>>
+is used to get the selected rows of a child table (Table field) in a form.
+
+let selected_rows = frm.get_selected();
+
+Returns an object where:
+key → child table fieldname
+value → array of names (row IDs) of selected row
+
+
+it automatically returns all selected rows in all child tables in the form.
+You don’t need to mention a specific child table when calling it.
+
+
+###########################################################################################################################################################################################
+
+
+
+24. frm.clear_custom_buttons  >>>>>>>>>>>>>>>>
+frm.clear_custom_buttons() is used to remove all custom buttons you have added to a form’s inner toolbar.
+
+frm.clear_custom_buttons();
+
+No parameters needed.
+Removes all buttons added via frm.add_custom_button.
+Does not affect default buttons like Save, Submit, or Cancel.
+
+
+###########################################################################################################################################################################################
+
+
+
+25. frm.ignore_doctypes_on_cancel_all  >>>>>>>>>>>>>>>
+
+used when you want to prevent certain linked documents from being canceled when you use the “Cancel All” feature.
+
+
+How it works:
+frm.ignore_doctypes_on_cancel_all = ["Sales Invoice", "Payment Entry"];
+
+frm.ignore_doctypes_on_cancel_all → array of DocType names
+When the user clicks “Cancel All”, Frappe will skip these DocTypes and not cancel them.
+
+
+
+
+
+1️⃣ Context – Linked Documents
+
+In Frappe/ERPNext:
+Some DocTypes are linked to others using a Link field.
+
+Example:
+Sales Order links to:
+   Delivery Note (via sales_order field)
+   Payment Entry (via sales_order field)
+   
+
+2️⃣ What “Cancel All” does
+
+If you click Cancel All on a Sales Order, Frappe tries to cancel all linked documents automatically.
+
+That means:
+All Delivery Notes linked to this Sales Order → canceled
+All Payment Entries linked to this Sales Order → canceled  
+
+
+
+🤔️so structure :::::::
+
+Sales Order is the main DocType.
+Delivery Note and Payment Entry are completely separate DocTypes.
+
+Both of them can have a Link field pointing to a Sales Order.
+That means for any single Sales Order, you can create:
+One or more Delivery Notes linked to it
+One or more Payment Entries linked to it
+
+So yes, you link the same Sales Order data in both Delivery Note and Payment Entry DocTypes using their Link fields. 
+
+
+
+3️⃣ Why we need ignore_doctypes_on_cancel_all
+
+Sometimes you don’t want some linked documents to be canceled, for example:
+
+You want Payment Entries to stay valid even if the Sales Order is canceled.
+You still want Delivery Notes to be canceled.
+
+This is where frm.ignore_doctypes_on_cancel_all comes in.
+
+4️⃣ How to use it
+
+frappe.ui.form.on("Sales Order", {
+    onload: function(frm) {
+        // Payment Entry will NOT be canceled
+        frm.ignore_doctypes_on_cancel_all = ["Payment Entry"];
+    }
+});
+
+✅ Effect
+
+User clicks Cancel All on Sales Order
+Frappe checks all linked DocTypes:
+Delivery Note → canceled
+Payment Entry → ignored (not canceled)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

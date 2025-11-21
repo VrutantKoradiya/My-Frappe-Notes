@@ -1,0 +1,860 @@
+
+
+SQL for Frappe :::::
+
+###################################################################################################################################################################################
+
+The Relational Database Model :
+- a way to store data in tables (rows + columns) that are related to each other using keys.
+- Relationships are created using Primary Key and Foreign Key.
+
+
+🔑 Important Terms
+
+| Term               | Meaning                                  | Example                                    |
+| ------------------ | ---------------------------------------- | ------------------------------------------ |
+| **Table**          | Collection of data in rows & columns     | customers, orders                          |
+| **Row (Record)**   | One entry in a table                     | Raj’s full record                          |
+| **Column (Field)** | A property of data                       | customer_name, city                        |
+| **Primary Key**    | Unique identifier for each record        | customer_id                                |
+| **Foreign Key**    | References another table’s primary key   | orders.customer_id → customers.customer_id |
+| **Relationship**   | Link between two tables using key fields | 1 Customer → Many Orders                   |
+
+
+###################################################################################################################################################################################
+
+1. DESC (Describe Table Structure)
+- Used to describe table structure — shows columns, data types, etc.
+
+
+sy: DESC `tabCustomer`;
+
+------------------------------------------------------------------------------------------------
+
+2. SELECT
+- Used to fetch specific columns or all (*) from a table.
+
+sy :
+- SELECT column1, column2 FROM table_name;
+- SELECT * FROM table_name;
+
+ex: SELECT customer_name, city FROM `tabCustomer`;
+
+------------------------------------------------------------------------------------------------
+
+3. WHERE
+- Used to filter records based on conditions.
+
+sy: SELECT * FROM table_name WHERE condition;
+
+ex: SELECT * FROM `tabCustomer` WHERE city = 'Surat';
+
+------------------------------------------------------------------------------------------------
+
+4. WHERE with Operators (=, >, <, >=, <=, <>, !=)
+
+ex: SELECT * FROM `tabSales Order` WHERE amount > 5000;
+
+------------------------------------------------------------------------------------------------
+
+5. AND, OR, NOT
+- Combine multiple conditions.
+
+sy & ex :
+
+-- AND: both conditions true
+SELECT * FROM `tabCustomer`
+WHERE city = 'Surat' AND customer_name = 'Raj';
+
+-- OR: any one true
+SELECT * FROM `tabCustomer`
+WHERE city = 'Surat' OR city = 'Mumbai';
+
+-- NOT: exclude a condition
+SELECT * FROM `tabCustomer`
+WHERE NOT city = 'Mumbai';
+
+------------------------------------------------------------------------------------------------
+
+6. LIKE Operator
+- Used for pattern matching (with % and _).
+
+| Symbol | Meaning                  | Example                      |
+| ------ | ------------------------ | ---------------------------- |
+| `%`    | any number of characters | `'S%'` → starts with S       |
+| `_`    | single character         | `'R_j'` → R + any 1 char + j |
+
+
+ex:
+
+-- starts with M
+SELECT * FROM `tabCustomer` WHERE customer_name LIKE 'M%';
+
+-- ends with i
+SELECT * FROM `tabCustomer` WHERE customer_name LIKE '%i';
+
+-- contains "e"
+SELECT * FROM `tabCustomer` WHERE customer_name LIKE '%e%';
+
+
+###################################################################################################################################################################################
+
+Row Level Functions in SQL (MariaDB / Frappe) :
+- These functions work on each individual row — not on the whole table.
+
+
+1. 🕒 NOW() → current date & time
+- Returns current date and time from system.
+
+sy & ex : SELECT NOW() AS current_datetime;
+
+Output → 2025-10-29 16:45:12
+
+------------------------------------------------------------------------------------------------
+
+2. 📅 CURDATE() → current date
+sy & ex : SELECT CURDATE() AS today_date;
+
+Output → 2025-10-29
+
+------------------------------------------------------------------------------------------------
+
+3. ⏰ CURTIME() → current time
+sy & ex: SELECT CURTIME() AS current_time;
+
+Output → 16:45:12
+
+------------------------------------------------------------------------------------------------
+
+
+4. 📆 YEAR(), MONTH(), DAY() → extract from date
+- Used to get specific parts of a date column
+
+ex:
+
+SELECT customer_name, YEAR(join_date) AS year_joined FROM `tabCustomer`;
+SELECT customer_name, MONTH(join_date) AS month_joined FROM `tabCustomer`;
+SELECT customer_name, DAY(join_date) AS day_joined FROM `tabCustomer`;
+
+
+Output → extracts year, month, or day for each record.
+
+------------------------------------------------------------------------------------------------
+
+5. 📅 DAYNAME() → get weekday name
+ex : SELECT customer_name, DAYNAME(join_date) AS join_day FROM `tabCustomer`;
+
+Output → e.g., “Tuesday”, “Friday”
+
+------------------------------------------------------------------------------------------------
+
+6. 🔠 UCASE() / UPPER() and LCASE() / LOWER()
+- Convert text to upper or lower case.
+
+ex:
+SELECT UCASE(customer_name) AS upper_name FROM `tabCustomer`;
+SELECT LCASE(city) AS lower_city FROM `tabCustomer`;
+
+------------------------------------------------------------------------------------------------
+
+7. 🧮 Using + as Calculator
+- You can perform arithmetic directly in SQL.
+
+ex: SELECT amount, amount + 500 AS new_amount FROM `tabSales Order`;
+
+Output → adds 500 to each amount.
+
+------------------------------------------------------------------------------------------------
+
+8. ✂️ TRIM() → remove spaces
+
+ex: SELECT TRIM('   Frappe   ') AS trimmed_text;
+
+Output → 'Frappe'
+
+------------------------------------------------------------------------------------------------
+
+
+complex query :
+
+SELECT customer_name, join_date, YEAR(join_date) AS Year
+FROM `tabCustomer`
+WHERE YEAR(join_date) = 2023
+
+
+
+
+###################################################################################################################################################################################
+
+Sorting & Limiting — ORDER BY, DESC, LIMIT :
+- These commands help you control the order of your query results and limit how many rows are shown.
+
+
+1. ORDER BY
+- Used to sort the query results by one or more columns.
+
+sy: SELECT * FROM table_name ORDER BY column_name;
+ex: SELECT * FROM `tabSales Order` ORDER BY amount;  <- Orders the records from lowest → highest amount.
+
+
+:) ORDER BY ... DESC - 
+- Add DESC to sort in descending (highest → lowest) order.
+
+ex: SELECT * FROM `tabSales Order` ORDER BY amount DESC; <- Orders the records from highest amount first.
+
+
+:) Multiple column sorting
+- You can sort by multiple columns — first priority, second priority, etc.
+
+ex:
+
+SELECT * FROM `tabSales Order`
+ORDER BY customer ASC, amount DESC;
+
+Sorts first by customer (A–Z), and then by amount (highest → lowest) inside each customer group.
+
+
+
+:( ⚠️ Important Rule — WHERE must come before ORDER BY
+
+Wrong ❌: SELECT * FROM `tabSales Order` ORDER BY amount WHERE amount > 1000;
+Correct ✅: SELECT * FROM `tabSales Order` WHERE amount > 1000 ORDER BY amount DESC;
+
+Always remember → WHERE → ORDER BY → LIMIT sequence.
+
+------------------------------------------------------------------------------------------------
+
+2. LIMIT
+- Used to restrict how many rows you want to display.
+
+sy: SELECT * FROM table_name LIMIT number;
+ex: SELECT * FROM `tabSales Order` ORDER BY amount DESC LIMIT 2;  <- Shows only top 2 highest amount orders.
+
+:) LIMIT with offset
+- You can skip a few rows before showing results.
+
+sy: SELECT * FROM table_name LIMIT offset, count;
+ex: SELECT * FROM `tabSales Order` ORDER BY amount DESC LIMIT 1, 2;  <- Skips 1st record, shows next 2.
+
+------------------------------------------------------------------------------------------------
+
+query :
+
+SELECT customer, amount FROM `tabSales Order`
+ORDER BY amount DESC LIMIT 5;
+
+
+###################################################################################################################################################################################
+
+Aggregate Functions:
+- These functions work on multiple rows together (not per row).
+- They combine data into a single summarized result — e.g., total sales, number of orders, etc.
+
+
+⚙️ Table for this topic
+
+Sales Order
+
+| name (PK) | customer  | product_name | amount | order_date |
+| --------- | --------- | ------------ | ------ | ---------- |
+| SO-0001   | CUST-0001 | Laptop       | 60000  | 2024-03-12 |
+| SO-0002   | CUST-0002 | Keyboard     | 1500   | 2024-04-01 |
+| SO-0003   | CUST-0001 | Mouse        | 700    | 2024-05-05 |
+| SO-0004   | CUST-0003 | Monitor      | 8000   | 2024-06-15 |
+
+
+1. COUNT() → Count total rows
+- Returns how many records exist in the table or match a condition.
+
+sy: SELECT COUNT(*) FROM table_name;
+ex: SELECT COUNT(*) AS total_orders FROM `tabSales Order`;
+
+Output → 4
+
+------------------------------------------------------------------------------------------------
+
+2. SUM() → Add up all numeric values
+- Used to get total of a column (e.g., total sales).
+
+ex: SELECT SUM(amount) AS total_sales FROM `tabSales Order`;
+Output → 69200
+
+------------------------------------------------------------------------------------------------
+
+3. AVG() → Average of all numeric values
+
+ex: SELECT AVG(amount) AS avg_order_value FROM `tabSales Order`;
+Output → 17300.00
+
+------------------------------------------------------------------------------------------------
+
+4. MIN() → Minimum value
+
+ex: SELECT MIN(amount) AS smallest_order FROM `tabSales Order`;
+Output → 700
+
+------------------------------------------------------------------------------------------------
+
+5. MAX() → Maximum value
+
+ex: SELECT MAX(amount) AS biggest_order FROM `tabSales Order`;
+Output → 60000
+
+------------------------------------------------------------------------------------------------
+
+6. Using Aggregate with WHERE
+- You can filter records before aggregation.
+
+ex: 
+SELECT SUM(amount) AS total_high_value_orders
+FROM `tabSales Order`
+WHERE amount > 1000;
+
+Adds only those orders above ₹1000.
+
+------------------------------------------------------------------------------------------------
+
+7. Aggregate with Aliases (AS)
+- Rename your result column for better readability.
+
+ex: 
+
+SELECT COUNT(*) AS total, SUM(amount) AS total_amount FROM `tabSales Order`;
+
+------------------------------------------------------------------------------------------------
+
+query:
+
+SELECT customer, SUM(amount) AS total_sales
+FROM `tabSales Order`
+GROUP BY customer
+ORDER BY total_sales DESC;
+
+
+
+###################################################################################################################################################################################
+
+
+Combining with Row-Level Functions - GROUP BY, DAYOFWEEK(), WEEKDAY()
+- These help you group rows together (like total per customer or per day) and use date-based functions to make time-based summaries easily.
+
+
+⚙️ Table for this topic
+
+tabSales Order
+
+| name (PK) | customer  | product_name | amount | order_date |
+| --------- | --------- | ------------ | ------ | ---------- |
+| SO-0001   | CUST-0001 | Laptop       | 60000  | 2024-03-12 |
+| SO-0002   | CUST-0002 | Keyboard     | 1500   | 2024-04-01 |
+| SO-0003   | CUST-0001 | Mouse        | 700    | 2024-05-05 |
+| SO-0004   | CUST-0003 | Monitor      | 8000   | 2024-06-15 |
+
+
+
+
+1. GROUP BY
+- Used to combine rows having same values in a column, then apply aggregate functions (like SUM, COUNT, AVG).
+
+( 
+ In SQL, the GROUP BY clause is used to group rows that have the same values in one or more columns, so you can perform aggregate calculations on each group — such as: 
+  SUM() → total sales per customer
+  COUNT() → number of orders per day
+  AVG() → average rating per product
+  MAX() / MIN() → highest or lowest value per group
+  
+  
+ Essentially: GROUP BY compresses multiple rows into summary rows — one per group.
+)
+
+sy:
+
+SELECT column_name, AGG_FUNC(column_name)
+FROM table_name
+GROUP BY column_name;
+
+
+ex: 
+SELECT customer, SUM(amount) AS total_sales
+FROM `tabSales Order`
+GROUP BY customer;
+
+Groups all sales by customer → one row per customer with total amount.
+
+
+
+:) GROUP BY with multiple columns
+- 🧠 You can group by more than one column.
+
+ex:
+
+SELECT customer, product_name, SUM(amount) AS total
+FROM `tabSales Order`
+GROUP BY customer, product_name;
+
+Groups by both customer and product.
+
+
+:) ORDER BY after GROUP BY
+- You can sort grouped results.
+
+ex: 
+
+SELECT customer, SUM(amount) AS total_sales
+FROM `tabSales Order`
+GROUP BY customer
+ORDER BY total_sales DESC;
+
+Shows total per customer, sorted highest → lowest.
+
+------------------------------------------------------------------------------------------------
+
+2. DAYOFWEEK()
+- Returns number for the day of the week (Sunday=1, Monday=2, ... Saturday=7).
+
+ex:
+
+SELECT name, order_date, DAYOFWEEK(order_date) AS day_number
+FROM `tabSales Order`;
+
+Output → For each order, shows a number 1–7.
+
+------------------------------------------------------------------------------------------------
+
+3. WEEKDAY()
+- Returns number for weekday (Monday=0, Sunday=6).
+- Note: difference is in starting day (Monday vs Sunday).
+
+ex: 
+
+SELECT name, order_date, WEEKDAY(order_date) AS weekday_number
+FROM `tabSales Order`;
+
+Output → Monday = 0, Tuesday = 1, etc.
+
+
+:) Example combining date functions with aggregation
+
+ex: 
+
+SELECT DAYNAME(order_date) AS day_name,
+       COUNT(*) AS total_orders,
+       SUM(amount) AS total_amount
+FROM `tabSales Order`
+GROUP BY DAYNAME(order_date)
+ORDER BY total_amount DESC;
+
+Shows which day of week has highest sales.
+
+
+⚙️ Difference between DAYOFWEEK() & WEEKDAY()
+
+| Function      | Range | Starts from | Example (2024-03-12 → Tuesday) |
+| ------------- | ----- | ----------- | ------------------------------ |
+| `DAYOFWEEK()` | 1–7   | Sunday = 1  | → 3                            |
+| `WEEKDAY()`   | 0–6   | Monday = 0  | → 1                            |
+
+
+
+query:
+
+You can easily show:
+- Total sales per customer
+- Orders per day of week
+- Monthly or weekly totals
+
+ex: 
+
+SELECT customer, SUM(amount) AS total_amount, COUNT(*) AS total_orders
+FROM `tabSales Order`
+GROUP BY customer
+ORDER BY total_amount DESC;
+
+
+###################################################################################################################################################################################
+
+Column Alias (AS) & IN() Operator:
+- These are small but very useful parts of SQL, especially in Frappe query reports.
+- They make your queries more readable and flexible.
+
+⚙️ Table for this topic
+tabSales Order
+
+| name (PK) | customer  | product_name | amount | order_date |
+| --------- | --------- | ------------ | ------ | ---------- |
+| SO-0001   | CUST-0001 | Laptop       | 60000  | 2024-03-12 |
+| SO-0002   | CUST-0002 | Keyboard     | 1500   | 2024-04-01 |
+| SO-0003   | CUST-0001 | Mouse        | 700    | 2024-05-05 |
+| SO-0004   | CUST-0003 | Monitor      | 8000   | 2024-06-15 |
+
+
+1. AS → Column Alias
+- Used to give a temporary name (alias) to a column or table in the query result.
+- It helps you display more readable column names or shorter ones.
+
+
+sy: SELECT column_name AS alias_name FROM table_name;
+
+ex: 
+
+-- Simple alias
+SELECT customer AS Customer_ID, amount AS Order_Amount FROM `tabSales Order`;
+
+-- With function
+SELECT SUM(amount) AS Total_Sales FROM `tabSales Order`;
+
+-- You can also use alias without AS (optional)
+SELECT customer Customer_ID, amount Order_Amount FROM `tabSales Order`;  <- Output columns will show renamed headings — e.g., Customer_ID, Order_Amount, etc.
+
+------------------------------------------------------------------------------------------------
+
+2. Table alias
+- You can also rename a table temporarily — helpful in joins or complex queries.
+
+ex:
+
+SELECT so.customer, so.amount
+FROM `tabSales Order` AS so;
+
+Here so is a short name for tabSales Order.
+
+
+note:
+- The alias (so) doesn’t affect the output
+- it only makes your SQL cleaner and easier to read, especially in joins
+
+
+
+2. IN() → Check if a value matches any value in a list
+- Works like multiple OR conditions but cleaner.
+
+sy: SELECT * FROM table_name WHERE column_name IN (value1, value2, ...);
+
+ex: 
+
+-- Matches multiple customers
+SELECT * FROM `tabSales Order`
+WHERE customer IN ('CUST-0001', 'CUST-0003');
+
+-- Combine with condition
+SELECT * FROM `tabSales Order`
+WHERE customer IN ('CUST-0001', 'CUST-0003') AND amount > 1000;
+
+Returns all records where customer = CUST-0001 or CUST-0003.
+
+------------------------------------------------------------------------------------------------
+
+3. NOT IN()
+- Opposite of IN() — excludes the listed values.
+
+ex:
+
+SELECT * FROM `tabSales Order`
+WHERE customer NOT IN ('CUST-0002');
+
+
+
+query:
+- IN() helps when using filter parameters
+
+SELECT * FROM `tabSales Order`
+WHERE customer IN (%(customer)s);
+
+
+
+###################################################################################################################################################################################
+
+Joins in SQL (Relationships, Keys, Constraints, Joining Tables)
+- Joins help you combine data from multiple related tables using their relationship keys.
+
+⚙️ Tables for this topic
+tabCustomer
+
+| name (PK) | customer_name | city      | join_date  |
+| --------- | ------------- | --------- | ---------- |
+| CUST-0001 | Raj           | Surat     | 2023-10-10 |
+| CUST-0002 | Mehul         | Ahmedabad | 2023-11-05 |
+| CUST-0003 | Priya         | Mumbai    | 2024-01-20 |
+
+
+tabSales Order
+| name (PK) | customer  | product_name | amount | order_date |
+| --------- | --------- | ------------ | ------ | ---------- |
+| SO-0001   | CUST-0001 | Laptop       | 60000  | 2024-03-12 |
+| SO-0002   | CUST-0002 | Keyboard     | 1500   | 2024-04-01 |
+| SO-0003   | CUST-0001 | Mouse        | 700    | 2024-05-05 |
+| SO-0004   | CUST-0003 | Monitor      | 8000   | 2024-06-15 |
+
+------------------------------------------------------------------------------------------------
+
+1. Entity Relationships & Keys
+
+| Concept              | Meaning                          | Example                                        |
+| -------------------- | -------------------------------- | ---------------------------------------------- |
+| **Primary Key (PK)** | Uniquely identifies each row     | `tabCustomer.name`                             |
+| **Foreign Key (FK)** | Refers to another table’s PK     | `tabSales Order.customer` → `tabCustomer.name` |
+| **One-to-Many**      | One customer → Many sales orders | Customer → Orders                              |
+
+
+:) Creating tables with constraints
+- Usually Frappe handles this automatically, but knowing the syntax helps.
+
+ex.
+
+CREATE TABLE `tabCustomer` (
+  name VARCHAR(20) PRIMARY KEY,
+  customer_name VARCHAR(100),
+  city VARCHAR(50)
+);
+
+CREATE TABLE `tabSales Order` (
+  name VARCHAR(20) PRIMARY KEY,
+  customer VARCHAR(20),
+  product_name VARCHAR(50),
+  amount DECIMAL(10,2),
+  FOREIGN KEY (customer) REFERENCES `tabCustomer`(name)
+);
+
+This defines relationship between tabSales Order.customer and tabCustomer.name.
+
+------------------------------------------------------------------------------------------------
+
+2. Joining Tables
+
+------------------------
+
+A. INNER JOIN
+
+sy:
+
+SELECT columns
+FROM table1
+INNER JOIN table2
+ON table1.column = table2.column;
+
+ex:
+
+SELECT so.name AS order_id,
+       c.customer_name,
+       so.product_name,
+       so.amount
+FROM `tabSales Order` AS so
+INNER JOIN `tabCustomer` AS c
+ON so.customer = c.name;
+
+------------------------
+
+B. LEFT JOIN
+- Returns all rows from left table + matching rows from right table (if any).
+
+ex:
+
+SELECT so.name AS order_id,
+       c.customer_name,
+       so.amount
+FROM `tabSales Order` AS so
+LEFT JOIN `tabCustomer` AS c
+ON so.customer = c.name;
+
+Shows all sales orders, even if customer not found (customer_name = NULL).
+
+------------------------
+
+C. RIGHT JOIN
+- Returns all rows from right table + matching rows from left table.
+
+ex:
+
+SELECT c.customer_name,
+       so.name AS order_id,
+       so.amount
+FROM `tabSales Order` AS so
+RIGHT JOIN `tabCustomer` AS c
+ON so.customer = c.name;
+
+Shows all customers even if they have no sales orders (order_id = NULL).
+
+
+D. Self Join (less used, but good to know)
+- Join the same table with itself — e.g., when comparing rows.
+
+ex:
+
+SELECT A.name AS order1, B.name AS order2
+FROM `tabSales Order` A, `tabSales Order` B
+WHERE A.amount > B.amount;
+
+
+:) Filtering with WHERE in Joins
+- You can add conditions after the join.
+
+ex:
+
+SELECT c.customer_name, so.product_name, so.amount
+FROM `tabSales Order` AS so
+INNER JOIN `tabCustomer` AS c
+ON so.customer = c.name
+WHERE so.amount > 5000;
+
+
+other:
+
+In Frappe:
+- Link Fields → create relationships (same as FK)
+- You use joins to show linked data (like fetching Customer Name in Sales Order reports)
+
+
+ex:
+
+SELECT so.name AS "Order ID:Link/Sales Order",
+       c.customer_name AS "Customer",
+       so.amount AS "Amount"
+FROM `tabSales Order` AS so
+INNER JOIN `tabCustomer` AS c
+ON so.customer = c.name;
+
+
+###################################################################################################################################################################################
+
+SQL in Frappe (MariaDB-style Queries + Filters + Query Report Usage):
+- You’ll see how to write Frappe-compatible SQL queries — same syntax you’ll use in Query Reports or Custom Scripts.
+
+1. SQL Table Naming Rule in Frappe
+- Every Doctype = a table with name format:
+
+- tab<Doctype Name>
+
+
+Examples:
+- tabCustomer
+- tabSales Order
+- tabItem
+- tabSales Invoice
+
+- Always use backticks (`) if the name contains spaces, e.g.:  SELECT * FROM `tabSales Order`;
+
+
+:) Basic Query Example - SELECT name, customer, amount FROM `tabSales Order`;    <- Fetches all order records.
+
+------------------------------------------------------------------------------------------------
+
+2. Query Report Filter Variables
+- In Frappe Query Reports, you can accept user filters and use them in your SQL using placeholders
+
+sy: %(filter_name)s
+ex: 
+
+SELECT
+    name AS "Employee ID:Link/Employee",
+    employee_name AS "Employee Name",
+    department AS "Department"
+FROM `tabEmployee`
+WHERE department = %(department)s;
+
+
+here "Employee ID:Link/Employee" means
+
+| Part            | Meaning                                                                 |
+| --------------- | ----------------------------------------------------------------------- |
+| **Employee ID** | The **column label** shown in the report header                         |
+| **Link**        | The **data type** — tells Frappe to render it as a **clickable link**   |
+| **/Employee**   | The **doctype** the link points to (in this case, the Employee DocType) |
+
+
+Here:
+- %(department)s → gets replaced by value from report filter
+- Used safely to prevent SQL injection.
+
+
+
+
+:) Query Report Filters Example (front-end definition)
+filters: [
+        {
+            fieldname: "city",
+            label: "City",
+            fieldtype: "Data",
+            reqd: 0
+        }
+    ]  - this is done from ui, it is just json lookout
+
+Then your SQL file can use: WHERE c.city = %(city)s
+    
+    
+    
+    
+:) Column Label Format in Query Reports
+
+- Frappe allows you to define column type & link using syntax: 
+   
+   "Label:Fieldtype/Doctype:Width"
+
+ex:
+
+SELECT 
+    so.name AS "Order ID:Link/Sales Order:120",
+    c.customer_name AS "Customer:Data:150",
+    so.amount AS "Amount:Currency:100",
+    so.order_date AS "Order Date:Date:100"
+FROM `tabSales Order` AS so
+INNER JOIN `tabCustomer` AS c
+ON so.customer = c.name;
+
+
+This makes your report look formatted with links, dates, and currency columns.
+
+------------------------------------------------------------------------------------------------
+
+3. Common SQL Commands for Frappe Use
+
+| Command                   | Purpose                     | Example                                 |
+| ------------------------- | --------------------------- | --------------------------------------- |
+| `DESC table_name`         | See table fields            | `DESC \`tabCustomer`;`                  |
+| `SHOW TABLES`             | List all doctypes as tables | `SHOW TABLES;`                          |
+| `SHOW COLUMNS FROM table` | Show fieldnames             | `SHOW COLUMNS FROM \`tabSales Order`;`  |
+| `LIMIT`                   | Limit number of rows        | `SELECT * FROM \`tabCustomer` LIMIT 5;` |
+
+
+------------------------------------------------------------------------------------------------
+
+Real-world Example: Frappe Query Report for Customer Sales Summary
+
+SELECT 
+    c.customer_name AS "Customer:Data:180",
+    c.city AS "City:Data:100",
+    SUM(so.amount) AS "Total Amount:Currency:120",
+    COUNT(so.name) AS "Total Orders:Int:100"
+FROM `tabSales Order` AS so
+INNER JOIN `tabCustomer` AS c ON so.customer = c.name
+WHERE so.order_date BETWEEN %(from_date)s AND %(to_date)s
+GROUP BY c.name
+ORDER BY SUM(so.amount) DESC;
+
+
+###################################################################################################################################################################################
+
+Extra / Advanced SQL Topics for Frappe Developers:
+: mention on chat(SQL Learning for frappe), so when needed then read out there
+
+topic which mention there:
+- DISTINCT
+- CASE WHEN
+- IFNULL() / COALESCE()
+- UNION and UNION ALL
+- HAVING
+- SUBQUERIES (Nested Queries)
+- DATE_FORMAT() & STR_TO_DATE()
+- LIMIT with OFFSET → For pagination
+- Indexes & Performance (Concept)
+- Frappe Database Metadata Queries (Handy)
+
+
+
+
+
+
+
+
+Tip:
+- System Console Doctype available in frappe to perform SQL/Python query on available tables/doctypes
+

@@ -1,0 +1,1809 @@
+
+
+Buying Module :
+
+- helps to manage the complete process of procuring goods and services from suppliers
+- starting from identifying a need (Material Request) to completing payment for received goods (Purchase Invoice).
+
+
+It ensures:
+- You buy the right materials
+- From the right supplier
+- At the right price
+- Delivered on time
+
+
+
+🧩 Importance
+The Buying module is crucial because it:
+- Keeps purchase costs under control
+- Ensures material availability for production or sales
+- Maintains supplier relationships
+- Provides full purchase traceability (from request → invoice)
+- Helps with budgeting and audit compliance
+
+
+📚 Key Concepts & Terminologies
+
+| Term                            | Simple Meaning                                                    | Real Example                                    |
+| ------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------- |
+| **Supplier**                    | The person or company from whom you buy goods                     | Example: “ABC Traders” supplying computer parts |
+| **Material Request**            | Internal document to request materials (from warehouse or vendor) | “Need 10 Laptops for new employees”             |
+| **Request for Quotation (RFQ)** | Asking different suppliers for price quotes                       | Send RFQ to 3 suppliers for 10 laptops          |
+| **Supplier Quotation**          | Supplier’s response with prices and terms                         | “ABC Traders – ₹50,000 per laptop”              |
+| **Purchase Order (PO)**         | Confirmed order sent to the selected supplier                     | You finalize one supplier and place PO          |
+| **Purchase Receipt (GRN)**      | Proof that items have been received                               | “Received 10 laptops from ABC Traders”          |
+| **Purchase Invoice (PI)**       | Supplier’s bill for payment                                       | “Invoice #123 from ABC Traders – ₹5,00,000”     |
+| **Payment Entry**               | Record of payment made to supplier                                | Paid ₹5,00,000 via bank transfer                |
+
+
+
+
+💡Key Theoretical Points :
+
+:) The Buying Module integrates tightly with Stock, Accounts, and Supplier Master.
+:) Every Buying transaction can affect inventory (through Purchase Receipt) and accounts (through Purchase Invoice & Payment).
+:) ERPNext allows custom workflows, approval levels, and auto-updates stock values from purchase entries.
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Buying Cycle :
+
+1️⃣ Material Request
+- This is the starting point of the buying process.
+→ When any department needs an item, they create this request.
+  (We need to buy something.)
+
+
+
+2️⃣ Request for Quotation (RFQ)
+- Once you know what you need, you ask multiple suppliers for their price offers.
+- The RFQ is sent to all suppliers registered in the system.
+→ Send this to suppliers asking for prices.
+  (Ask suppliers – “How much will you charge?”)
+
+ex: RFQ sent to 3 suppliers: HP Dealer, Dell Dealer, and Lenovo Dealer.
+
+
+
+3️⃣ Supplier Quotation
+- Suppliers reply with their quotation — including price, delivery time, and terms.
+- You compare the quotations and choose the best offer.
+→ Supplier replies with prices and terms.
+  (Supplier says – “My rate is ₹___ per item.”)
+
+ex: HP Dealer offers ₹50,000 per laptop — best deal → chosen supplier.
+
+
+4️⃣ Purchase Order (PO)
+- Once the supplier is finalized, you issue a Purchase Order.
+- This is the official confirmation that you’re buying items from that supplier.
+- The supplier will now start preparing to deliver the goods.
+→ You confirm the order with the selected supplier.
+  (Okay, we’ll buy from you.)
+
+ex: You send a PO to HP Dealer for 10 laptops at ₹50,000 each.
+
+
+
+5️⃣ Payment Entry (Advance) (optional)
+- Sometimes, suppliers ask for an advance payment before delivery.
+- In that case, you can create an Advance Payment Entry linked to the PO.
+→ If supplier needs advance payment before delivery.
+  (Pay some amount before getting goods.)
+
+ex: You pay 20% advance to HP Dealer before shipping.
+
+
+
+6️⃣ Purchase Receipt
+- When the goods are delivered, you record a Purchase Receipt.
+- It confirms that items have been received and added to stock (Inventory).
+- Stock levels are updated automatically.
+- actual stock entry (in this phase our stock & accounting gets impact)
+→ When items arrive, record that you’ve received them.
+  (Goods received and added to stock.)
+
+ex: You receive 10 laptops → Stock increases by 10 units.
+
+
+
+7️⃣ Quality Inspection (optional)
+- If your company has a quality process, you can inspect items before final acceptance.
+- The result (Pass/Fail) is recorded here.
+→ Check product quality if required.
+  (Check if items are okay or damaged.)
+
+ex: 2 laptops had screen issues → marked as “Failed” in Quality Inspection.
+
+
+
+8️⃣ Purchase Invoice
+- Once goods are received and verified, you get a supplier invoice (bill).
+- You record this as a Purchase Invoice, which creates a payable entry in Accounts.
+→ Supplier sends bill → record it here.
+  (Record supplier’s invoice for payment.)
+  
+ex: Invoice #HP123 – ₹5,00,000 created against the PO.
+
+
+9️⃣ Payment Entry
+- Finally, you create a Payment Entry to mark the invoice as paid.
+- It reduces your Accounts Payable and updates your bank balance.
+→ Make final payment and close the purchase.
+  (Pay supplier and finish the cycle.)
+
+ex: Paid ₹5,00,000 to HP Dealer → Payment Entry marked as “Completed”.
+
+
+-----------------------
+
+Cycle image/Flow 
+- on folder, also on my NoteBook
+
+-----------------------
+
+Main chain view  :
+Material Request → Request for Quotation → Supplier Quotation → Purchase Order → Purchase Receipt → Purchase Invoice → Payment Entry
+
+-----------------------
+
+User Flow:
+
+Buyer → Buyer (internal): Material Request  
+Buyer → Supplier: Request for Quotation  
+Supplier → Buyer: Supplier Quotation  
+Buyer → Supplier: Purchase Order  
+Buyer → Supplier: Advance Payment (optional)  
+Supplier → Buyer: Goods Delivery → Purchase Receipt  
+Buyer → Buyer: Quality Inspection (optional)  
+Supplier → Buyer: Invoice  
+Buyer → Supplier: Final Payment
+
+
+Final FLow :
+
+(Internal Need)
+Buyer → creates → Material Request
+Buyer → sends → Request for Quotation → to Suppliers
+Supplier → sends → Supplier Quotation → to Buyer
+Buyer → sends → Purchase Order → to Supplier
+Buyer → makes (optional) → Advance Payment
+Supplier → delivers → Goods
+Buyer → creates → Purchase Receipt
+Buyer → (optional) → does Quality Inspection
+Supplier → sends → Purchase Invoice
+Buyer → makes → Final Payment Entry
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+here only fields are available, for more you can visit chat
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Material Request :
+
+🧩 TAB 1 – Details
+
+| Field                | Simple Meaning                                                                                             |
+| -------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Series**           | Auto ID format of this document (like MAT-MR-YYYY-0001).                                                   |
+| **Transaction Date** | Date when you create the material request.                                                                 |
+| **Purpose**          | Why you need this request → e.g. *Purchase*, *Material Transfer*, *Manufacture*, *Customer Provided*, etc. |
+| **Required By**      | The date by which you want items to be available.                                                          |
+| **Price List**       | Default buying price list used to fetch item rates.                                                        |
+
+
+🧱 Items Section
+
+| Field                | Meaning                                                   |
+| -------------------- | --------------------------------------------------------- |
+| **Scan Barcode**     | Scan item barcode (if enabled) — auto fills item details. |
+| **Item Code**        | Item you are requesting.                                  |
+| **Required By**      | When this item is needed (can be different per item).     |
+| **Quantity**         | How many units you need.                                  |
+| **Target Warehouse** | Where you want these items to go after procurement.       |
+| **UOM**              | Unit of Measure (e.g., Nos, Kg, Box).                     |
+
+
+🧩 TAB 2 – Terms
+
+| Field                            | Simple Meaning                                                                                       |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Terms**                        | You can select predefined “Terms & Conditions”.                                                      |
+| **Terms and Conditions Content** | Editable area where you can type or modify any terms (like payment terms, delivery, warranty, etc.). |
+
+
+🧩 TAB 3 – More Info
+
+| Section              | Fields                             | Simple Meaning                                                                                                |
+| -------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Printing Details** | **Letter Head**, **Print Heading** | Choose which letterhead to use for print (like company logo header), and custom heading for print (optional). |
+
+
+⚙️ Button: Get Items From
+- This button helps you auto-fetch items from other sources instead of manually typing them.
+
+| Option                      | Meaning                                                                          |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| **Bill of Materials (BOM)** | Fetch items required for manufacturing a product.                                |
+| **Sales Order**             | Fetch items from a customer’s sales order (for subcontracting or make-to-order). |
+| **Product Bundle**          | Fetch items grouped under a single product bundle (kit).                         |
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Request for Quotation :
+
+🧩 Main Section – Details
+
+| Field                       | Simple Meaning                                                     |
+| --------------------------- | ------------------------------------------------------------------ |
+| **Series**                  | Auto ID format for RFQ (example: PUR-RFQ-YYYY-0001).               |
+| **Date**                    | Date of RFQ creation.                                              |
+| **Company Billing Address** | Address from where your company is sending the RFQ.                |
+| **Required Date**           | When you need the items (important for supplier to know deadline). |
+| **Status**                  | Shows document stage (Draft, Submitted, etc.).                     |
+
+
+
+📦 Suppliers Table
+
+| Field              | Meaning                                                                |
+| ------------------ | ---------------------------------------------------------------------- |
+| **Supplier**       | Select suppliers to send the RFQ to.                                   |
+| **Contact**        | Contact person for that supplier.                                      |
+| **Email Id**       | Supplier’s email where RFQ will be sent.                               |
+| **Send Email (✔)** | If checked, ERPNext will send this RFQ automatically to that supplier. |
+
+
+📋 Items Table
+
+| Field             | Meaning                                     |
+| ----------------- | ------------------------------------------- |
+| **Item Code**     | Item you’re requesting price for.           |
+| **Required Date** | When you need it.                           |
+| **Quantity**      | How much you need.                          |
+| **UOM**           | Unit of Measure (Nos, Kg, etc.).            |
+| **Warehouse**     | Warehouse where items will go after buying. |
+
+
+
+✉️ Email Details Section
+
+| Field                   | Meaning                                               |
+| ----------------------- | ----------------------------------------------------- |
+| **Email Template**      | Choose which email format to use when sending RFQs.   |
+| **Preview Email**       | See how your email looks before sending.              |
+| **Send Attached Files** | If checked, attachments are sent to the supplier.     |
+| **Send Document Print** | If checked, the PDF of RFQ is attached automatically. |
+
+
+
+
+🧩 Terms and Conditions Section
+
+| Field                    | Meaning                                                                  |
+| ------------------------ | ------------------------------------------------------------------------ |
+| **Incoterm**             | International commercial term (like FOB, CIF – used for shipping/trade). |
+| **Terms**                | Predefined term template.                                                |
+| **Terms and Conditions** | Editable area to write conditions like delivery time, payment, etc.      |
+
+
+
+🧩 Printing Settings Section
+
+| Field             | Meaning                                                                    |
+| ----------------- | -------------------------------------------------------------------------- |
+| **Print Heading** | Optional heading for print (e.g., “Request for Quotation – IT Equipment”). |
+| **Letter Head**   | Select which company letterhead to print on.                               |
+
+
+🧰 Tools Menu
+
+| Option                        | Meaning                                                                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Link to Material Requests** | Connects this RFQ to one or more Material Requests. *(Fetch items from them)*                                                 |
+| **Get Suppliers**             | Automatically pulls suppliers from existing Supplier records or Supplier Groups. *(Useful to send to many suppliers quickly)* |
+
+
+🪄 Get Items From Button
+
+| Option                | Meaning                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------- |
+| **Material Request**  | Pulls items directly from an existing Material Request.                               |
+| **Opportunity**       | Fetches items linked with a sales opportunity (if you’re buying based on sales lead). |
+| **Possible Supplier** | Fetches potential suppliers automatically (based on system setup).                    |
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Supplier Quotation :
+
+
+🧩 TAB 1 – Details
+
+| Field                     | Simple Meaning                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| **Series**                | Auto ID pattern (like PUR-SQTN-YYYY-0001).                                      |
+| **Supplier**              | The supplier who gave this quotation.                                           |
+| **Status**                | Stage of the document (Draft, Submitted, etc.).                                 |
+| **Date**                  | Date on which supplier sent the quotation.                                      |
+| **Valid Till**            | Till when this quotation is valid (after this date, prices may change).         |
+| **Quotation Number**      | Supplier’s own quotation number (if any).                                       |
+| **Cost Center / Project** | Optional fields if you want to link this purchase with a department or project. |
+
+
+🧩 TAB 2 – Address & Contact
+
+| Field                       | Meaning                                             |
+| --------------------------- | --------------------------------------------------- |
+| **Supplier Address**        | Supplier’s address.                                 |
+| **Contact Person**          | Person from the supplier side you’re in touch with. |
+| **Shipping Address**        | Where items will be delivered.                      |
+| **Company Billing Address** | Your company’s billing address.                     |
+| **Place of Supply**         | For GST purposes (used in tax calculation).         |
+
+
+🧩 TAB 3 – Currency and Price List
+
+| Field                            | Meaning                                                    |
+| -------------------------------- | ---------------------------------------------------------- |
+| **Currency**                     | Currency of quotation (like INR, USD, etc.).               |
+| **Price List**                   | Default buying price list (example: “Standard Buying”).    |
+| **Ignore Pricing Rule**          | Tick if you don’t want ERPNext to apply any pricing rules. |
+| **Items Table**                  | List of items, their quantity, rate, and amount.           |
+| **Total Quantity / Total (INR)** | Auto-calculated totals for the quotation.                  |
+
+
+
+🧩 TAB 4 – Taxes and Charges
+
+| Field                                   | Meaning                                                         |
+| --------------------------------------- | --------------------------------------------------------------- |
+| **Tax Category**                        | Type of tax (e.g., GST, Import, etc.).                          |
+| **Shipping Rule**                       | Rule for calculating shipping charges (if any).                 |
+| **Incoterm**                            | Trade term like FOB, CIF, etc. (optional).                      |
+| **Purchase Taxes and Charges Template** | Select a predefined tax template.                               |
+| **Purchase Taxes and Charges (Table)**  | Add rows for specific taxes – type, account head, rate, amount. |
+| **Taxes and Charges Added / Deducted**  | Totals of tax values.                                           |
+| **Total Taxes and Charges**             | Combined total tax applied.                                     |
+
+
+
+Taxes and Charges Added :::
+This is the total of all extra costs or taxes added on top of your item total.
+
+→ It increases your purchase amount.
+→ Calculated from all rows in the Purchase Taxes and Charges table where the tax type adds value (like GST, Freight, Customs, etc.).
+
+| Description                       | Amount      |
+| --------------------------------- | ----------- |
+| Item Total                        | ₹1,00,000   |
+| CGST @9%                          | ₹9,000      |
+| SGST @9%                          | ₹9,000      |
+| Freight                           | ₹2,000      |
+| **Taxes and Charges Added (INR)** | **₹20,000** |
+
+----------
+
+Taxes and Charges Deducted :::
+This is the total of all taxes or charges subtracted from your total amount.
+
+→ It reduces your purchase amount.
+→ Calculated from rows in the Purchase Taxes and Charges table where the tax type deducts value (like TDS, discount, etc.).
+
+
+| Description                          | Amount      |
+| ------------------------------------ | ----------- |
+| Item Total                           | ₹1,00,000   |
+| TDS @10%                             | ₹-10,000    |
+| **Taxes and Charges Deducted (INR)** | **₹10,000** |
+
+----------
+
+Purchase Taxes and Charges (Table)- each field :::
+Type 
+- The nature of the tax/charge. Common types:
+- On Net Total → calculated on total amount.
+- On Previous Row Amount → tax applied on previous tax’s value.
+- Actual → fixed value (not percentage).
+- On Item Quantity → tax per item quantity.
+
+
+Account Head
+The account in your Chart of Accounts where the tax/charge will be posted.
+Example: “CGST - Input Tax”, “Freight Charges”, “Custom Duty”.
+
+
+Tax Rate
+The percentage rate of the tax/charge.
+Example: 18% for GST.
+
+
+Amount
+Calculated automatically (based on rate and base). You can also manually enter it if Type = Actual.
+
+
+Total
+Auto-calculated total after applying the tax/charge
+
+
+🧩 TAB 5 – Additional Discount and Totals
+
+| Field                              | Meaning                                 |
+| ---------------------------------- | --------------------------------------- |
+| **Apply Additional Discount On**   | Choose base (Net Total or Grand Total). |
+| **Additional Discount % / Amount** | Add overall discount.                   |
+| **Grand Total**                    | Total amount before rounding.           |
+| **Rounded Total**                  | Final rounded amount.                   |
+| **Disable Rounded Total**          | Prevent rounding if not needed.         |
+
+
+Apply Additional Discount On :::
+- This dropdown decides on what base the discount will be applied.
+
+| Option          | Meaning                                                                   |
+| --------------- | ------------------------------------------------------------------------- |
+| **Net Total**   | Discount is applied on the *total item amount* (before taxes).            |
+| **Grand Total** | Discount is applied on the *final amount after adding taxes and charges.* |
+
+-----------------
+
+Additional Discount Percentage :::
+- This field is used to give the discount as a percentage.
+
+-----------------
+
+Additional Discount Amount (INR)
+- This is for giving a fixed rupee amount discount instead of a percentage.
+
+-----------------
+
+
+🧩 TAB 6 – Terms
+
+| Field                    | Meaning                                              |
+| ------------------------ | ---------------------------------------------------- |
+| **Terms Template**       | Choose a saved Terms and Conditions template.        |
+| **Terms and Conditions** | Type or edit payment terms, delivery, warranty, etc. |
+
+
+🧩 TAB 7 – More Info
+
+| Section                                | Fields                                                      | Meaning                                         |
+| -------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------- |
+| **Printing Settings**                  | Letter Head, Print Heading                                  | Choose letterhead and custom heading for print. |
+| **Group Same Items**                   | Combine identical items in print preview.                   |                                                 |
+| **Additional Info → Is Subcontracted** | If checked, this quotation is for subcontracting materials. |                                                 |
+
+
+- Subcontracting in ERPNext means you send your raw materials or components to an external supplier (subcontractor), and they use those materials to manufacture 
+  or assemble a finished product for you.
+- So, you own the raw materials, but the subcontractor performs the work (like fabrication, coating, assembly, etc.).
+
+- Subcontracting materials are the raw materials or components that you supply to the subcontractor to make the final product.
+
+
+⚙️ Special Checkbox Fields
+
+| Field                 | Meaning                                                                 |
+| --------------------- | ----------------------------------------------------------------------- |
+| **Is Reverse Charge** | Used for reverse charge tax scenarios (GST-related). Usually unchecked. |
+
+This checkbox is used when you (the buyer) have to pay GST directly to the government instead of your supplier.
+Normally, the supplier collects GST and pays it to the government.
+But under Reverse Charge Mechanism (RCM) — The buyer is responsible for paying GST to the government.
+
+
+:) Tools Menu
+
+| Option                        | Meaning                                                                           |
+| ----------------------------- | --------------------------------------------------------------------------------- |
+| **Link to Material Requests** | Connect this quotation to original Material Requests. *(Useful for traceability)* |
+
+
+
+:) Get Items From Button
+
+| Option                    | Meaning                                                |
+| ------------------------- | ------------------------------------------------------ |
+| **Material Request**      | Pull items directly from an existing Material Request. |
+| **Request for Quotation** | Pull items from a specific RFQ sent earlier.           |
+
+
+Accounting Dimensions :
+
+Cost Center
+→ What it is: the department/location that will bear the cost.
+→ Why use it: to know which department spent money (eg. IT, Production, Sales).
+→ Effect: Purchase values get recorded against that cost center for reporting and P&L breakdown.
+→ Example: Laptops bought for IT → Cost Center = IT Department.
+
+Project
+→ What it is: project code/name this purchase belongs to.
+→ Why use it: to track expenses against a specific project (billing, margin, budget).
+→ Effect: Costs are attributed to the project for cost-to-complete and profitability checks.
+→ Example: Laptops for Project Alpha → Project = Project Alpha.
+
+
+
+:) Totals section
+
+Grand Total - 
+The final amount after:
+- Adding all item amounts
+- Adding all “Taxes and Charges Added”
+- Subtracting “Taxes and Charges Deducted”(TDS)
+- Subtracting “Additional Discount”
+
+
+Rounding Adjustment
+- This shows the tiny difference that comes when ERPNext rounds the Grand Total to the nearest whole number.
+- It’s an auto-calculated field — you don’t type anything.
+
+
+Rounded Total
+- This is the final payable amount after rounding.
+- It’s what actually shows on the printed invoice and used for payment.0.000.00
+
+Disable Rounded Total
+- If you tick this ✅ checkbox, ERPNext will not round the amount.
+- It will keep the exact decimal value from the Grand Total.
+
+
+🏠 Address & Contact Tab
+| **Field Name**                 | **Who It Belongs To** | **Simple Meaning / Use**                                                                                                |
+| ------------------------------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 🏢 **Supplier Address**        | Supplier              | The supplier’s registered or communication address. Used for correspondence and printed on RFQ / PO / Invoice.          |
+| 👤 **Contact Person**          | Supplier              | Name of the person you’re dealing with from that supplier. Auto-fills phone/email if stored in Supplier Master.         |
+| 🚚 **Shipping Address**        | Buyer (Your Company)  | The location where goods should be **delivered** by the supplier.                                                       |
+| 🧾 **Company Billing Address** | Buyer (Your Company)  | The **official company address** where the supplier’s invoice will be billed to. Appears on printed purchase documents. |
+| 📍 **Place of Supply**         | Buyer (For GST)       | Used to determine **GST applicability** (intra-state or inter-state). Comes from shipping address or manually selected. |
+
+
+Other:
+| Field                       | Meaning                                                                      | Includes Taxes? |
+| --------------------------- | ---------------------------------------------------------------------------- | --------------- |
+| **Total**                   | Sum of all item amounts (qty × rate) before any discounts or taxes.          | ❌ No            |
+| **Net Total**               | Sum of all item amounts **after item-level discounts** but **before taxes**. | ❌ No            |
+| **Taxes and Charges Total** | Sum of all applied taxes and charges.                                        | —               |
+| **Grand Total**             | **Net Total + Taxes and Charges Total**                                      | ✅ Yes           |
+| **Rounded Total**           | Rounded version of Grand Total (based on rounding settings).                 | ✅ Yes           |
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Purchase Order 
+
+| **Field / Section**              | **Simple Meaning (Easy to Remember)**                            |
+| -------------------------------- | ---------------------------------------------------------------- |
+| **Series**                       | Auto-generated number format (like PUR-ORD-YYYY-0001).           |
+| **Date**                         | Date when PO is created.                                         |
+| **Supplier**                     | The supplier you’re buying from.                                 |
+| **Required By**                  | When you need the items ready.                                   |
+| **Expected Delivery**            | Date supplier should deliver goods.                              |
+| **Apply Tax Withholding Amount** | Used for TDS (Tax Deducted at Source).                           |
+| **Is Reverse Charge**            | Buyer pays GST directly to govt (not supplier).                  |
+| **Is Subcontracted**             | Tick if you’re sending raw materials to a supplier for job work. |
+
+
+“Apply Tax Withholding Amount” :
+- In ERPNext, the “Apply Tax Withholding Amount” option is used to automatically deduct Tax Deducted at Source (TDS) or Withholding Tax from a transaction
+ (like a Purchase Invoice, Payment Entry, or Journal Entry) based on predefined rules.
+
+
+🧾 What is Tax Withholding?
+Tax Withholding (TDS) means that when you pay a supplier (or sometimes receive money from a customer), you deduct a percentage of the amount as tax and pay that to the government instead of paying the full amount to the other party.
+
+
+Example (India context):
+- You pay ₹100,000 to a consultant.
+- TDS @10% is applicable.
+- You pay ₹90,000 to the consultant and ₹10,000 to the government.
+ERPNext should automatically calculate and show that ₹10,000 was withheld.
+
+	
+🧮 Effect on Accounting
+- Expense (or income) is recorded in full.
+- A liability (TDS Payable) is created for the withheld amount.
+- Net payable/receivable is reduced by the TDS amount.
+
+
+
+📦 Currency and Price List / Items Section
+
+| Field                            | Meaning                                       |
+| -------------------------------- | --------------------------------------------- |
+| **Scan Barcode**                 | Scan item barcode to auto-fill details.       |
+| **Set Target Warehouse**         | Warehouse where goods will go after purchase. |
+| **Item Code**                    | Item to purchase.                             |
+| **Required By**                  | Item-wise required date.                      |
+| **Quantity**                     | Total quantity of the item.                   |
+| **UOM**                          | Unit of Measure (Nos, Kg, Box, etc.).         |
+| **Rate / Amount**                | Price per item and total amount.              |
+| **Total Quantity / Total (INR)** | Auto-calculated totals.                       |
+
+
+🧮 Accounting Dimensions
+
+| Field           | Meaning                                                        |
+| --------------- | -------------------------------------------------------------- |
+| **Cost Center** | Department that will bear the cost. *(Example: IT Department)* |
+| **Project**     | Project this order is linked to. *(Example: Project Alpha)*    |
+
+
+💰 Taxes and Charges
+
+| Field                                   | Meaning                                              |
+| --------------------------------------- | ---------------------------------------------------- |
+| **Tax Category**                        | Type of tax (like GST, Import, etc.).                |
+| **Shipping Rule**                       | Predefined shipping logic (optional).                |
+| **Incoterm**                            | Trade term (like FOB, CIF).                          |
+| **Purchase Taxes and Charges Template** | Template for standard tax setup.                     |
+| **Purchase Taxes and Charges (Table)**  | Add tax rows — Type, Account Head, Tax Rate, Amount. |
+| **Total Taxes and Charges (INR)**       | Combined total of all taxes/charges.                 |
+
+
+
+💸 Additional Discount & Totals
+
+| Field                              | Meaning                                             |
+| ---------------------------------- | --------------------------------------------------- |
+| **Apply Additional Discount On**   | Choose base for discount (Net Total / Grand Total). |
+| **Additional Discount % / Amount** | Final overall discount on total bill.               |
+| **Grand Total (INR)**              | Final amount before rounding.                       |
+| **Rounding Adjustment (INR)**      | Small +/– difference while rounding.                |
+| **Rounded Total (INR)**            | Final rounded amount to pay.                        |
+| **Disable Rounded Total**          | Stops auto-rounding (keeps decimal).                |
+| **Advance Paid (INR)**             | Shows advance already paid to supplier.             |
+
+
+🏢 Address & Contact Tab
+
+| Field                                   | Meaning                                       |
+| --------------------------------------- | --------------------------------------------- |
+| **Supplier Address**                    | Address of supplier (from Supplier master).   |
+| **Supplier Contact**                    | Contact person at supplier side.              |
+| **Dispatch Address / Shipping Address** | Where goods should be delivered.              |
+| **Company Billing Address**             | Buyer’s (your company’s) billing address.     |
+| **Place of Supply**                     | State/location used for GST type (CGST/IGST). |
+
+Dispatch address - location of the seller
+Shipping address - customer’s address	
+
+📄 Payment Terms & Conditions
+
+| Field                      | Meaning                                                          |
+| -------------------------- | ---------------------------------------------------------------- |
+| **Payment Terms Template** | Predefined payment schedule (like 50% advance, 50% on delivery). |
+| **Payment Schedule Table** | Add custom due dates, payment amounts, or portions.              |
+| **Terms**                  | Select terms template.                                           |
+| **Terms and Conditions**   | Editable box for delivery/warranty/payment notes.                |
+
+
+🖨️ More Info Tab
+
+| Field                                                                | Meaning                                                 |
+| -------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Order Status**                                                     | Current document status (Draft, To Receive, Completed). |
+| **Printing Settings → Letter Head / Print Heading / Print Language** | Customize print layout and letterhead.                  |
+| **Group Same Items**                                                 | Merge duplicate items in print.                         |
+| **Auto Repeat → From Date / To Date**                                | Repeat PO automatically for recurring orders.           |
+| **Additional Info → Is Internal Supplier**                           | Tick if supplier is your own internal company/branch.   |
+
+
+
+⚙️ Buttons
+
+| Button                                       | Simple Meaning                                          |
+| -------------------------------------------- | ------------------------------------------------------- |
+| **Tools → Update Rate as per Last Purchase** | Auto-update item rates based on last purchase.          |
+| **Tools → Link to Material Request**         | Connect this PO to a Material Request.                  |
+| **Get Items From → Product Bundle**          | Fetch grouped product items.                            |
+| **Get Items From → Material Request**        | Pull items from approved Material Request.              |
+| **Get Items From → Supplier Quotation**      | Fetch items and rates from selected Supplier Quotation. |
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Purchase Receipt 
+
+| **Field / Section**            | **Simple Meaning (Easy to Remember)**                |
+| ------------------------------ | ---------------------------------------------------- |
+| **Series**                     | Auto-generated number format (ex: PR-YYYY-0001).     |
+| **Date / Posting Time**        | When goods are received and entered into the system. |
+| **Supplier**                   | From whom the goods were received.                   |
+| **Supplier Delivery Note**     | Supplier’s note or reference number.                 |
+| **Edit Posting Date and Time** | Allows backdated entry of receipt.                   |
+| **Apply Putaway Rule**         | Auto-suggest warehouse bin for stock.                |
+| **Is Return**                  | Used if goods are being returned to the supplier.    |
+
+here,
+Apply Putaway Rule :
+If checked ✅, ERPNext will automatically decide where to store items inside a warehouse based on Putaway Rules.
+
+What is a Putaway Rule?
+- A Putaway Rule tells ERPNext where (in which bin, rack, or warehouse section) to place an item when it arrives.
+- Think of it as a “storage placement guide” for your items.
+
+
+
+🧮 Accounting Dimensions
+
+| Field           | Meaning                                  |
+| --------------- | ---------------------------------------- |
+| **Cost Center** | Department/Division to allocate expense. |
+| **Project**     | Link receipt to specific project.        |
+
+
+
+💰 Currency and Price List
+
+| Field                   | Meaning                                        |
+| ----------------------- | ---------------------------------------------- |
+| **Currency**            | Default currency (e.g., INR, USD).             |
+| **Price List**          | Price rule for buying (e.g., Standard Buying). |
+| **Ignore Pricing Rule** | Ignores predefined item price rules.           |
+
+
+📋 Items Section
+
+| Field                            | Meaning                                     |
+| -------------------------------- | ------------------------------------------- |
+| **Scan Barcode**                 | Quickly fetch item details using barcode.   |
+| **Accepted Warehouse**           | Warehouse for accepted items.               |
+| **Rejected Warehouse**           | Warehouse for defective/rejected items.     |
+| **Is Subcontracted**             | Tick if items are for subcontract job work. |
+| **Item Code**                    | Item name/ID received.                      |
+| **Accepted / Rejected Quantity** | Split accepted and rejected items.          |
+| **Rate / Amount (INR)**          | Price per item and total value.             |
+| **Total Quantity / Total (INR)** | Auto-calculated totals.                     |
+
+
+
+🧾 Taxes and Charges
+
+| Field                                   | Meaning                                          |
+| --------------------------------------- | ------------------------------------------------ |
+| **Tax Category**                        | Category (like GST, Import, etc.).               |
+| **Shipping Rule**                       | Defines delivery charge rule.                    |
+| **Incoterm**                            | Trade term (e.g., CIF, FOB).                     |
+| **Purchase Taxes and Charges Template** | Predefined tax template.                         |
+| **Purchase Taxes and Charges (Table)**  | Add tax details – type, account head, rate, etc. |
+| **Taxes and Charges Added (INR)**       | Total taxes added to item amount.                |
+| **Taxes and Charges Deducted (INR)**    | Total taxes subtracted (like TDS).               |
+| **Total Taxes and Charges (INR)**       | Net total of all taxes and charges.              |
+
+
+
+💵 Totals & Additional Discount
+
+| Field                              | Meaning                              |
+| ---------------------------------- | ------------------------------------ |
+| **Grand Total (INR)**              | Final amount before rounding.        |
+| **Rounding Adjustment (INR)**      | Minor value change after rounding.   |
+| **Rounded Total (INR)**            | Final payable amount after rounding. |
+| **Disable Rounded Total**          | Keeps decimals, disables rounding.   |
+| **Apply Additional Discount On**   | Select base (Net or Grand Total).    |
+| **Additional Discount % / Amount** | Final overall discount on invoice.   |
+
+
+
+🏗️ Raw Materials Consumed
+
+| Field                                  | Meaning                                                 |
+| -------------------------------------- | ------------------------------------------------------- |
+| **Consumed Items Table**               | Used when raw materials are consumed in subcontracting. |
+| **Raw Material Item Code**             | Which raw material used.                                |
+| **Qty to be Consumed / Current Stock** | How much is used vs available.                          |
+
+
+
+📍 Address & Contact Tab
+
+| Field                                                     | Meaning                                  |
+| --------------------------------------------------------- | ---------------------------------------- |
+| **Supplier Address / Contact Person**                     | Supplier’s official address and contact. |
+| **Dispatch Address Template / Shipping Address Template** | Shipping info for delivery.              |
+| **Billing Address**                                       | Company’s billing address.               |
+| **Place of Supply**                                       | Used for GST calculation (CGST/IGST).    |
+
+
+📄 Terms Tab
+
+| Field                    | Meaning                                 |
+| ------------------------ | --------------------------------------- |
+| **Terms**                | Select terms template (optional).       |
+| **Terms and Conditions** | Custom conditions for delivery/payment. |
+
+
+
+🚚 Transporter Section
+
+| Field                                | Meaning                                          |
+| ------------------------------------ | ------------------------------------------------ |
+| **Transporter / GST Transporter ID** | Name & GST ID of transport company.              |
+| **Transport Receipt No / Date**      | Lorry or consignment note number & date.         |
+| **Vehicle No**                       | Vehicle number carrying the goods.               |
+| **Distance (in km)**                 | Distance for e-way bill generation.              |
+| **Mode of Transport**                | Road / Rail / Air / Ship.                        |
+| **Driver / Driver Name**             | Driver info (optional).                          |
+| **GST Vehicle Type**                 | Type for GST (Regular / Over Dimensional Cargo). |
+
+
+🧾 Additional Info
+
+| Field                    | Meaning                                          |
+| ------------------------ | ------------------------------------------------ |
+| **Instructions**         | Notes for internal use or warehouse.             |
+| **Remarks**              | Any general comments.                            |
+| **Is Internal Supplier** | Tick if supplier is your own branch or division. |
+
+
+
+🖨️ Status & Printing Settings
+
+| Field                           | Meaning                                         |
+| ------------------------------- | ----------------------------------------------- |
+| **Status**                      | Document stage (Draft / Submitted / Cancelled). |
+| **Letter Head / Print Heading** | Customize printed document.                     |
+| **Group Same Items**            | Merge duplicate items while printing.           |
+
+
+
+⚙️ Extra Checkbox
+
+| Field                 | Meaning                                                                        |
+| --------------------- | ------------------------------------------------------------------------------ |
+| **Is Reverse Charge** | Buyer pays tax to govt (supplier not responsible). Used for special GST cases. |
+
+
+
+⚙️ Buttons in Purchase Receipt
+
+| **Button / Option**                   | **Simple Meaning (Easy to Remember)**                                                                                 |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Get Items From → Purchase Invoice** | Fetch items directly from an existing **Purchase Invoice** (used when invoice is created before goods are received).  |
+| **Get Items From → Purchase Order**   | Pull items from **Purchase Order** (most common). It auto-fills supplier, item details, rate, and taxes from that PO. |
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Purchase Invoice
+
+| **Field / Section**              | **Simple Meaning (Easy to Remember)**                 |
+| -------------------------------- | ----------------------------------------------------- |
+| **Series**                       | Auto-generated invoice number (e.g., PINV-YYYY-0001). |
+| **Date / Posting Time**          | When the invoice is recorded.                         |
+| **Supplier**                     | The vendor who sent the bill.                         |
+| **Edit Posting Date and Time**   | Allow backdated invoice entry.                        |
+| **Due Date**                     | Date when payment is due.                             |
+| **Is Paid**                      | Tick if invoice is already paid.                      |
+| **Is Return (Debit Note)**       | Used when returning goods to supplier.                |
+| **Apply Tax Withholding Amount** | Used for TDS calculation.                             |
+| **Is Reverse Charge**            | Buyer pays GST to govt (not supplier).                |
+
+
+
+🧾 Supplier Invoice
+
+| Field                          | Meaning                                           |
+| ------------------------------ | ------------------------------------------------- |
+| **Supplier Invoice No / Date** | Reference of vendor’s original bill and its date. |
+
+
+
+🧮 Accounting Dimensions
+
+| Field           | Meaning                            |
+| --------------- | ---------------------------------- |
+| **Cost Center** | Department that bears the expense. |
+| **Project**     | Project related to this purchase.  |
+
+
+
+💰 Currency and Price List
+
+| Field                                  | Meaning                                         |
+| -------------------------------------- | ----------------------------------------------- |
+| **Currency**                           | Invoice currency (e.g., INR, USD).              |
+| **Price List**                         | Standard Buying (default price list).           |
+| **Use Transaction Date Exchange Rate** | Fetch rate of currency as per transaction date. |
+| **Ignore Pricing Rule**                | Skips predefined item rate rules.               |
+
+
+📦 Items Section
+
+| Field                                   | Meaning                                                            |
+| --------------------------------------- | ------------------------------------------------------------------ |
+| **Scan Barcode**                        | Fetch item using barcode.                                          |
+| **Update Stock**                        | Tick if stock should be updated with this invoice (acts like GRN). |
+| **Is Subcontracted**                    | Tick if this is for subcontracting job.                            |
+| **Item / Accepted Qty / Rate / Amount** | Item details, quantity, price, and total.                          |
+| **Total Quantity / Total (INR)**        | Auto-calculated totals.                                            |
+
+
+
+💸 Taxes and Charges
+
+| Field                                                | Meaning                                      |
+| ---------------------------------------------------- | -------------------------------------------- |
+| **Tax Category**                                     | Category (like GST, Import, etc.).           |
+| **Shipping Rule**                                    | Predefined shipping charge rule.             |
+| **Incoterm**                                         | Trade condition (e.g., CIF, FOB).            |
+| **Purchase Taxes and Charges Template**              | Template for taxes (like GST @18%).          |
+| **Purchase Taxes and Charges (Table)**               | Add specific tax rows (type, account, rate). |
+| **Taxes and Charges Added / Deducted / Total (INR)** | Shows total added and deducted tax values.   |
+
+
+🧾 Totals & Additional Discount
+
+| Field                                         | Meaning                             |
+| --------------------------------------------- | ----------------------------------- |
+| **Grand Total (INR)**                         | Invoice amount before rounding.     |
+| **Rounding Adjustment (INR)**                 | Difference due to rounding.         |
+| **Use Company Default Round Off Cost Center** | Applies default round-off settings. |
+| **Rounded Total (INR)**                       | Final amount after rounding.        |
+| **Total Advance (INR)**                       | Total advance amount already paid.  |
+| **Apply Additional Discount On**              | Select base (Net or Grand Total).   |
+| **Additional Discount % / Amount**            | Final discount at invoice level.    |
+
+
+
+💵 Advance Payments
+
+| Field                                | Meaning                                    |
+| ------------------------------------ | ------------------------------------------ |
+| **Set Advances and Allocate (FIFO)** | Auto-adjust advances using FIFO method.    |
+| **Get Advances Paid**                | Fetch advance payments made to supplier.   |
+| **Advances Table**                   | Shows advance ref, amount, and allocation. |
+
+
+
+🧾 Write Off
+
+| Field                      | Meaning                                                            |
+| -------------------------- | ------------------------------------------------------------------ |
+| **Write Off Amount (INR)** | Amount you want to skip from payment (small rounding differences). |
+
+ex. wriite off amount
+
+| **Case**             | **Amount (₹)** | **Explanation**                                          |
+| -------------------- | -------------- | -------------------------------------------------------- |
+| Supplier Bill Total  | ₹5000.02       | From Purchase Invoice                                    |
+| You Paid             | ₹5000.00       | Paid through Bank                                        |
+| Difference           | ₹0.02          | Minor rounding difference                                |
+| **Write Off Amount** | ₹0.02          | ERPNext marks it as expense → invoice becomes fully paid |
+
+
+ 
+
+🏢 Address & Contact Tab
+
+| Field                                   | Meaning                          |
+| --------------------------------------- | -------------------------------- |
+| **Supplier Address / Contact Person**   | Vendor’s contact info.           |
+| **Dispatch Address / Shipping Address** | Where goods should be sent.      |
+| **Company Billing Address**             | Company billing info.            |
+| **Place of Supply**                     | Determines GST type (CGST/IGST). |
+
+where, 
+
+| **Field**            | **Simple Meaning (Easy to Remember)**                                                                                |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Dispatch Address** | The **address from where goods are sent** (origin address). Usually your **supplier’s warehouse**.                   |
+| **Shipping Address** | The **address where goods will be delivered** (destination address). Usually your **company’s or branch warehouse**. |
+
+
+
+📑 Payment Terms & Conditions
+
+| Field                            | Meaning                                                         |
+| -------------------------------- | --------------------------------------------------------------- |
+| **Payment Terms Template**       | Standard payment schedule (e.g., 50% advance, 50% on delivery). |
+| **Payment Schedule Table**       | Add manual due dates & amounts.                                 |
+| **Terms / Terms and Conditions** | Payment & delivery rules (custom text).                         |
+
+
+🧾 Status / Accounting Details / Subscription / Printing
+
+| Field                                              | Meaning                                          |
+| -------------------------------------------------- | ------------------------------------------------ |
+| **Status**                                         | Document state (Draft / Submitted / Paid).       |
+| **Credit To**                                      | Supplier’s payable account (default: Creditors). |
+| **Is Opening Entry**                               | Used for initial balance entries.                |
+| **Subscription / From Date / To Date**             | Auto-repeat setup for recurring invoices.        |
+| **Letter Head / Print Heading / Group Same Items** | Customize invoice print view.                    |
+
+
+
+🚚 Transporter Info
+
+| Field                                | Meaning                                   |
+| ------------------------------------ | ----------------------------------------- |
+| **Transporter / GST Transporter ID** | Name & GST ID of transporter.             |
+| **Driver / Driver Name**             | Transport driver details.                 |
+| **Transport Receipt No / Date**      | Delivery challan / Lorry receipt details. |
+| **Vehicle No**                       | Transport vehicle number.                 |
+| **Distance (km)**                    | Distance for e-way bill.                  |
+| **Mode of Transport**                | Road / Rail / Air / Ship.                 |
+| **GST Vehicle Type**                 | Regular or special category.              |
+
+
+
+🧾 GST Details
+
+| Field                  | Meaning                                          |
+| ---------------------- | ------------------------------------------------ |
+| **ITC Classification** | Type of Input Tax Credit (like “All Other ITC”). |
+
+
+
+🧾 Hold Invoice & Additional Info
+
+| Field                    | Meaning                                           |
+| ------------------------ | ------------------------------------------------- |
+| **Hold Invoice**         | Temporarily stop invoice from processing payment. |
+| **Is Internal Supplier** | Tick if vendor is your own branch/company.        |
+| **Supplier Group**       | Supplier’s category (e.g., Local, Overseas).      |
+| **Remarks**              | Free text notes or comments.                      |
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Payment Entry
+
+| **Section / Field** | **Simple Meaning (Easy to Remember)**                            |
+| ------------------- | ---------------------------------------------------------------- |
+| **Series**          | Auto naming format (e.g., ACC-PAY-YYYY-0001).                    |
+| **Posting Date**    | Date when payment is recorded in accounts.                       |
+| **Payment Type**    | Choose **“Pay”** (to Supplier) or **“Receive”** (from Customer). |
+| **Mode of Payment** | How payment is made — e.g., Cash, Bank, Cheque, UPI.             |
+
+
+
+💳 Payment From / To
+
+| Field          | Meaning                                                          |
+| -------------- | ---------------------------------------------------------------- |
+| **Party Type** | The party you’re paying or receiving from (Supplier / Customer). |
+| **Party**      | The specific supplier/customer name.                             |
+| **Party Name** | Auto-filled based on the selected party.                         |
+
+
+
+🧾 Accounts
+
+| Field                 | Meaning                                                                 |
+| --------------------- | ----------------------------------------------------------------------- |
+| **Account Paid To**   | The account where money is coming in (your receiving account).            |
+| **Account Paid From** | The account from which money is going out (your payment source). |
+
+
+
+💸 Taxes and Charges
+
+| Field                                         | Meaning                                                |
+| --------------------------------------------- | ------------------------------------------------------ |
+| **Sales/Purchase Taxes and Charges Template** | Template for any tax applicable on advance or payment. |
+| **Advance Taxes and Charges (Table)**         | Add tax details if TDS or GST applies on payment.      |
+
+
+
+🧾 GST Details
+
+| Field                | Meaning                                    |
+| -------------------- | ------------------------------------------ |
+| **Company Address**  | Company’s registered GST address.          |
+| **Customer Address** | Customer/Supplier address for GST invoice. |
+| **Place of Supply**  | Determines GST type (CGST+SGST or IGST).   |
+
+
+🧮 Accounting Dimensions
+
+| Field           | Meaning                                        |
+| --------------- | ---------------------------------------------- |
+| **Project**     | Tag payment to a project for tracking.         |
+| **Cost Center** | Department responsible for payment or expense. |`
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Item
+
+| **Section / Field**                | **Simple Meaning (Easy to Remember)**                |
+| ---------------------------------- | ---------------------------------------------------- |
+| **Item Code / Item Name**          | Unique ID and name for the item.                     |
+| **Item Group**                     | Category of item (e.g., Raw Material, Product).      |
+| **HSN/SAC**                        | GST classification code for goods/services.          |
+| **Default Unit of Measure (UOM)**  | Base unit (e.g., Nos, Kg, Box).                      |
+| **Disabled**                       | Stops item from being used in transactions.          |
+| **Allow Alternative Item**         | Allows linking substitute item.                      |
+| **Maintain Stock**                 | Tick if stock is tracked in inventory.               |
+| **Has Variants**                   | Tick if item has variations (like color/size).       |
+| **Opening Stock / Valuation Rate** | Initial quantity and rate while creation.            |
+| **Standard Selling Rate**          | Default selling price.                               |
+| **Is Fixed Asset**                 | Tick if item is a company asset (not regular stock). |
+
+here,
+
+Allow Alternative Item :
+- If ✅ checked, ERPNext allows this item to be replaced with another equivalent item in transactions.
+- Useful when the exact item is unavailable, and you want to use a substitute item instead
+
+- Sometimes the main item is out of stock, discontinued, or temporarily unavailable. Instead of blocking the order, ERPNext can suggest or allow an alternative item 
+ (defined under the same item or linked through “Item Alternative” Doctype).
+
+How works
+
+| **Step** | **What Happens**                                                                                                           |
+| -------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1️⃣      | You tick **Allow Alternative Item** in Item master.                                                                        |
+| 2️⃣      | You link related items under **Item Alternative** Doctype.                                                                 |
+| 3️⃣      | When that item is used in an order and stock is not available, ERPNext suggests available alternative items automatically. |
+
+-------
+
+Maintain Stock:
+- If ✅ checked, ERPNext will track stock quantity and value for this item. If ❌ unchecked, ERPNext treats it as a non-stock item.
+
+| **Situation**                           | **Maintain Stock?** |
+| --------------------------------------- | ------------------- |
+| Raw Material / Finished Goods           | ✅ Yes               |
+| Consumables (tracked inventory)         | ✅ Yes               |
+| Labor / Service / Subcontract Charges   | ❌ No                |
+| Office Expenses (like Stationery, Rent) | ❌ No                |
+
+Maintain Stock = tells ERPNext whether to track inventory movement for that item or treat it as a non-stock (service/expense) item.
+
+-------
+
+HSN and SAC are classification codes used in GST (Goods and Services Tax) systems — primarily in India, but ERPNext supports them globally for tax compliance.
+
+| Code Type | Full Form                         | Applies To           | Purpose                                                 |
+| --------- | --------------------------------- | -------------------- | ------------------------------------------------------- |
+| **HSN**   | Harmonized System of Nomenclature | **Goods / Products** | Used to classify goods for GST and international trade. |
+| **SAC**   | Services Accounting Code          | **Services**         | Used to classify services for GST and taxation.         |
+
+-------
+
+A Fixed Asset in ERPNext (and in accounting generally) is:
+- If ✅ checked, ERPNext treats this item as a Fixed Asset instead of inventory.
+- A tangible or intangible item that your company owns, uses for operations, and expects to use for more than one accounting period.
+
+Examples:
+- Computers, furniture, vehicles, machinery — tangible assets
+- Patents, software licenses — intangible assets
+
+This tells ERPNext that the item you are buying is not meant for resale or consumption, but is a company asset — like furniture, computers, machinery, etc.
+
+- So instead of tracking it as stock, ERPNext will create an Asset record after you buy it.
+
+
+
+📝 Description
+
+| Field           | Meaning                             |
+| --------------- | ----------------------------------- |
+| **Description** | Item details shown on transactions. |
+| **Brand**       | Brand name of item.                 |
+
+
+📏 Units of Measure (UOMs)
+
+| Field                 | Meaning                                       |
+| --------------------- | --------------------------------------------- |
+| **UOM Table**         | Define alternate UOMs (e.g., 1 Box = 10 Nos). |
+| **Conversion Factor** | Defines relation between UOMs.                |
+
+here,
+- In ERPNext, Conversion Factor defines the relationship between two Units of Measurement (UOMs) for the same Item.
+- It tells ERPNext how many base units are contained in one alternate UOM.
+
+| Item   | Base UOM | Alternate UOM | Conversion Factor | Meaning            |
+| ------ | -------- | ------------- | ----------------- | ------------------ |
+| Cement | Kg       | Bag           | 50                | 1 Bag = 50 Kg      |
+| Paper  | Nos      | Box           | 10                | 1 Box = 10 Nos     |
+| Cable  | Meter    | Roll          | 100               | 1 Roll = 100 Meter |
+
+
+
+🏷️ Inventory Settings
+
+| Field                                | Meaning                                             |
+| ------------------------------------ | --------------------------------------------------- |
+| **Shelf Life in Days / End of Life** | Expiry or usable period of item.                    |
+| **Warranty Period (days)**           | Warranty duration after sale.                       |
+| **Weight per Unit / Weight UOM**     | Item’s physical weight.                             |
+| **Default Material Request Type**    | Default request type (e.g., Purchase).              |
+| **Valuation Method**                 | FIFO or Moving Average (how cost is tracked).       |
+| **Allow Negative Stock**             | Allows going below zero quantity (not recommended). |
+
+
+
+🧾 Serial Nos and Batches
+
+| Field             | Meaning                                           |
+| ----------------- | ------------------------------------------------- |
+| **Has Batch No**  | Enables batch tracking (e.g., for medicines).     |
+| **Has Serial No** | Enables serial-wise tracking (e.g., electronics). |
+
+
+🔁 Auto Re-order
+
+| Field                     | Meaning                                                  |
+| ------------------------- | -------------------------------------------------------- |
+| **Reorder Table**         | Define when ERPNext should auto-create Material Request. |
+| **Reorder Level / Qty**   | Minimum stock limit to trigger reordering.               |
+| **Material Request Type** | Type of request generated (Purchase / Manufacture).      |
+
+
+
+💼 Deferred Accounting
+
+| Field                                 | Meaning                                                               |
+| ------------------------------------- | --------------------------------------------------------------------- |
+| **Enable Deferred Expense / Revenue** | Spread cost/income over time (for prepaid expenses or advance sales). |
+| **Item Defaults Table**               | Set company-wise default warehouse & price list.                      |
+
+
+here,
+Enable Deferred Expense : if ✅ checked, ERPNext will not book the full expense immediately — instead, it will spread (amortize) the expense over time.
+                          Used in Buying Cycle (Purchase Invoices).
+                          
+Enable Deferred Revenue : If ✅ checked, ERPNext will not recognize the full income at once — it will recognize revenue gradually over the defined period.
+                          Used in Selling Cycle (Sales Invoices).
+                          
+                       	
+
+🌏 Foreign Trade Details
+
+| Field                     | Meaning                                   |
+| ------------------------- | ----------------------------------------- |
+| **Country of Origin**     | Where item is manufactured.               |
+| **Customs Tariff Number** | Code used in import/export documentation. |
+
+
+🏭 Purchase Details
+
+| Field                         | Meaning                                               |
+| ----------------------------- | ----------------------------------------------------- |
+| **Default Purchase UOM**      | Default buying unit (e.g., Box).                      |
+| **Minimum Order Qty**         | Minimum quantity to buy.                              |
+| **Lead Time (days)**          | Avg. delivery time from supplier.                     |
+| **Safety Stock**              | Minimum stock to keep in hand.                        |
+| **Allow Purchase**            | Enables item to be used in buying.                    |
+| **Is Customer Provided Item** | Raw materials given by customer for subcontract work. |
+
+here,
+
+is cutsomer provided :
+- You sometimes receive an item from your customer to repair, process, or modify,
+- but it still belongs to the customer — it’s not your company’s stock.
+
+🚚 Supplier Details
+
+| Field                                 | Meaning                                        |
+| ------------------------------------- | ---------------------------------------------- |
+| **Delivered by Supplier (Drop Ship)** | Goods sent directly from supplier to customer. |
+| **Supplier Table**                    | Add suppliers & their part numbers.            |
+
+
+
+💵 Sales Details
+
+| Field                 | Meaning                         |
+| --------------------- | ------------------------------- |
+| **Default Sales UOM** | Default unit while selling.     |
+| **Max Discount (%)**  | Limit maximum discount allowed. |
+| **Grant Commission**  | Enable sales commission.        |
+| **Allow Sales**       | Allows item to be sold.         |
+
+
+
+🧍 Customer Details
+
+| Field                    | Meaning                                   |
+| ------------------------ | ----------------------------------------- |
+| **Customer Items Table** | Map item to specific customers or groups. |
+
+
+💰 Taxes
+
+| Field                                  | Meaning                                  |
+| -------------------------------------- | ---------------------------------------- |
+| **Is Ineligible for Input Tax Credit** | No GST credit allowed for this item.     |
+| **Item Tax Table**                     | Define tax template, rate, and category. |
+
+Input Tax Credit (ITC) in GST?
+Input Tax Credit (ITC) means you can claim credit for the GST you paid on purchases (inputs, goods, or services) that are used in your business.
+
+For example:
+- You buy goods worth ₹10,000 + 18% GST = ₹1,800
+- You can claim ₹1,800 as input tax credit, reducing your GST payable on sales.
+
+Ineligible for Input Tax Credit” Mean?
+- Some purchases are not allowed to be claimed as input tax credit under GST rules.
+- If a purchase is ineligible, you cannot use that GST amount to offset your output tax liability.
+
+- means if ITC applied then when you buy something then you pay GST( e.g. 1800 rs.), after that when you sell that product you get that GST from your buyer, so now you get 1800 
+  so here only one person pay GST to gevernment.( if you sell then you get your paid gst then it consider your buyer pays gst)
+
+- but if you ineligible for that so you only pays GST after that when you sell you not get any GST for your recovery ....
+  
+| Type of Expense                         | ITC Allowed? | Reason                   |
+| --------------------------------------- | ------------ | ------------------------ |
+| Personal use expenses                   | ❌ No         | Not for business purpose |
+| Motor vehicles (except certain cases)   | ❌ No         | Restricted ITC           |
+| Food, beverages, club memberships       | ❌ No         | Personal nature          |
+| Goods/services used for exempt supplies | ❌ No         | Not taxable              |
+| Purchase for non-business use           | ❌ No         | Not related to business  |
+
+
+🧪 Quality Inspection
+
+| Field                                   | Meaning                             |
+| --------------------------------------- | ----------------------------------- |
+| **Inspection Required Before Purchase** | Tick if inspection before buying.   |
+| **Quality Inspection Template**         | Template to check item quality.     |
+| **Inspection Required Before Delivery** | Tick if inspection before dispatch. |
+
+
+🏗️ Manufacturing
+
+| Field                                 | Meaning                                        |
+| ------------------------------------- | ---------------------------------------------- |
+| **Include Item in Manufacturing**     | Can be used in BOM / production.               |
+| **Supply Raw Materials for Purchase** | For subcontract — buyer provides raw material. |
+
+
+⚙️ Buttons
+
+| **Button / Option**             | **Simple Meaning (Easy to Remember)**                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Actions → Add / Edit Prices** | Opens a popup to **add or change item prices** (in Price List). Useful if you want to update item buying/selling rate quickly. |
+| **View → Stock Balance**        | Shows **current available stock** of the selected item across warehouses.                                                      |
+| **View → Stock Ledger**         | Displays **detailed movement of stock** (In/Out entries with dates and values).                                                |
+| **View → Stock Projected Qty**  | Shows **future available stock** considering open Purchase Orders, Material Requests, and Sales Orders.                        |
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Price List
+
+| **Field**                            | **Simple Meaning (Easy to Remember)**                                                 |
+| ------------------------------------ | ------------------------------------------------------------------------------------- |
+| **Enabled**                          | Tick this to **activate** the price list. Disabled lists can’t be used.               |
+| **Price List Name**                  | The **name of your price list**, e.g., “Standard Buying” or “Retail Selling.”         |
+| **Currency**                         | The **currency** in which prices are defined, e.g., INR, USD.                         |
+| **Buying**                           | Tick if this list is for **purchase prices** (used in Purchase Orders, etc.).         |
+| **Selling**                          | Tick if this list is for **sales prices** (used in Sales Orders, etc.).               |
+| **Price Not UOM Dependent**          | If ticked, price stays **same for all UOMs** (Unit of Measures).                      |
+| **Applicable for Countries (Table)** | Add countries where this price list is valid. Useful for **multi-country companies**. |
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Pricing Rule
+
+| **Section / Field**                 | **Simple Meaning (Easy to Remember)**                                          |
+| ----------------------------------- | ------------------------------------------------------------------------------ |
+| **Naming Series**                   | Auto name pattern for rule (e.g., PRLE-0001).                                  |
+| **Title**                           | Rule name — describe offer or condition (e.g., “10% Discount on Electronics”). |
+| **Disable**                         | Tick to **turn off** the rule temporarily.                                     |
+| **Apply On**                        | What rule applies to — e.g., Item, Item Group, Brand, Customer Group, etc.     |
+| **Apply Rule On Item Code (Table)** | Select item(s) for which the rule will apply.                                  |
+| **Price or Product Discount**       | Choose **Price** (reduce rate) or **Discount** (apply % off).                  |
+| **Warehouse**                       | If rule applies only to items in a specific warehouse.                         |
+| **Mixed Conditions**                | Apply rule if **multiple conditions** match together.                          |
+| **Is Cumulative**                   | Allows **multiple rules to apply together**.                                   |
+| **Coupon Code Based**               | Rule is applied **only when coupon code is entered**.                          |
+
+
+🛒 Discount on Other Item
+
+| Field                   | Meaning                                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------------------- |
+| **Apply Rule On Other** | Apply discount on a different item when buying another (e.g., “Buy Laptop, get Mouse 50% off”). |
+
+
+👥 Party Information
+
+| Field                | Meaning                                                                |
+| -------------------- | ---------------------------------------------------------------------- |
+| **Selling / Buying** | Select whether rule applies in **sales** or **purchase** transactions. |
+
+
+📦 Quantity and Amount
+
+| Field             | Meaning                                          |
+| ----------------- | ------------------------------------------------ |
+| **Min / Max Qty** | Apply rule only if quantity falls in this range. |
+| **Min / Max Amt** | Apply rule if total amount falls in this range.  |
+
+
+⏰ Period Settings
+
+| Field                       | Meaning                                        |
+| --------------------------- | ---------------------------------------------- |
+| **Valid From / Valid Upto** | Rule active between these dates.               |
+| **Company / Currency**      | Which company & currency this rule belongs to. |
+
+
+💰 Margin
+
+| Field                     | Meaning                                |
+| ------------------------- | -------------------------------------- |
+| **Margin Type**           | Choose **Percentage** or **Amount**.   |
+| **Margin Rate or Amount** | Add profit margin value on cost price. |
+
+
+💸 Price Discount Scheme
+
+| Field                            | Meaning                                                      |
+| -------------------------------- | ------------------------------------------------------------ |
+| **Rate or Discount**             | Select how rule affects price — e.g., Discount %, Flat Rate. |
+| **Discount Percentage / Amount** | Actual discount value.                                       |
+| **For Price List**               | Apply this rule only on selected price list.                 |
+
+
+⚙️ Dynamic Condition
+
+| Field                             | Meaning                                                        |
+| --------------------------------- | -------------------------------------------------------------- |
+| **Condition (Python expression)** | Write custom conditions like `territory != 'All Territories'`. |
+
+
+🧠 Advanced Settings
+
+| Field                            | Meaning                                                           |
+| -------------------------------- | ----------------------------------------------------------------- |
+| **Apply Multiple Pricing Rules** | Allow multiple pricing rules to combine.                          |
+| **Threshold for Suggestion (%)** | System alerts user when price is outside threshold.               |
+| **Validate Applied Rule**        | If enabled, system won’t auto-apply; user must validate manually. |
+| **Has Priority**                 | Higher priority rules override lower ones.                        |
+
+here,
+- Threshold for Suggestion (%) is a tolerance percentage used in stock-related transactions (like Stock Entry, Material Request, Purchase Order, etc.) 
+  that affects how ERPNext auto-suggests quantities based on existing data.
+
+When ERPNext tries to suggest a quantity (e.g., in a Material Request or Stock Entry), it compares the suggested quantity with the actual requirement.
+- If the difference is within the threshold → ERPNext shows the suggestion.
+- If the difference is beyond the threshold → ERPNext does not auto-suggest (to avoid large errors).
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+supplier
+
+🔹 1. Details Tab
+
+| **Field**                        | **Simple Meaning (Easy to Remember)**                                |
+| -------------------------------- | -------------------------------------------------------------------- |
+| **Supplier Name**                | Supplier’s full name or company name.                                |
+| **Supplier Group**               | Category of supplier (e.g., Local, Overseas, Raw Material).          |
+| **Country**                      | Supplier’s country.                                                  |
+| **Supplier Type**                | Defines if the supplier is an **Individual or Company**.             |
+| **Is Transporter**               | Tick if the supplier provides **transportation/logistics** services. |
+| **Billing Currency**             | Default currency for transactions with this supplier.                |
+| **Price List**                   | Default **Buying Price List** used in Purchase transactions.         |
+| **Default Company Bank Account** | Your company’s default bank account for paying this supplier.        |
+| **Is Internal Supplier**         | Tick if this supplier is another **branch of your company**.         |
+| **Supplier Details**             | Additional information like description or notes.                    |
+| **Website / Print Language**     | Supplier’s website and preferred print language.                     |
+
+
+🔹 2. Tax Tab
+
+| **Field**                     | **Meaning**                                              |
+| ----------------------------- | -------------------------------------------------------- |
+| **GSTIN / UIN**               | Supplier’s GST number (for India).                       |
+| **GST Category**              | Registration type (e.g., Registered, Unregistered, SEZ). |
+| **Tax Category**              | Custom tax group applicable.                             |
+| **Reverse Charge Applicable** | Tick if you need to pay GST instead of supplier.         |
+| **PAN / Tax ID**              | Supplier’s PAN or international tax ID.                  |
+| **Tax Withholding Category**  | TDS category if applicable.                              |
+
+
+🔹 3. Address & Contact Tab
+
+| **Field**                    | **Meaning**                                                      |
+| ---------------------------- | ---------------------------------------------------------------- |
+| **Supplier Primary Address** | Default address for correspondence.                              |
+| **Supplier Primary Contact** | Default person for communication.                                |
+| *(Note)*                     | If address/contact changes after save, system can auto reselect. |
+
+
+🔹 4. Accounting Tab
+
+| **Field**                          | **Meaning**                                                   |
+| ---------------------------------- | ------------------------------------------------------------- |
+| **Default Payment Terms Template** | Default payment period (e.g., Net 30 days).                   |
+| **Default Accounts Table**         | Assign custom payable accounts if not using the standard one. |
+
+
+🔹 5. Settings Tab
+
+| **Field**                                                    | **Meaning**                                                       |
+| ------------------------------------------------------------ | ----------------------------------------------------------------- |
+| **Allow Purchase Invoice Creation Without Purchase Order**   | Allows direct Purchase Invoice without a PO.                      |
+| **Allow Purchase Invoice Creation Without Purchase Receipt** | Allows direct Purchase Invoice without PR.                        |
+| **Is Frozen**                                                | Prevents any new transactions for this supplier.                  |
+| **Disabled**                                                 | Completely deactivate the supplier.                               |
+| **Block Supplier**                                           | Stop further orders/invoices — used when supplier is blacklisted. |
+
+
+🔹 6. Portal Users Tab
+
+| **Field**                         | **Meaning**                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Supplier Portal Users (Table)** | Add ERPNext user(s) who can **log in as the supplier** in the portal to check Purchase Orders, Invoices, etc. |
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Supplier Group
+
+| **Field**                 | **Simple Meaning (Easy to Remember)**                                                           |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Supplier Group Name**   | Name of the group (e.g., *Local Suppliers*, *Overseas Vendors*, *Transporters*).                |
+| **Parent Supplier Group** | Used to create a **hierarchy** of groups (like parent–child relationship).                      |
+| **Is Group**              | Tick this if it’s a **main group** and will contain other subgroups (not individual suppliers). |
+
+
+💳 Credit Limit Section
+
+| **Field**                          | **Meaning**                                                                            |
+| ---------------------------------- | -------------------------------------------------------------------------------------- |
+| **Default Payment Terms Template** | Set default payment duration for all suppliers under this group (e.g., *Net 30 Days*). |
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Buying Settings
+
+
+🏷️ 1. Naming Series and Price Defaults
+
+| **Field**                                                               | **Simple Meaning (Easy to Remember)**                                                                        |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Supplier Naming By**                                                  | How supplier records will be named (by *Supplier Name* or *Naming Series*).                                  |
+| **Default Supplier Group**                                              | Default group assigned when new supplier is created.                                                         |
+| **Default Buying Price List**                                           | Default price list for all purchase-related transactions.                                                    |
+| **Action If Same Rate Is Not Maintained**                               | What to do if rate differs between Purchase Order, Receipt, and Invoice — options: *Stop*, *Warn*, *Ignore*. |
+| **Role Allowed to Override Stop Action**                                | Role that can override the "Stop" action if rates differ.                                                    |
+| **Is Purchase Order Required for Purchase Invoice & Receipt Creation?** | Enforces linking Purchase Orders before Purchase Receipt/Invoice creation.                                   |
+| **Is Purchase Receipt Required for Purchase Invoice Creation?**         | Enforces linking Purchase Receipt before Purchase Invoice creation.                                          |
+| **Blanket Order Allowance (%)**                                         | How much quantity (%) can exceed from Blanket Order limit.                                                   |
+| **Update Frequency of Project**                                         | Defines how often total purchase cost should update in related Project — e.g., *Each Transaction*.           |
+
+
+
+📦 2. Transaction Settings
+
+| **Field**                                                  | **Meaning**                                                                    |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Allow Supplier Quotation with Zero Quantity**            | Allows submitting quotations without specifying quantity (for rate contracts). |
+| **Allow Request for Quotation with Zero Quantity**         | Allows creating RFQs without quantity.                                         |
+| **Use Transaction Date Exchange Rate**                     | Uses the exchange rate of the transaction date (not from Purchase Order).      |
+| **Maintain Same Rate Throughout the Purchase Cycle**       | Ensures same item rate is maintained across PO → PR → PI.                      |
+| **Allow Item to Be Added Multiple Times in a Transaction** | Enables adding same item multiple times in the same document.                  |
+| **Bill for Rejected Quantity in Purchase Invoice**         | Bills even for rejected quantities (if enabled).                               |
+| **Set Valuation Rate for Rejected Materials**              | Automatically create accounting entries for rejected materials.                |
+| **Disable Last Purchase Rate**                             | Hides the “Last Purchase Rate” suggestion in forms.                            |
+| **Allow Purchase Order with Zero Quantity**                | Allows PO creation without specific quantities — used for rate contracts.      |
+
+
+here,
+
+Use Transaction Date Exchange Rate:
+- While making Purchase Invoice from Purchase Order, use Exchange Rate on Invoice's transaction date rather than inheriting it from Purchase Order. Only applies for Purchase Invoice.
+
+Bill for Rejected Quantity in Purchase Invoice:
+- if checked, Rejected Quantity will be included while making Purchase Invoice from Purchase Receipt.
+
+
+🏗️ 3. Subcontracting Settings
+
+| **Field**                                           | **Meaning**                                                                     |
+| --------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Backflush Raw Materials of Subcontract Based On** | Defines how raw materials are consumed — usually *BOM (Bill of Materials)*.     |
+| **Over Transfer Allowance (%)**                     | % of extra raw materials allowed to send to subcontractor.                      |
+| **Auto Create Subcontracting Order**                | Automatically create Subcontracting Order when Purchase Order is submitted.     |
+| **Auto Create Purchase Receipt**                    | Automatically create Purchase Receipt when Subcontracting Receipt is submitted. |
+
+
+
+📧 4. Request for Quotation (RFQ)
+
+| **Field**                        | **Meaning**                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Fixed Outgoing Email Account** | Specify a fixed email account for sending RFQs — avoids using user’s personal email or global outgoing mail. |
+
+
+
+
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+REPORTS IN INSHORT
+
+🏆 Key Reports
+
+| **Report Name**                   | **Simple Meaning / Use**                                                                                        |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Purchase Analytics**            | Summary of all purchase transactions — analyze total spending by item, supplier, or date.                       |
+| **Purchase Order Analysis**       | Compare **Ordered vs Received vs Billed** quantities and values for every Purchase Order.                       |
+| **Supplier-Wise Sales Analytics** | Shows how much business (buying & selling) is done with each supplier — good for supplier performance tracking. |
+| **Items to Order and Receive**    | Lists all items that need to be **ordered or received**, based on stock levels and pending POs.                 |
+| **Purchase Order Trends**         | Visual report showing **monthly or yearly purchase patterns** — helps identify demand trends.                   |
+| **Procurement Tracker**           | Tracks full procurement flow from **Material Request → RFQ → Purchase Order → Receipt → Invoice**.              |
+
+
+📦 Other Reports
+
+| **Report Name**                                            | **Simple Meaning / Use**                                                                   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Items To Be Requested**                                  | Shows items that should be requested soon (usually below reorder level).                   |
+| **Item-wise Purchase History**                             | Displays purchase rate and quantity history per item — helps in pricing decisions.         |
+| **Purchase Receipt Trends**                                | Trend report showing how many items were received over time.                               |
+| **Purchase Invoice Trends**                                | Tracks number/value of invoices created — helps monitor billing trends.                    |
+| **Subcontracted Raw Materials To Be Transferred**          | Lists raw materials that must be sent to subcontractors for manufacturing.                 |
+| **Subcontracted Item To Be Received**                      | Shows subcontracted finished goods pending receipt from supplier.                          |
+| **Supplier Quotation Comparison**                          | Compare multiple supplier quotations side by side to choose the best offer.                |
+| **Material Requests for which Supplier Quotation Created** | Tracks which material requests already have quotations linked — avoids duplicate RFQs.     |
+| **Supplier Addresses And Contacts**                        | Combined list of all supplier addresses and contacts — for communication and verification. |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

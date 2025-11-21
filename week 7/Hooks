@@ -1,0 +1,3525 @@
+
+1. What is Hooks.
+-> 
+Hooks are connection points in the Frappe Framework that allow you to extend or override core features without touching the Frappe source code.
+
+Think of hooks as “customization entry points”.
+Whenever something happens inside Frappe (like saving a document, sending an email, loading a page, etc.), hooks give your app a way to run your own code during that process.
+
+📍In simple words:
+Hooks = “Tell Frappe to also run my code when this event happens.”
+
+################################################################################################################################################################################################
+
+
+2. how Hooks Work.
+Hooks are written inside your app’s hooks.py file:
+
+Inside this file, you define key-value pairs.
+Each key represents a specific “hook point” (like app_include_js, doc_events, etc.), and the value tells Frappe what to do.
+
+-----------------------------------------------------------------------------------------------------------------
+
+syntax : 
+
+in hooks.py , 
+
+test_string = "value"
+test_list = ["value"]
+test_dict = {
+    "key": "value"
+}
+
+Then you can access these hooks anywhere using get_hooks:
+frappe.get_hooks("test_string")     
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+so inshort : 
+1. Hooks.py = connection bridge between Frappe and your custom code
+2. frappe.get_hooks() → collects hooks from all installed apps
+3. Hooks allow extending / overriding core behavior
+
+Example: include JS, CSS, event triggers, permissions, etc.
+
+4. If multiple apps define same hook → Frappe merges them (list behavior)
+
+
+################################################################################################################################################################################################
+
+3. How are conflicting hooks resolved?
+
+🤔️ What are Conflicting Hooks?
+Sometimes multiple apps define the same hook — for example, two apps both try to override the same class or event.
+That’s called a conflict because Frappe needs to decide which one to use.
+
+-----------------------------------------------------------------------------------------------------------------
+
+🤔️ How Frappe Resolves Conflicts
+Frappe follows a rule called “last writer wins.”
+👉 The last installed app (as per site order) has the highest priority.
+
+
+
+-In app1/hooks.py
+override_doctype_class = {
+    "Customer": "app1.customer.CustomCustomer"
+}
+
+-In app2/hooks.py
+override_doctype_class = {
+    "Customer": "app2.customer.NewCustomer"
+}
+
+✅ Frappe will use the Customer class from app2,
+because app2 was installed after app1.
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔹 When Hook Type Matters
+
+Override hooks → Only the last one works.
+e.g. override_doctype_class, override_whitelisted_methods
+
+Extend hooks → All are applied in order of installation.
+e.g. doc_events, scheduler_events, app_include_js
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔹 Change Hook Priority (s)
+
+You can manually control which app runs first or last.
+
+Steps:
+Go to “Installed Applications” in your site (Desk → Search bar → type Installed Applications)
+Click “Update Hooks Resolution Order”
+
+Drag apps to reorder them
+   Top = lowest priority
+   Bottom = highest priority
+         so if your app is first/top, it’s low priority → other apps installed below it can override its hooks.
+
+Then save — Frappe will now apply hooks in that order.
+
+-----------------------------------------------------------------------------------------------------------------
+
+💡 Summary:
+
+Override Hook → only the last one (last installed app) works
+👉 Example: override_doctype_class, override_whitelisted_methods
+→ “Last writer wins”
+
+Extend Hook → all of them work, but in order of app installation
+👉 Example: doc_events, scheduler_events, app_include_js
+→ “Executed in sequence”
+
+So yes —
+✅ Override = only last one
+✅ Extend = all, in sequence
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔹 Real World Example
+
+Let’s say you have:
+  school_app (adds JS)
+  theme_app (adds custom JS too)
+
+Both use this hook:   
+    app_include_js = "/assets/js/custom.js"
+
+
+If theme_app was installed last → its JS will be loaded after school_app, meaning it can override earlier scripts.
+
+
+################################################################################################################################################################################################
+
+4. App Meta Data ( add_to_apps_screen )
+
+These are automatically generated when you create a new app. Most of the time you don't need to change anything here.
+
+add_to_apps_screen = [
+    {
+        "name": "demoapp1",
+        "logo": "/assets/demoapp1/logo.png",
+        "title": "Demo App",
+        "route": "/demoapp1",
+        "has_permission": "demoapp1.api.permission.has_app_permission"
+    }
+]
+
+so 
+name → App’s internal name
+logo → Path to app logo
+title → App display name
+route → Path used in URL
+has_permission → Optional function to control visibility
+
+
+so - The “Apps” page in Frappe Desk is the page you see when you click to open Desk → Apps.
+
+
+################################################################################################################################################################################################
+
+
+5. Javascript / CSS Assets 
+These hooks allow you to inject static JS and CSS files into different parts of your Frappe site.
+
+run command after apllying all this:
+
+bench --site demosite1.com clear-cache
+bench --site demosite1.com clear-assets
+
+-----------------------------------------------------------------------------------------------------------------
+
+1️⃣ Desk Hooks - extend hooks ( app_include_js/css )
+
+Inject JS/CSS into the Desk (the Frappe admin interface).
+Files injected: desk.html automatically includes these assets.
+
+syntax : 
+# Single file
+app_include_js = "assets/js/app.min.js"
+app_include_css = "assets/css/app.min.css"
+
+# Multiple files
+app_include_js = ["assets/js/app1.min.js", "assets/js/app2.min.js"]
+app_include_css = ["assets/css/app1.css", "assets/css/app2.css"]
+
+
+
+Use these for Desk-wide customizations
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+2️⃣ Portal Hooks - Extend hook ( web_include_js/css )
+
+Inject JS/CSS into web.html, which is used for Portal pages.
+
+syntax : 
+web_include_js = "assets/js/app-web.min.js"
+web_include_css = "assets/js/app-web.min.css"
+
+# All of the above support a list of paths too
+web_include_js = ["assets/js/web1.min.js", "assets/js/web2.min.js"]
+
+
+
+Use this for Portal customization
+
+-----------------------------------------------------------------------------------------------------------------
+
+3️⃣ Web Form Hooks ( webform_include_js/css )
+
+Inject JS/CSS into standard Web Forms (like ToDo, Customer, etc.) or in web_form.html
+
+
+For user-created Web Forms, you write JS directly in the form itself. means in User-Created Web Form → hooks do NOT work, you must add JS inside the Web Form itself
+
+syntax : 
+webform_include_js = {"ToDo": "public/js/custom_todo.js"}
+webform_include_css = {"ToDo": "public/css/custom_todo.css"}
+
+-----------------------------------------------------------------------------------------------------------------
+
+4️⃣ Page Hooks ( page_js )
+
+Inject JS assets into standard Desk pages
+
+syntax:
+page_js = {"page_name": "public/js/file.js"}
+
+ex:
+page_js = {"background_jobs": "public/js/custom_background_jobs.js"}
+
+-----------------------------------------------------------------------------------------------------------------
+
+note : if you write your files in Public folder then in some case you dont need to put Public in path 
+      like in web form & pages we dont need to write assests but we need to mention public , you can read syntax of all
+
+
+################################################################################################################################################################################################
+
+6. Sounds - Extend ( sounds )
+
+Frappe provides a hook to add custom audio notifications.
+These sounds can be triggered for events like success, error, submission, or any custom action in Desk or Portal.
+
+hey can be played via frappe.utils.play_sound("sound_name")
+
+-----------------------------------------------------------------------------------------------------------------
+
+syntax : 
+sounds = [
+    {"name": "ping", "src": "/assets/demoapp1/sounds/ping.mp3", "volume": 0.2}
+]
+
+name → Unique identifier to play the sound
+src → Path to your sound file
+volume → 0.0 to 1.0
+
+-----------------------------------------------------------------------------------------------------------------
+
+Play the sound in JS or Python :
+in JS :frappe.utils.play_sound("ping");   //here parameter is sound="namne_of_sound"
+
+in Py : 
+
+import frappe
+from frappe.utils import play_sound
+
+# Play sound server-side (triggered via client call)
+frappe.enqueue('frappe.utils.play_sound', sound='ping')
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+after setting sounds we can trigger in different ways like : 
+
+1. Client-Side (JS) Trigger ->  frappe.utils.play_sound("ping");
+2. Server-Side (Python) Trigger   -> 
+
+ex:
+import frappe
+from frappe.utils import play_sound
+
+def after_submit_todo(doc, method):
+    frappe.enqueue('frappe.utils.play_sound', sound='ping')
+
+so frappe.enqueue('frappe.utils.play_sound', sound='ping')  , we cant directly use frappe.utils.play_sound() , here we use dec_evnets .... 
+
+
+3. Buttons in Desk Page / Web Form: Play a sound on click.
+
+
+################################################################################################################################################################################################
+
+7. Install Hooks ( before_install/after/after_sync )
+
+ allow you to run code automatically during your app installation process.
+
+sy : 
+before_install = "demoapp1.demo_module.install.before_install"
+after_install = "demoapp1.demo_module.install.after_install"
+after_sync = "demoapp1.demo_module.install.after_sync"
+
+-----------------------------------------------------------------------------------------------------------------
+
+ex: 
+
+import frappe
+
+def before_install():
+    print("🚀 demoapp1 is about to be installed!")
+
+def after_install():
+    # Create a default customer automatically
+    if not frappe.db.exists("Customer", "Default Customer"):
+        frappe.get_doc({
+            "doctype": "Customer",
+            "customer_name": "Default Customer",
+            "customer_group": "Commercial",
+            "territory": "Default Territory"
+        }).insert(ignore_permissions=True)
+        print("✅ Default Customer created after installation.")
+
+def after_sync():
+    print("⚡ Fixtures synced successfully!")
+
+-----------------------------------------------------------------------------------------------------------------
+
+When These Run
+
+before_install	- Just before the app is installed on the site
+after_install	- Immediately after the app is installed
+after_sync  -	After any fixtures (custom fields, settings) are synced
+
+
+note : Cannot point to a JS file or asset , Only Python functions are allowed for install hooks
+
+so Path = <app>.<module>.<file_without_py>.<function without ()> ex. demoapp1.demo_module.install.before_install
+
+
+################################################################################################################################################################################################
+
+8.  Uninstall Hooks ( before_uninstall/after )
+
+allow you to execute custom code automatically when your app is removed from a site.
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy : 
+before_uninstall = "demoapp1.demo_module.uninstall.before_uninstall"
+after_uninstall = "demoapp1.demo_module.uninstall.after_uninstall"
+
+-----------------------------------------------------------------------------------------------------------------
+
+use case :
+Clean up or backup data before the app is removed → before_uninstall
+Perform final tasks after the app is uninstalled → after_uninstall
+
+-----------------------------------------------------------------------------------------------------------------
+
+Frappe automatically calls these hooks when you run:   bench --site yoursite uninstall-app demoapp1
+
+-----------------------------------------------------------------------------------------------------------------
+
+ex: same as above as user requirement
+
+################################################################################################################################################################################################
+
+9. Migrate Hooks ( before_migrate/after )
+
+allow you to execute custom code automatically before or after a site migration.
+
+triggered when you run: bench --site sitename migrate
+
+
+sy : 
+
+before_migrate = "demoapp1.migrate.before_migrate"
+after_migrate = "demoapp1.migrate.after_migrate"
+
+
+
+################################################################################################################################################################################################
+
+Note for install , uninstall , Migrate hooks : All these hooks (install, uninstall, migrate) must be defined in the hooks.py of the app you want them to run for.
+
+################################################################################################################################################################################################
+
+
+10. Test Hooks  ( before_tests )
+
+allow you to run code automatically before running tests on your site.
+
+Triggered when you run : bench --site sitename run-tests
+
+sy :
+before_tests = "demoapp1.migrate.before_tests"
+
+
+When This Runs:
+Immediately before running any test cases
+
+Ensures all your tests have required data
+Runs once per test session
+
+
+################################################################################################################################################################################################
+
+11. File Hooks ( before_write_file , write_file , delete_file_data_content ) 
+
+🧠 Concept Summary
+
+In Frappe, when users upload or delete files, by default Frappe:
+Saves files in /sites/[sitename]/public/files
+Deletes them from the same location when removed
+
+
+But — sometimes you want to change that behavior, for example:
+Upload files to AWS S3, Google Drive, or a CDN instead of your server.
+Run some logic before writing/deleting files (like logging or virus scanning).
+So Frappe gives special File Hooks for this purpose.
+
+
+sy: 
+
+before_write_file = "demoapp1.overrides.file.before_write_file"
+write_file = "demoapp1.overrides.file.write_file"
+delete_file_data_content = "demoapp1.overrides.file.delete_file"
+
+
+Example entry in DB:
+file_name	file_url	   attached_to_doctype	  attached_to_name
+test.png	/files/test.png	     Customer	            CUST-0001
+
+
+for example , now i want to store files into -> /home/FILE HOOK/my_drive
+
+################################################################################################################################################################################################
+
+12. Email Hooks  ( get_sender_details , override_email_send  )
+
+Frappe has a default email sending module. By default:
+Emails are sent via SMTP defined in Email Account doctype.
+The sender is the currently logged-in user.
+
+But sometimes, you want to change the sender (e.g., "support@example.com
+") or use a third-party service (like SendGrid, Mailgun, or an internal API).
+
+so, Email hooks let you intercept or override Frappe’s email sending logic.
+
+
+sy : 
+
+# hooks.py
+override_email_send = "app.overrides.email.send"
+get_sender_details = "app.overrides.email.get_sender_details"
+
+-----------------------------------------------------------------------------------------------------------------
+
+a) get_sender_details :
+Purpose: Control who appears as the sender.
+Frappe default: logged_in_user.name <logged_in_user.email>.
+
+Custom: Return your own name & email.
+def get_sender_details():
+    return "John Doe", "johndoe@example.com"
+
+-----------------------------------------------------------------------------------------------------------------
+
+b) override_email_send
+Purpose: Replace the actual email sending function.
+
+Useful when using external services or custom logic.
+
+1️⃣ What override_email_send Actually Does
+
+Normally, Frappe uses its built-in SMTP logic to send emails.
+override_email_send allows you to replace that sending logic entirely.
+It doesn’t just change the sender; it handles the full process of sending the email.
+
+self → the EmailQueue document (record of the email in Frappe).
+sender → who the email is from.
+recipient → who the email is going to.
+msg → the full MIME message, including attachments, subject, and body.
+
+so, You control how the email is sent and when its status is updated(like self.update_status("Sending")).
+
+2️⃣ When You Would Use It
+- Using a third-party email service
+- Sending emails through a custom internal server : If your company has an internal mail service or webhook system, you can push emails there.
+- Adding custom processing logic( Logging email content somewhere , Transforming attachments before sending , Encrypting email body or attachments , Adding custom headers.)
+
+
+
+################################################################################################################################################################################################
+
+13. Extend Bootinfo ( extend_bootinfo )
+
+1️⃣ What is bootinfo?
+After a user logs in, Frappe prepares a dictionary of values called bootinfo.
+
+  -This dictionary is sent from the server to the client (browser) during Desk loading.
+  -On the client side, it is accessible as frappe.boot
+  
+  
+Example of some built-in values in frappe.boot
+{
+  "user": "Administrator",
+  "user_roles": ["System Manager"],
+  "defaults": { "language": "en", "time_zone": "Asia/Kolkata" },
+  "notifications": { "count": 5 },
+  "permissions": {...},
+  "user_settings": {...},
+  "lang": "en",
+  "time_zone": "Asia/Kolkata"
+}
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+This is why you often see frappe.boot used in client-side JS for things like:
+  Showing current user’s name or role.
+  Checking notification counts.
+  Applying user defaults.
+  
+  
+2️⃣ Why use extend_bootinfo?
+your app needs global values available everywhere in client code without making additional API calls.
+
+Without extend_bootinfo, you'd have to call a server method each time you want this data.
+
+so, extend_bootinfo allows you to inject values into frappe.boot at login, so your client code can use them immediately.
+
+sy:
+extend_bootinfo = "myapp.boot.boot_session"
+
+ex:
+
+1. Create the function in your Python module
+
+# myapp/boot.py
+
+def boot_session(bootinfo):
+    # Add a simple value
+    bootinfo.my_global_key = "my_global_value"
+
+    # You can also add dicts or lists
+    bootinfo.app_settings = {
+        "theme": "dark",
+        "enable_feature_x": True
+    }
+
+
+2. Access it in client-side JS
+
+console.log(frappe.boot.my_global_key); 
+// Output: "my_global_value"
+
+console.log(frappe.boot.app_settings.enable_feature_x); 
+// Output: true
+
+
+
+Important Notes:
+
+Only use extend_bootinfo for non-sensitive data because frappe.boot is visible in browser JS.
+Avoid adding large datasets—this can slow down Desk loading. For big data, use API calls.
+Changes in extend_bootinfo take effect after login or refresh of Desk
+
+so, inshort
+
+| Concept                | Purpose                                                          |
+| ---------------------- | ---------------------------------------------------------------- |
+| `bootinfo`             | Dictionary of global values sent from server to Desk client.     |
+| `frappe.boot`          | JS object accessible in browser after login.                     |
+| `extend_bootinfo` hook | Allows adding custom global values to `bootinfo` at login.       |
+| Use cases              | App settings, feature flags, defaults, preloaded reference data. |
+
+
+
+################################################################################################################################################################################################
+
+14 .Website Context  ( website_context , update_website_context )
+
+1️⃣ What is the context?
+When Frappe renders a Portal Page (or any website page), it creates a dictionary of variables that the template might need. This dictionary is called context.
+
+Example of some built-in context values:
+{
+    "title": "Home",
+    "base_template": "templates/web.html",
+    "path": "/",
+    "page_name": "home",
+    "lang": "en",
+    "theme": "light",
+}
+
+In Jinja templates, you can access context values directly:
+<title>{{ title }}</title>
+<link rel="icon" href="{{ favicon }}">
+<p>Language: {{ lang }}</p>
+
+-----------------------------------------------------------------------------------------------------------------
+sy:
+website_context = {
+    "favicon": "/assets/app/image/favicon.png",
+    "my_custom_key": "hello_world"
+}
+
+update_website_context = "app.overrides.website_context"
+
+-----------------------------------------------------------------------------------------------------------------
+
+2️⃣ website_context
+This is the simplest way to add or override context values.
+
+ex.
+
+website_context = {
+    "favicon": "/assets/app/image/favicon.png",
+    "my_custom_key": "hello_world"
+}
+
+Static key-value pairs only.
+Applied globally, across all website pages.
+No Python function needed; just define the dict.
+
+Usage in template:   <p>{{ my_custom_key }}</p>  <!-- Output: hello_world -->
+
+-----------------------------------------------------------------------------------------------------------------
+
+3️⃣ update_website_context
+This hook is more dynamic. It lets you manipulate the context using Python code.
+
+ex. 
+
+update_website_context = "app.overrides.website_context"
+
+
+# app/overrides.py
+def website_context(context):
+    # Add a new key
+    context.my_key = "my_value"
+
+    # You can also conditionally change values
+    if frappe.session.user == "Guest":
+        context.show_login_banner = True
+
+    # OR return a dict that will be merged
+    return {
+        "extra_info": "Some info"
+    }
+
+The context argument is the existing context dictionary.
+You can mutate it directly (e.g., context.new_key = value) or return a new dict that Frappe will merge into the context.
+This is useful when values depend on runtime conditions (like logged-in user, database queries, or site settings).
+
+-----------------------------------------------------------------------------------------------------------------
+
+4️⃣ When to use each
+
+| Hook                     | Use Case                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| `website_context`        | Simple, static values like favicon, site title, colors.                        |
+| `update_website_context` | Dynamic or conditional values that depend on user, database, or runtime logic. |
+
+he website_context and update_website_context hooks are primarily used for passing variables to Jinja templates when rendering website or portal pages in Frappe.
+
+
+################################################################################################################################################################################################
+
+15. Website Controller Context ( extend_website_page_controller_context )
+
+When Frappe renders a web page, it creates a context dictionary with all the variables the page might need.
+
+This is similar to website_context, but controller context is specific to individual pages, especially standard or custom pages that already have their own controller logic.
+
+Example of standard pages: /404, /about, /login.
+These pages have default controllers in Frappe (like frappe.www.404).
+
+By default, they have some context variables set by Frappe, but you can extend or override these variables using this hook.
+
+
+sy:
+extend_website_page_controller_context = {
+    "frappe.www.404": "app.pages.context_404"
+}
+
+
+Key: the full Python path to the page controller (frappe.www.404).
+Value: the Python function that will modify the context (app.pages.context_404).
+
+This function will be called with the page’s context dictionary, so you can add, remove, or modify keys.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Key points -
+
+website_context → global variables for all pages.
+update_website_context → dynamic global variables.
+extend_website_page_controller_context → per-page context, allowing you to customize variables only for specific pages.
+
+
+so, this one is Ideal for pages like /404 where you don’t want to touch the global website context.
+-----------------------------------------------------------------------------------------------------------------
+ex.
+1. # app/pages.py
+def context_404(context):
+    # add a custom key
+    context.my_key = "my_value"
+    
+    # override existing values
+    context.page_title = "Oops! Page Not Found"
+
+2. # app/hooks.py
+extend_website_page_controller_context = {
+    "frappe.www.404": "app.pages.context_404"
+}
+
+
+3. 
+<h1>{{ page_title }}</h1>
+<p>{{ my_key }}</p>
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+Standard Pages
+
+| Page Route        | Controller Path             | Description                                      |
+| ----------------- | --------------------------- | ------------------------------------------------ |
+| `/404`            | `frappe.www.404`            | Page not found                                   |
+| `/about`          | `frappe.www.about`          | About page of the site                           |
+| `/login`          | `frappe.www.login`          | Login page                                       |
+| `/signup`         | `frappe.www.signup`         | Signup page                                      |
+| `/reset-password` | `frappe.www.reset_password` | Password reset page                              |
+| `/contact`        | `frappe.www.contact`        | Contact page (if using standard Frappe template) |
+| `/search`         | `frappe.www.search`         | Search page                                      |
+
+
+Custom Pages
+
+Any custom page you create with frappe.get_doc("Page", "my-page") can also have a controller context.
+You would use the full Python path to your page controller in the hook. like
+
+extend_website_page_controller_context = {
+    "my_app.www.my-custom-page": "my_app.pages.context_my_custom_page"
+}
+
+so,
+Left side: Full path to your Page Python controller
+
+   Format: "module_name.www.page_name"
+   
+   Example: "my_app.www.my-custom-page"
+   
+Right side: Path to the Python function that modifies the context
+
+                                                                                                              
+################################################################################################################################################################################################
+
+16. Web pages with dynamic routes ( get_web_pages_with_dynamic_routes )
+
+
+A dynamic route is a URL path that has a variable part — for example:
+
+/profile/<name>
+
+<name> is the dynamic part (can change depending on user or data).
+
+Frappe uses a single page template to render all variations of this route.
+
+Dynamic routes are useful when you want one page to display different content based on URL parameters, like user profiles, product pages, etc.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Default behavior
+
+By default, dynamic routes are supported for documents created via the Web Page doctype (or doctypes extended from WebsiteGenerator).
+Example: if you have a Web Page called profile-page, you can set it to a route like /profile/<name> in your generator.
+
+Frappe automatically renders the same template but fills in values from the URL.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Custom dynamic routes using hooks:
+If you want other dynamic routes not tied directly to a Web Page doctype, you use the hook
+
+sy :
+get_web_pages_with_dynamic_routes = "script.get_web_pages_with_dynamic_routes"
+
+Here, script.get_web_pages_with_dynamic_routes is a Python function you write that returns a list of dynamic route definitions.
+
+ex: 
+
+# app/script.py
+
+1. get_web_pages_with_dynamic_routes = "script.get_web_pages_with_dynamic_routes"
+
+2. def get_web_pages_with_dynamic_routes():
+    return [
+        {
+            "doctype": "Custom Web Page",   # The doctype to render the page (must be WebsiteGenerator)
+            "route": "/profile/<name>",     # The dynamic route
+            "name": "profile-page"          # Name of the web page document to render
+        },
+        {
+            "doctype": "Product",
+            "route": "/product/<product_id>",
+            "name": "product-page"
+        }
+    ]
+    
+
+doctype → Which set of data/documents should I use (must inherit WebsiteGenerator if you want automatic website rendering).  
+        - for dynamic routes, Frappe needs a Doctype that provides actual data for each page. That’s why WebsiteGenerator is usually required
+        
+route → the URL with dynamic part <...>
+name → the name of the Web Page or document used to render the template.
+-----------------------------------------------------------------------------------------------------------------
+
+ How it works in rendering
+
+1. User visits /profile/john-doe.
+2. Frappe sees /profile/<name> is a dynamic route.
+3. It calls the get_web_pages_with_dynamic_routes function to match the route.
+4. It fetches the profile-page document.
+5. Your Jinja template in profile-page uses the dynamic value:
+      <h1>Profile: {{ name }}</h1>
+6. name will automatically be john-doe (from URL).    
+
+-----------------------------------------------------------------------------------------------------------------
+
+Notes / Tips
+
+The dynamic key <name> becomes available in your template context automatically.
+You can add multiple dynamic routes in the returned list.
+The document rendered (name) must have a template (.html) associated with it.
+This works well for portals, product pages, blogs, or any page where URL parameters determine the content.  
+
+
+################################################################################################################################################################################################
+
+17. Website Clear Cache ( website_clear_cache )
+
+This hook lets you run custom logic when website cache is cleared —
+      either for a specific page or for all pages.
+
+-Frappe caches your website pages for faster loading.
+-But if your pages show dynamic data (like prices, blog counts, etc.), you may need to manually clear or refresh that cache when data changes.
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy : website_clear_cache = "myapp.overrides.clear_website_cache"
+
+This tells Frappe: “Whenever website cache is being cleared, run my custom function.”
+
+-----------------------------------------------------------------------------------------------------------------
+
+ex:
+
+import frappe
+
+def clear_website_cache(path=None):
+    if path:
+        # ✅ Case 1: Cache cleared for one route only
+        frappe.logger().info(f"Clearing cache for route: {path}")
+        # Example: remove custom cached data related to that route
+        frappe.cache().delete_value(f"custom_cache_{path}")
+
+    else:
+        # ✅ Case 2: Cache cleared for all routes
+        frappe.logger().info("Clearing cache for all website pages")
+        # Example: clear all custom web-related cache
+        frappe.cache().delete_value("custom_recent_posts")
+        frappe.cache().delete_value("custom_featured_products")
+
+
+
+🧩 How it’s triggered
+
+When you run : bench clear-cache   or
+             : bench --site mysite.com clear-website-cache
+
+-----------------------------------------------------------------------------------------------------------------
+
+🧱 Real-world example
+
+Suppose your website homepage (/) displays “Featured Products” stored in Redis cache.
+When a new product is marked as “featured”, you want that homepage cache to refresh.
+
+So:
+
+You store featured_products in cache.
+
+And in your hook:
+
+def clear_website_cache(path=None):
+    if not path or path == '/':
+        frappe.cache().delete_value("featured_products")
+        
+Now, the next time the cache clears — homepage data will refresh automatically 🚀.
+
+
+
+################################################################################################################################################################################################
+
+
+18. Website Redirects ( website_redirects )
+
+Frappe’s website_redirects hook lets you define automatic redirections for your website URLs.
+
+Whenever a user visits one route (like /compare), Frappe can automatically redirect them to another route (like /comparison).
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy:
+website_redirects = [
+    {"source": "/compare", "target": "/comparison"},
+    {"source": "/docs(/.*)?", "target": "https://docs.tennismart.com/\1"},
+    {"source": r'/items/item\?item_name=(.*)', "target": '/items/\1', match_with_query_string=True},
+]
+
+🧠 Explanation of Each Field
+
+| Key                       | Description                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `source`                  | The **original route** (the one user visits). Can be a normal path or a regex.                         |
+| `target`                  | The **destination route** — where Frappe should redirect the user.                                     |
+| `match_with_query_string` | If `True`, Frappe will include the query string (e.g., `?id=5`) in the match. Useful for dynamic URLs. |
+
+-----------------------------------------------------------------------------------------------------------------
+
+note : you can learn more about Path Redirect with regex (wildcard) or Redirect with query string in future when need to implement.
+
+-----------------------------------------------------------------------------------------------------------------
+
+🌍 Real-World Use Cases:
+
+| Use Case                               | Example                                               |
+| -------------------------------------- | ----------------------------------------------------- |
+| You renamed a web page                 | `/aboutus` → `/about`                                 |
+| You moved docs to another site         | `/docs/...` → `https://docs.yoursite.com/...`         |
+| You changed your product URL structure | `/item?product=chair` → `/products/chair`             |
+| SEO / Backward compatibility           | Old links from Google or social media will still work |
+
+-----------------------------------------------------------------------------------------------------------------
+
+🚀 Bonus — Dynamic redirects
+
+You can even generate redirects dynamically from a function:
+
+website_redirects = "myapp.overrides.get_redirects"
+        
+myapp/overrides.py
+
+   def get_redirects():
+       return [
+           {"source": "/old-page", "target": "/new-page"},
+           {"source": "/legacy/(.*)", "target": "/new/\1"},
+       ]
+
+
+################################################################################################################################################################################################
+
+
+19. Website Route Rules ( website_route_rules )
+
+website_route_rules lets you map clean, custom URLs (routes) to your Python + HTML controller pair.
+This means you can define your own URL structure for your website — even with dynamic parts — without creating Web Page doctypes.
+
+-----------------------------------------------------------------------------------------------------------------
+
+what is meaning of this - without creating Web Page doctypes.
+
+🧩 1️⃣ Normally (Without This Hook)
+
+If you want to make a page appear on your Frappe website,
+you usually create a Web Page document in the UI (Doctype = Web Page).
+
+| Field   | Value                                   |
+| ------- | --------------------------------------- |
+| Route   | `/about-us`                             |
+| Title   | “About Us”                              |
+| Content | “We are a college management platform…” |
+
+Then Frappe automatically shows that page at /about-us.
+✅ This is the normal way using the Web Page doctype.
+
+
+🧠 2️⃣ But there’s a limitation
+
+If you want a dynamic route like /student/<id> —
+the “Web Page” doctype doesn’t support that easily.
+It’s for static pages (about, contact, faq, etc.).
+
+Also, you might not want to create 10,000 “Web Page” records
+for each student or article or product 😅
+
+🚀 3️⃣ What website_route_rules does
+
+It gives you the power to generate pages dynamically,
+without using the “Web Page” doctype at all.
+
+That means:
+   No need to go to the Desk → Website → Web Page → New
+   No need to fill route, title, HTML etc.
+   You handle it entirely with code (Python + HTML in your app).
+
+So your app directly controls:
+   What data to fetch (via get_context)
+   What template to render
+   What URL pattern to match (/student/<id>, /project/<name>, etc.)
+   
+
+📘 4️⃣ Real comparison
+
+| Feature      | Using Web Page Doctype      | Using `website_route_rules`                  |
+| ------------ | --------------------------- | -------------------------------------------- |
+| Stored in DB | Yes (each page is a record) | No (fully code-based)                        |
+| Route type   | Static (e.g., `/about`)     | Dynamic (e.g., `/student/<id>`)              |
+| Control      | Through UI                  | Through Python code                          |
+| Performance  | Slightly slower (DB lookup) | Faster (direct controller render)            |
+| Flexibility  | Limited fields              | Full control over logic, data, and rendering |
+
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy : 
+website_route_rules = [
+    {"from_route": "/projects/<name>", "to_route": "app/projects/project"},
+]
+
+| Key          | Meaning                                                                              |
+| ------------ | ------------------------------------------------------------------------------------ |
+| `from_route` | The **public URL** you want users to access (can include dynamic part `<name>`)      |
+| `to_route`   | The **internal controller path** inside your app (folder path **without extension**) |
+
+
+So:
+👉 /projects/<name> → handled by app/projects/project.py and app/projects/project.html
+
+
+
+📁 Folder & File Structure
+
+app/
+ ├── www/
+ │   └── projects.html            ← Optional: /projects (list page)
+ ├── app/
+ │   └── projects/
+ │       ├── project.py           ← Controller for single project
+ │       └── project.html         ← Template for single project
+
+
+
+🧠 How Frappe Uses It
+
+When a user visits /projects/project-alpha:
+
+1️⃣ Frappe matches it with, from_route: /projects/<name>
+2️⃣ It extracts the dynamic value → <name> = "project-alpha"
+3️⃣ It loads your controller file → app/projects/project.py
+4️⃣ It runs the get_context(context) function inside that file
+5️⃣ It passes the returned data to → app/projects/project.html
+
+
+so, here we need to put our Files path in to_route whihc handle dynamic URL. (to_route It’s not a URL — it’s a Python import path (like how you’d import a module).)
+
+| Key                | Meaning                                                  |
+| ------------------ | -------------------------------------------------------- |
+| `from_route`       | Public URL (user-facing)                                 |
+| `to_route`         | Internal Python path (controller that handles rendering) |
+| Example URL        | `/student/STU-0001`                                      |
+| Example Controller | `demoapp1/www/student_profile/student_profile.py`        |
+
+
+we can access URL dynamic part using -> frappe.form_dict.name_of_Dynamic_variable_ofthe_url
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+⚠️ Important Notes
+
+The folder app/projects/ must be inside your app directory /app/your_module/... , not inside /www/. It’s a controller folder, not a static page.
+
+| Folder            | Auto Route | Dynamic Variables (`<name>`) | Needs Hook                    |
+| ----------------- | ---------- | ---------------------------- | ----------------------------- |
+| `/www/`           | ✅ Yes      | ❌ No                         | ❌ No                          |
+| `/app/module/...` | ❌ No       | ✅ Yes                        | ✅ Yes (`website_route_rules`) |
+
+/app/your_module/... → need website_route_rules	
+
+The .py file must define a function get_context(context) — Frappe will call it automatically.
+The .html file must have the same name as the .py file (for rendering).
+Dynamic variable names like <name> in your from_route become available via frappe.form_dict.
+
+-----------------------------------------------------------------------------------------------------------------
+
+🧩 Bonus — Multiple Dynamic Parts
+
+You can also use multiple placeholders:
+website_route_rules = [
+    {"from_route": "/project/<project_name>/task/<task_id>", "to_route": "app/projects/task"},
+
+
+Then inside your controller:
+def get_context(context):
+    project_name = frappe.form_dict.project_name
+    task_id = frappe.form_dict.task_id
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+Real World Example:
+
+🎯 Goal
+
+We’ll make a public student profile page:
+
+  Route → /student/<student_id>
+  Shows → Name, Email, and Program
+  Data comes from Student Doctype
+  
+  
+1. hooks.py
+
+website_route_rules = [
+    {"from_route": "/student/<student_id>", "to_route": "demoapp1/student_profile/student_profile"},
+]
+
+Explanation:
+/student/<student_id> → user visits this URL (dynamic part)
+
+demoapp1/student_profile/student_profile → Frappe looks for
+student_profile.py + student_profile.html inside the folder demoapp1/student_profile/
+
+2. Folder Structure
+
+demoapp1/
+ ├── student_profile/
+ │   ├── student_profile.py
+ │   └── student_profile.html
+  
+  
+3. controller file
+demoapp1/student_profile/student_profile.py
+
+import frappe
+
+def get_context(context):
+    # Get dynamic part from URL
+    student_id = frappe.form_dict.student_id
+
+    # Fetch student record (assuming 'name' = student_id)
+    student = frappe.get_doc("Student", student_id)
+
+    # Add data to context (accessible in HTML)
+    context.student = student
+    context.title = f"Profile of {student.first_name}"  # Optional page title
+
+
+frappe.form_dict.student_id → comes from the <student_id> in the route
+frappe.get_doc("Student", student_id) → fetches the record
+Whatever you put in context → becomes available in the HTML file  
+  
+
+4. Template File
+demoapp1/student_profile/student_profile.html
+
+<div class="student-profile">
+  <h1>🎓 {{ student.first_name }} {{ student.last_name }}</h1>
+  <p><strong>Email:</strong> {{ student.email }}</p>
+  <p><strong>Program:</strong> {{ student.program }}</p>
+  <p><strong>Student ID:</strong> {{ student.name }}</p>
+</div>
+
+
+
+
+################################################################################################################################################################################################
+
+20. Website Path Resolver ( website_path_resolver )
+
+1️⃣ What normally happens (Default Resolver)
+
+Whenever you open a page in Frappe, like: /profile
+
+Frappe doesn’t just look for a file called profile.html.
+It first runs its internal path resolver, which does things like:
+
+| Example    | What Frappe actually resolves to | Why                              |
+| ---------- | -------------------------------- | -------------------------------- |
+| `/profile` | `/me`                            | System shortcut for user profile |
+| `/app`     | `/desk`                          | Redirects to the Desk app        |
+| `/login`   | `/login.html`                    | Standard login page              |
+
+
+✅ This built-in system is called the default route resolver — it automatically translates user-friendly URLs to internal ones.
+
+
+2️⃣ What website_path_resolver lets you do
+
+Now, suppose you want to control that behavior —
+like adding your own rule to modify the route before Frappe renders it.
+
+You can override Frappe’s logic by writing your own custom resolver function and setting it in hooks.py.
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy:
+website_path_resolver = "demoapp1.custom_resolver.resolve_path"
+
+-----------------------------------------------------------------------------------------------------------------
+
+Ex:
+
+1. app/hooks.py
+website_path_resolver = "demoapp1.custom_resolver.resolve_path"
+
+
+2. demoapp1/custom_resolver.py
+
+def resolve_path(route):
+    # Example 1: redirect old URLs
+    if route == "old-projects":
+        return "projects"  # internally use /projects
+
+    # Example 2: handle dynamic alias
+    if route.startswith("blog-"):
+        return "blogs/" + route.replace("blog-", "")
+
+    # Example 3: add custom logic
+    if route == "profile":
+        return "me"  # same as Frappe’s default
+
+    # Default: return same route
+    return route
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔄 What happens now
+
+If a user visits: /old-projects
+
+👉 Frappe will call your resolver: resolve_path("old-projects")
+
+Your resolver returns "projects", so Frappe internally serves /projects page instead. ✅
+
+-----------------------------------------------------------------------------------------------------------------
+
+in Short,
+
+| Concept                 | Meaning                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------- |
+| `website_path_resolver` | Hook that lets you intercept and modify the requested route before Frappe renders the page. |
+| Input                   | The route user requested (e.g. `"old-projects"`)                                            |
+| Output                  | The route Frappe should actually load (e.g. `"projects"`)                                   |
+
+-----------------------------------------------------------------------------------------------------------------
+
+Real-world example use cases,
+
+| Use Case                                  | Example                                     |
+| ----------------------------------------- | ------------------------------------------- |
+| 🔁 Redirect old URLs after renaming pages | `/old-blog-title` → `/new-blog-title`       |
+| 🧩 Add dynamic route aliases              | `/blog-123` → `/blogs/123`                  |
+| 🚪 Handle custom user shortcuts           | `/my-profile` → `/me`                       |
+| 🌐 SEO-friendly URL mapping               | `/p/some-product` → `/product/some-product` |
+
+
+################################################################################################################################################################################################
+
+
+21. Website 404 ( website_catch_all )
+
+🚫 1️⃣ Default behavior
+When you visit a page in Frappe that doesn’t exist, like:  /abcxyz
+
+
+Frappe shows its default 404 page — a plain “Not Found” message.
+But sometimes, you want to show your own custom 404 page, like a styled one or with a message such as “Oops! Page not found 😢”.
+
+That’s where this hook helps.
+
+-----------------------------------------------------------------------------------------------------------------
+
+2️⃣ Hook used
+
+sy:
+website_catch_all = "not_found" <- route name
+
+
+👉 This tells Frappe:
+“Whenever a route is not found (404), instead of showing default 404, show /not_found page.
+
+-----------------------------------------------------------------------------------------------------------------
+
+🧱 3️⃣ Files you need to create
+
+Create these inside your app’s www folder:
+
+/your_app/www/not_found.html
+/your_app/www/not_found.py
+
+-----------------------------------------------------------------------------------------------------------------
+
+ex:
+1. app/hooks.py
+
+website_catch_all = "not_found"
+
+
+2. www/not_found.py
+
+def get_context(context):
+    context.title = "Page Not Found"
+    context.message = "Oops! The page you’re looking for doesn’t exist."
+    return context
+
+3. www/not_found.html
+
+<div class="not-found-page" style="text-align:center; padding:50px;">
+  <h1>404 - {{ title }}</h1>
+  <p>{{ message }}</p>
+  <a href="/" class="btn btn-primary">Go Home</a>
+</div>
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔄 4️⃣ What happens now
+
+When someone visits: /abcxyz
+
+
+Frappe doesn’t find the page, so it goes to the catch-all route you set in hooks:
+→ /not_found
+
+✅ Then it renders your custom 404 page (HTML + Python context).
+
+
+in short,
+| Concept             | Meaning                                                            |
+| ------------------- | ------------------------------------------------------------------ |
+| `website_catch_all` | Hook that tells Frappe which route to render when no page is found |
+| Default behavior    | Frappe shows its default 404 page                                  |
+| After hook          | You can show your custom HTML page (like `/not_found`)             |
+
+-----------------------------------------------------------------------------------------------------------------
+
+💡 You have 2 ways to define the website_catch_all page
+
+🧩 Option 1 – Using a file in /www folder (recommended) - This is the method Frappe officially shows.
+
+👉 Why
+Because /www pages are static or controller-based routes, guaranteed to load even if other doctypes fail.
+
+Example
+
+In hooks.py:
+website_catch_all = "not_found"
+
+Then create:
+
+your_app/www/not_found.html
+your_app/www/not_found.py
+
+✅ Works always, no database dependency, faster to render.
+
+
+
+🧱 Option 2 – Using a Web Page (Doctype)
+Yes, you can also point to a Web Page Doctype route.
+
+Example
+
+If you created a Web Page in the desk called “Custom 404” with route /custom-404,
+then your hook can be:
+
+website_catch_all = "custom-404"
+
+
+✅ This will load the Web Page Doctype you created.
+
+
+final Difference:
+
+| Type             | Where defined | Works if DB/web page is missing?  | Performance          | Recommended                      |
+| ---------------- | ------------- | --------------------------------  | -------------------- | -------------------------------- |
+| `/www` file      | File-based    | ✅ Yes                            | Faster (no DB query) | ✅ Yes                           |
+| Web Page Doctype | In database   | ❌ No (depends on DB)             | Slightly slower      | Only if you need dynamic control |
+
+-----------------------------------------------------------------------------------------------------------------
+
+how to write route name in hook.py
+
+For the website_catch_all hook, you always use the route name without the leading slash (/).
+
+Examples
+
+If your route is /custom -> website_catch_all = "custom"
+This will render the page at https://your-site.com/custom for 404.
+
+
+If your route is /custom/custom-404 -> website_catch_all = "custom/custom-404"
+This will render the page at https://your-site.com/custom/custom-404 for 404.
+
+
+
+################################################################################################################################################################################################
+
+
+22. Default Homepage  ( homepage , role_home_page , get_website_user_home_page )
+
+1️⃣ Default Homepage (homepage hook)
+By default, Frappe looks for index.html in your app’s www folder. You can override it using:
+
+# hooks.py
+homepage = "homepage"
+
+
+Frappe will now load www/homepage.html instead of index.html when someone visits /.
+
+This is static — same homepage for all users.
+
+-----------------------------------------------------------------------------------------------------------------
+
+2️⃣ Role-based Homepage (role_home_page hook)
+
+You can specify different homepages for users based on their roles:
+
+# hooks.py
+role_home_page = {
+    "Customer": "orders",
+    "Supplier": "bills"
+}
+
+
+   If a user has role Customer, /orders will be their homepage.
+   If a user has role Supplier, /bills will be their homepage.
+   Any user without a listed role still falls back to homepage or index.
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+what is meaning of this : 
+
+Priority: This takes precedence over the plain homepage hook.
+
+
+This simply means which setting Frappe will use first when deciding which page to render at /.
+
+homepage → static homepage for everyone. Example: index or homepage.html.
+role_home_page → homepage depends on user role.
+
+If both are defined:
+   homepage = "homepage"
+   role_home_page = {"Customer": "orders"}
+
+
+A logged-in Customer will see /orders, not /homepage.
+A logged-in user without Customer role will see /homepage.
+
+✅ “Takes precedence” = Frappe ignores the plain homepage if a user’s role matches one in role_home_page.
+
+Similarly, get_website_user_home_page has the highest priority — if it’s defined, Frappe always calls your function first, ignoring both role_home_page and homepage.
+
+get_website_user_home_page -> role_home_page -> home_page
+
+-----------------------------------------------------------------------------------------------------------------
+
+3️⃣ Dynamic logic homepage (get_website_user_home_page )
+
+If you need fully custom logic — e.g., checking flags, profile types, subscriptions, etc. — you can define a Python function:
+
+# hooks.py
+get_website_user_home_page = "app.website.get_home_page"
+
+# app/website.py
+def get_home_page(user):
+    if is_projects_user(user):
+        return "projects"
+    if is_partner(user):
+        return "partner-dashboard"
+    return "index"
+
+
+user is the logged-in user’s name.
+
+You can write any logic you want to return the appropriate route.
+
+This is dynamic — different users can see completely different homepages even with the same role.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Priority:
+get_website_user_home_page > role_home_page > homepage
+
+-----------------------------------------------------------------------------------------------------------------
+
+✅ Summary Table
+
+| Hook                         | Applies To                | Priority | Notes                          |
+| ---------------------------- | ------------------------- | -------- | ------------------------------ |
+| `get_website_user_home_page` | Dynamic logic per user    | Highest  | You control everything in code |
+| `role_home_page`             | Users with specific roles | Medium   | Simple role-based mapping      |
+| `homepage`                   | All users                 | Lowest   | Static homepage for everyone   |
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔹 Quick Example
+
+# hooks.py
+
+homepage = "index"  # default static homepage
+role_home_page = {
+    "Customer": "orders",       # route /orders -> www/orders.html
+    "Supplier": "bills"         # route /bills -> www/bills.html
+}
+get_website_user_home_page = "app.website.get_home_page"  # highest priority
+
+
+# app/website.py
+def get_home_page(user):
+    if is_projects_user(user):
+        return "projects"          # /projects -> www/projects.html or projects.py controller
+    if is_partner(user):
+        return "partner-dashboard" # /partner-dashboard -> www/partner-dashboard.html
+    return "index"                 # fallback
+
+-----------------------------------------------------------------------------------------------------------------
+
+Question : what if i want to route custom/custom-404 then my files will in www folder ?
+
+Answer :
+
+1️⃣ Route structure:
+
+If your desired route is: /custom/custom-404
+
+
+Then in Frappe: The route name is "custom/custom-404"
+Frappe will look for a file in your www folder that matches this route.
+
+2️⃣ Folder structure:
+
+Inside your app:
+
+your_app/
+└── www/
+    └── custom/
+        └── custom-404.html
+        └── custom-404.py   # optional controller if you need dynamic context
+
+
+.html → defines the template content.
+.py → optional, only if you want dynamic data (like get_context function).
+
+
+3️⃣ How to configure in hooks:
+If you want this page as your 404 page:
+# hooks.py
+website_catch_all = "custom/custom-404"
+
+Frappe will render /www/custom/custom-404.html when a 404 occurs.
+If you have /www/custom/custom-404.py, Frappe will call get_context(context) from that file before rendering the HTML.
+
+
+4️⃣ Key points:
+You do not provide file path in hooks — just the route (custom/custom-404).
+Frappe automatically looks inside www/ for the HTML or .py controller.
+The folder hierarchy in www/ must match the route.
+
+
+
+################################################################################################################################################################################################
+
+23. Portal Sidebar ( portal_menu_items , standard_portal_menu_items )
+
+
+1️⃣ portal_menu_items
+This hook is hardcoded in your app.
+It defines sidebar links for portal users.
+
+You specify:
+  title → The text shown in the sidebar.
+  route → The URL the link should go to.
+  role → Only users with this role will see the link.
+
+Example:
+
+# hooks.py
+portal_menu_items = [
+    {"title": "Dashboard", "route": "/dashboard", "role": "Customer"},
+    {"title": "Orders", "route": "/orders", "role": "Customer"},
+]
+
+
+✅ Behavior:
+
+Users with the Customer role will see Dashboard and Orders in their portal sidebar.
+Links are hardcoded, so if you want to hide or modify them later, you need to change the code and redeploy.
+
+-----------------------------------------------------------------------------------------------------------------
+
+2️⃣ standard_portal_menu_items
+This hook is dynamic.
+Items defined here are synced with the database (Portal Settings).
+
+After syncing, any System User can edit or hide these sidebar items from the Desk UI without touching code.
+
+Example:
+
+# hooks.py
+standard_portal_menu_items = [
+    {"title": "Dashboard", "route": "/dashboard", "role": "Website Manager"},
+    {"title": "Orders", "route": "/orders", "role": "Website Manager"},
+]
+
+
+✅ Behavior:
+Sidebar items appear for users with Website Manager role initially.
+Admins can later add, remove, or edit these links from Portal Settings.
+More flexible than portal_menu_items.
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔑 Key Difference:
+
+| Feature             | `portal_menu_items`               | `standard_portal_menu_items`                  |
+| ------------------- | --------------------------------- | --------------------------------------------- |
+| Editable from Desk? | ❌ Hardcoded                      | ✅ Synced to Portal Settings                  |
+| Use Case            | Static links for all portal users | Links you want to allow admins to edit/manage |
+| Role based          | Yes                               | Yes                                           |
+
+
+💡 Tip:
+
+Use portal_menu_items for permanent links that never change.
+Use standard_portal_menu_items for configurable sidebar items that admins can manage.
+
+
+################################################################################################################################################################################################
+
+
+24. Brand HTML ( brand_html )
+
+The brand_html hook allows you to customize the brand/logo section in the navbar of your website.
+
+   By default, Frappe uses the website’s name and possibly a default logo in the navbar.
+   Using brand_html, you can replace it with custom HTML, including images, text, or styling.
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy: 
+
+brand_html = '<div><img src="/assets/app/images/tennismart.png" style="height:30px;"/> TennisMart</div>'
+
+The HTML can include:
+   An <img> tag for the logo
+   Text for your brand name
+   Inline styles or classes for custom styling
+   This HTML will completely override the default navbar brand section.
+   
+-----------------------------------------------------------------------------------------------------------------
+
+Important Notes
+
+Version Control:
+  Using this hook is useful if you want your logo change to be part of your app code (version controlled).
+  Otherwise, it’s easier to just update the logo from Website Settings → Brand in the Desk.
+
+Static Files:
+  If you include an image, make sure it’s available in your public/assets folder so that the URL works.
+  
+Not for Frequent Changes:
+  Since this is a code change, it’s not meant for frequent updates. For dynamic or user-managed logos, use the Website Settings instead.
+  
+  
+so my path will : apps/demoapp1/demoapp1/public/images/cursor-icon.png for   "/assets/demoapp1/images/logo.png"    - dont need to write public ... .
+
+-----------------------------------------------------------------------------------------------------------------
+
+ex:
+
+# hooks.py
+brand_html = '''
+<div style="display:flex; align-items:center;">
+    <img src="/assets/demoapp1/images/logo.png" style="height:30px; margin-right:10px;"/>
+    My Custom Site
+</div>
+'''
+
+
+################################################################################################################################################################################################   
+
+
+25. Base Template ( base_template , base_template_map )
+
+1️⃣ What is the Base Template?
+In Frappe, every web page typically extends a base template called templates/base.html.
+
+This base template contains the common layout for your website:
+<head> section (CSS, JS includes)
+Navbar
+Footer
+Scripts for Frappe (frappe.web_form or frappe.ui)
+
+Your individual page templates extend this base, e.g.:
+
+    {% extends "templates/base.html" %}
+
+    {% block content %}
+    <h1>My Page Content</h1>
+    {% endblock %}
+
+
+By default, all pages inherit from templates/base.html.
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy:
+base_template = "app/templates/my_custom_base.html"  or
+
+base_template_map = {
+    r"docs.*": "app/templates/doc_template.html"
+}
+
+
+file structure :
+my_app/
+ └─ my_app/
+     └─ templates/
+         └─ my_custom_base.html  <-- your custom base template
+
+-----------------------------------------------------------------------------------------------------------------
+
+2️⃣ Overriding the Base Template
+
+If you want to replace the default base template with your own (e.g., add a custom navbar, footer, or styles globally), you use the base_template hook.
+
+sy:
+base_template = "app/templates/my_custom_base.html"
+
+ex:
+# hooks.py
+base_template = "app/templates/my_custom_base.html"
+
+✅ Result:
+All pages will now extend my_custom_base.html instead of templates/base.html.
+
+-----------------------------------------------------------------------------------------------------------------
+
+3️⃣ Using Different Base Templates for Specific Routes
+
+Sometimes, you may want different base layouts for different sections of your site. For example:
+   Docs pages (/docs/*) might need a sidebar layout.
+   Portal pages (/dashboard/*) might need a different navbar.
+
+
+You can achieve this with base_template_map:
+
+sy:
+
+# hooks.py
+base_template_map = {
+    r"docs.*": "app/templates/doc_template.html",  # regex match
+    r"dashboard.*": "app/templates/portal_template.html"
+}
+
+Key: A regex pattern matching the route.
+Value: Path to your custom base template.
+Any route not matched here will fallback to the default base template (templates/base.html or the one set in base_template hook).
+
+-----------------------------------------------------------------------------------------------------------------
+
+Example : 
+
+Suppose you want:
+  Normal pages → default my_custom_base.html
+  Docs pages → doc_template.html
+
+# hooks.py
+base_template = "app/templates/my_custom_base.html"
+base_template_map = {
+    r"docs.*": "app/templates/doc_template.html"
+}
+
+so now :
+
+| Route                 | Base Template Used  |
+| --------------------- | ------------------- |
+| /about                | my_custom_base.html |
+| /contact              | my_custom_base.html |
+| /docs/getting-started | doc_template.html   |
+| /docs/api             | doc_template.html   |
+
+-----------------------------------------------------------------------------------------------------------------
+
+Key Points
+
+base_template sets a global default.
+base_template_map overrides the base template only for specific routes.
+Routes are matched using regex, so you can match patterns like /docs/* or /portal/*.
+Useful for maintaining multiple layouts in a single website/app.
+
+
+
+
+################################################################################################################################################################################################
+
+
+26. Integrations  ->  Braintree Success Page  ( braintree_success_page )
+
+Frappe has built-in support for Braintree payments.
+Normally, after a successful Braintree payment, Frappe redirects the user to a default page.
+
+If you want to customize the page the user lands on after success, you use the braintree_success_page hook.
+
+-----------------------------------------------------------------------------------------------------------------
+
+How it works:
+
+1. Define the hook in hooks.py:
+
+# app/hooks.py
+braintree_success_page = "app.integrations.braintree_success_page"
+
+
+2. Create the function in integrations.py:
+
+# app/integrations.py
+def braintree_success_page(data):
+    """
+    This function returns the URL to redirect to after a successful Braintree payment.
+    
+    data: object with payment metadata
+        - data.reference_doctype  -> The DocType of the linked document (e.g., "Sales Order")
+        - data.reference_docname  -> The name of the linked document
+    """
+    # Example: redirect to a thank-you page
+    return "/thank-you"
+
+data object: contains information about the payment and which document triggered it.
+Return value: the URL string you want the user to go to.
+
+-----------------------------------------------------------------------------------------------------------------
+
+note : If your page’s route is /hello/thank_you_page --->  return "/hello/thank_you_page"
+🗂 Folder Structure
+
+If your files are located like this:
+
+your_app/
+ └── www/
+      └── hello/
+           ├── thankyou.html
+           └── thankyou.py   (optional controller)
+     
+✅ Correct route → /hello/thankyou
+❌ Not /hello/thankyou.py or /hello/thankyou.html
+
+so code will,
+def braintree_success_page(data):
+    return "/hello/thankyou"
+
+-----------------------------------------------------------------------------------------------------------------
+
+✅ Key points
+
+This hook only affects Braintree payments.
+Must return a string URL.
+You get metadata (data.reference_doctype and data.reference_docname) to customize the redirect dynamically.
+
+-----------------------------------------------------------------------------------------------------------------
+
+🧠 Quick Rule of Thumb : 
+
+| Folder Structure (in /www)   | Page Route           |
+| ---------------------------- | -------------------- |
+| `www/index.html`             | `/`                  |
+| `www/about.html`             | `/about`             |
+| `www/hello/thankyou.html`    | `/hello/thankyou`    |
+| `www/custom/pages/test.html` | `/custom/pages/test` |
+
+
+✅ Your page lives in the www folder,
+✅ Your route will be /hello/thankyou,
+✅ And in the hook, you always give the route (not file path).
+
+
+
+
+################################################################################################################################################################################################
+
+27. Calendars ( calendars )
+
+In the Desk (backend UI), Frappe has a built-in Calendar View —
+It shows records that have a date or datetime field, like events or appointments.
+
+By default, only some doctypes (like Event) appear there.
+
+-----------------------------------------------------------------------------------------------------------------
+
+⚙️ What This Hook Does
+calendars = ["Appointment"]  <- doctype name 
+
+
+✅ This tells Frappe:
+“Hey, also show the Appointment doctype as a menu option inside the Calendar view.”
+
+So, when you go to: Desk → Calendar
+you’ll see a sidebar menu option for Appointment.
+
+-----------------------------------------------------------------------------------------------------------------
+
+🧠 When You Click “Appointment” in Calendar
+Frappe will automatically fetch all records of the Appointment doctype.
+
+It looks for fields like:
+   starts_on / start_date
+   ends_on / end_date
+   or any field with Datetime / Date type
+
+Then it plots them on the calendar as events.
+
+-----------------------------------------------------------------------------------------------------------------
+
+📘 Example Use Case
+
+Suppose you have a doctype:
+
+Doctype Name: Appointment
+Fields:
+  - patient_name (Data)
+  - appointment_date (Datetime)
+
+
+In your hooks.py:
+calendars = ["Appointment"]
+
+
+Now, in Frappe Desk → Calendar, you’ll see a new option:
+• Event
+• Task
+• Appointment ✅
+
+Clicking Appointment will show all appointments by date.
+
+-----------------------------------------------------------------------------------------------------------------
+
+💬 Summary
+
+| Concept       | Meaning                                                                                              |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
+| **Hook name** | `calendars`                                                                                          |
+| **Value**     | List of doctype names                                                                                |
+| **Purpose**   | Show those doctypes in the Calendar view                                                             |
+| **When used** | When you have a doctype that represents date-based events (like meetings, bookings, reminders, etc.) |
+
+
+################################################################################################################################################################################################
+
+28. Clear Cache ( clear_cache )
+
+🧩 What Happens Normally
+
+Frappe has many kinds of cache layers (Redis, in-memory, etc.) to make things faster — like storing user sessions, permissions, and other values temporarily.
+
+When you run: bench --site sitename clear-cache
+
+or
+
+when Frappe internally clears its cache (like after migration or restart),
+
+-----------------------------------------------------------------------------------------------------------------
+
+🧠 Meaning of “your custom cache — if any — is not cleared automatically”
+
+Frappe automatically clears its own built-in cache when you run - bench clear-cache
+
+
+Examples of built-in cache Frappe clears automatically:
+  User permissions
+  System settings
+  Translations
+  Website routes
+  Boot info, etc.
+
+✅ These are managed by Frappe itself.
+
+---
+
+🧩 But... if you store extra cache (custom cache)
+When you, as a developer, store your own cached values,
+Frappe doesn’t know about them — so it won’t clear them automatically.
+
+
+For example 👇
+
+# You manually store a value
+frappe.cache().hset("myapp_cache", "total_students", 500)
+
+Now Frappe has no idea what myapp_cache is —
+
+so when you run: bench clear-cache
+👉 this cached value stays inside Redis (not cleared).
+
+---
+
+⚙️ The Fix — Use the Hook
+That’s why Frappe gives the hook:
+
+clear_cache = "myapp.cache.clear_cache"
+
+So you can tell Frappe:
+
+“Whenever you clear your own cache, also clear mine.” Then in your method:
+
+def clear_cache():
+    frappe.cache().hdel("myapp_cache")
+
+
+Now when you do bench clear-cache,
+your custom cache also gets cleared ✅
+
+
+-----------
+🔍 Simple Analogy
+
+Think of Frappe’s cache like Frappe’s own storage room.
+When you say “clean the room,” it cleans only its shelves.
+
+If you added a box (your custom cache), Frappe won’t touch it
+unless you tell it what box to remove → that’s the hook.
+
+-----------
+
+-----------------------------------------------------------------------------------------------------------------
+
+👉 The clear_cache hook is used so that your custom-created cache (data you manually store using frappe.cache()) also gets cleared 
+   automatically whenever Frappe’s normal cache is cleared — like when you run: bench clear-cache
+ 
+   
+So in short:
+🔹 Frappe’s default cache clears automatically.
+🔹 Your custom cache won’t — unless you use clear_cache hook.
+
+
+################################################################################################################################################################################################
+
+29. Default Mail Footer ( default_mail_footer )
+
+The default_mail_footer hook lets you define a custom HTML footer that will automatically appear at the bottom of every outgoing email sent by Frappe (through frappe.sendmail()).
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy & ex:
+
+default_mail_footer = """
+<div style="margin-top:10px; font-size:12px; color:#888;">
+    Sent via <a href="https://tennismart.com" target="_blank">TennisMart</a>
+</div>
+"""
+
+Now any email sent by Frappe (like password reset, communication emails, or even custom frappe.sendmail()) will automatically include this footer.
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+💡 Real-world use cases
+Add your company branding (“Sent from Acme ERP System”).
+Add unsubscription links or disclaimers (“Do not reply to this email”).
+Add social media links or support contact
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔒 Note
+This affects all outgoing emails globally.
+If you need different footers for different apps or situations — you should manually append custom HTML inside your Python email function instead of using this hook.
+
+
+################################################################################################################################################################################################
+
+30. Session Hooks ( on_login , on_session_creation , on_logout  )
+
+Frappe provides session lifecycle hooks to let you run custom code when users log in, log out, or when a new session is created.( login lifecycle )
+
+
+🔁 The 3 main session hooks
+
+| Hook                  | Trigger time                                                                            | Common uses                                                   |
+| --------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `on_login`            | Right **after** successful authentication (password verified, but before session setup) | Audit logs, login notifications, validation                   |
+| `on_session_creation` | After Frappe **creates a session** (user is fully logged in and session cookie set)     | Allocate user credits, setup user defaults, track login count |
+| `on_logout`           | When user **logs out** from Desk or Website                                             | Clear temporary data, revoke tokens, clean cache              |
+
+
+sy & ex : 
+
+🔹 hooks.py
+
+on_login = "demoapp1.overrides.successful_login"
+on_session_creation = "demoapp1.overrides.allocate_free_credits"
+on_logout = "demoapp1.overrides.clear_user_cache"
+
+
+
+🔹 overrides.py
+
+import frappe
+
+def successful_login(login_manager):
+    user = login_manager.user
+    frappe.logger().info(f"✅ {user} just logged in successfully.")
+    # Example: Send login alert email or record timestamp
+    frappe.db.set_value("User", user, "last_custom_login_time", frappe.utils.now())
+
+def allocate_free_credits(login_manager):
+    user = login_manager.user
+    # Give new user 100 free credits if not already assigned
+    if not frappe.db.get_value("User", user, "free_credits_assigned"):
+        frappe.db.set_value("User", user, "free_credits_assigned", 1)
+        frappe.logger().info(f"🎁 Free credits allocated to {user}")
+
+def clear_user_cache(login_manager):
+    user = login_manager.user
+    frappe.logger().info(f"🧹 Clearing cache for user: {user}")
+    frappe.cache().hdel("temp_user_data", user)
+
+-----------------------------------------------------------------------------------------------------------------
+
+💡 Real-world usage ideas
+
+on_login
+   Restrict logins based on IP or time.
+   Track login locations.
+   Send email/SMS for suspicious login.
+
+on_session_creation
+   Initialize user-specific data (credits, workspace defaults, etc.).
+   Sync data from external API for that user.
+   Log “User started session” in audit table.
+
+on_logout
+   Revoke access tokens from 3rd-party systems.
+   Clear temporary data like cart, cache, or session-specific info.
+   Log “User logged out” in audit log.
+
+-----------------------------------------------------------------------------------------------------------------
+
+📦 Argument: login_manager
+
+Each hook receives one argument → login_manager
+It gives access to:
+
+login_manager.user  # current user's email/id
+login_manager.info  # login details like full_name, roles, etc.
+frappe.session.user # same as above
+
+
+################################################################################################################################################################################################
+
+31. Auth Hooks ( auth_hooks )
+
+The Auth Hook runs during every HTTP request authentication 
+before Frappe decides who the user is, It lets you define your own authentication logic, like JWT, API key, or custom token headers.
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy: # app/hooks.py
+auth_hooks = ["app.overrides.validate_custom_jwt"]
+
+so, Before Frappe authenticates the request, it will call your function
+validate_custom_jwt() inside app/overrides.py.
+
+
+ex: # app/overrides.py
+
+import frappe
+import jwt  # optional, if using JSON Web Tokens
+
+def validate_custom_jwt():
+    # get the token from request header
+    token = frappe.request.headers.get("Authorization")
+    
+    if not token:
+        return  # no token, treat as Guest
+
+    try:
+        # remove "Bearer " prefix
+        token = token.replace("Bearer ", "")
+        
+        # verify the token (example)
+        decoded = jwt.decode(token, "secret_key", algorithms=["HS256"])
+        
+        # extract user from token
+        user = decoded.get("email")
+        
+        # map this user to frappe session
+        frappe.set_user(user)
+        
+    except Exception:
+        # token invalid → continue as Guest (don't throw error)
+        pass
+
+-----------------------------------------------------------------------------------------------------------------
+
+Full Explanation :::
+
+🧠 What Normally Happens in Frappe (Without Auth Hook)
+When any request (like visiting a page or calling an API) comes to your Frappe app,
+Frappe checks:
+
+1️⃣ Does the request have a valid session cookie or API key?
+2️⃣ If yes → It identifies who the user is (like “Administrator”, “Guest”, etc.)
+3️⃣ If no → It treats the user as Guest.
+
+
+
+⚙️ What Auth Hook Does
+Now, sometimes you don’t want to use Frappe’s default authentication.
+Maybe you are using:
+  JWT tokens (used by mobile apps / custom APIs)
+  Custom headers like X-Auth-Token
+  External login systems
+
+👉 In such cases, you use the Auth Hook.
+
+
+
+🔹 So, what it actually means: “Auth Hook runs before Frappe decides who the user is.”
+
+It means:
+Before Frappe says — “Okay, this request is from user X or from Guest” —
+your function (from auth_hooks) gets a chance to check the request first.
+
+If your code finds a valid custom token →
+you can tell Frappe who the user is manually:  frappe.set_user("user@example.com")
+
+Then Frappe will continue processing that request as that user.
+
+If your code doesn’t find any valid token →
+just don’t do anything → Frappe will continue as Guest.
+
+
+
+🔹 Real Example (JWT):
+
+Suppose a mobile app sends this header: Authorization: Bearer abc123
+Your auth hook checks this token → if valid → sets user: frappe.set_user("customer@example.com")
+Now Frappe knows: “ This request belongs to customer@example.com ”
+
+and runs with that user’s permissions.
+
+
+✅ In One Line:
+Auth Hook lets you write your own logic to decide
+👉 “Who is making this request?”
+using tokens, headers, or any external system —
+before Frappe applies its default authentication.
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+🔹 Important Points (s)
+- Triggered automatically on every request.
+- Used for custom authentication, e.g. JWT, API keys, or 3rd-party login systems.
+- You must call - frappe.set_user("<user_email>") to link the authenticated user to the current request.
+
+-If authentication fails — do not throw an error.
+ → Frappe will simply treat it as a Guest request.
+
+-You can combine with external servers or shared databases to verify tokens.
+
+----------
+
+🔹 Real-World Use Case Example
+
+You have a mobile app that sends API requests to Frappe with JWT tokens.
+Instead of using frappe.login, you verify the JWT in your auth_hook.
+If valid → set user.
+If invalid → request continues as Guest.
+
+
+
+✅ In short:
+auth_hooks are used to plug in your own authentication mechanism (like JWT or API key) into Frappe’s request pipeline.
+
+
+
+################################################################################################################################################################################################
+
+
+
+32. Fixtures
+Done in Week 5 , you can read about this in individula chat something like fixtures in frappe.... in chagpt , also can read into an note
+
+
+################################################################################################################################################################################################
+
+
+33. Document Hooks -> Modify List Query ( permission_query_conditions )
+
+The permission_query_conditions hook allows you to inject custom SQL conditions whenever Frappe builds a list of records for a specific DocType.
+Think of it as filtering the data automatically based on your custom rules, before it’s returned.
+
+Example: Only show ToDos that are owned by the current user or assigned by them.
+
+This is useful when you want to enforce custom permissions that are not covered by standard Role/Permission settings.
+
+-----------------------------------------------------------------------------------------------------------------
+
+How it works ::::
+
+Step 1: Define the hook in hooks.py
+
+permission_query_conditions = {
+    "ToDo": "app.permissions.todo_query",
+}
+
+"ToDo" → The DocType you want to customize the query for.
+"app.permissions.todo_query"    → Full Python path to your function that returns the SQL WHERE clause.
+
+
+
+
+step- 2 : Create the function that builds the SQL fragment
+
+# app/permissions.py
+def todo_query(user):
+    if not user:
+        user = frappe.session.user  # current logged-in user
+
+    # simple SQL WHERE fragment
+    return f"(`tabToDo`.owner = '{user}' OR `tabToDo`.assigned_by = '{user}')"
+
+
+
+here `tabToDo`.owner = '{user}' OR `tabToDo`.assigned_by = '{user}')" means ,
+
+-`tabToDo`.owner → In SQL, this refers to the owner column in the table tabToDo (the ToDo DocType).
+- OR → This is a logical operator. It means either condition can be true.
+- assigned_by → Another column in the ToDo table, storing who assigned the ToDo.
+
+
+This SQL fragment means:  "Give me all ToDo records where the owner is John OR where John assigned the ToDo."
+
+-----------------------------------------------------------------------------------------------------------------
+
+How it’s applied
+
+Whenever you call:
+    todos = frappe.db.getx_list("ToDo")
+
+
+Frappe automatically appends your custom WHERE clause:
+
+     select `tabToDo`.`name`
+     from `tabToDo`
+     where ((`tabToDo`.owner = 'john@doe.com' or `tabToDo`.assigned_by = 'john@doe.com'))
+     order by `tabToDo`.`modified` DESC
+
+
+✅ Only ToDos matching the condition are returned.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Important Notes :
+
+- This hook only affects frappe.db.get_list.
+- It does NOT affect frappe.db.get_all.
+- user argument can be None, in which case you usually fallback to frappe.session.user.
+- The string returned must be safe SQL (use frappe.db.escape).
+
+-----------------------------------------------------------------------------------------------------------------
+
+In SHort,
+permission_query_conditions lets you add dynamic, per-user SQL filters to get_list queries for a DocType.
+
+
+
+
+
+################################################################################################################################################################################################
+
+34. Document Hooks -> Document Permissions ( has_permission )
+
+Frappe has a default permission system that checks whether a user can read, write, create, delete, etc., a document (doc.has_permission).
+The has_permission hook allows you to customize these rules for any DocType. You can define your own logic instead of relying purely on roles or default permissions.
+
+
+Hook setup -
+
+# app/hooks.py
+has_permission = {
+    "Event": "app.permissions.event_has_permission",
+}
+
+
+"Event" → The DocType you want to customize permissions for.
+
+"app.permissions.event_has_permission" → The Python function that will handle the custom permission logic.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Custom permission function - 
+
+# app/permissions.py
+def event_has_permission(doc, user=None, permission_type=None):
+    # when reading a document, allow if event is Public
+    if permission_type == "read" and doc.event_type == "Public":
+        return True
+
+    # when writing a document, allow if event is owned by user
+    if permission_type == "write" and doc.owner == user:
+        return True
+
+    return False
+
+Arguments:
+
+doc → The document object being accessed (an Event record in this case).
+user → The user trying to access the document.
+permission_type → Type of permission being checked (read, write, etc.).
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+How it works:
+
+Read permission:
+   If the user is trying to read the event and the event is Public, return True.
+   Else, it falls back to default permissions (or False if you return False).
+
+Write permission:
+   If the user is trying to write the event and they are the owner, return True.
+
+Anything else:
+   Return False → access denied.
+   
+----------------------------------------------------------------------------------------------------------------- 
+
+✅ Key points:
+
+This hook allows fine-grained control per DocType.
+
+Returning None → Frappe uses default permission rules.
+Returning True → allows access.
+Returning False → denies access.
+
+
+
+
+
+################################################################################################################################################################################################
+
+
+35. Document Hooks -> Extend DocType Class  ( extend_doctype_class )
+
+🧠 Concept: Extend DocType Class
+
+Normally, every DocType in Frappe (like Address, Customer, Sales Invoice) is represented internally by a Python class — e.g., Address(Document).
+
+Before v16, if you wanted to customize logic (like adding new methods or validations), you had to override the class entirely using override_doctype_class.
+
+-----------------------------------------------------------------------------------------------------------------
+
+👉 But that caused conflicts if multiple apps tried to override the same DocType.
+
+It means —
+
+before extend_doctype_class, if two apps both tried to override the same DocType (for example, both override Address),
+👉 only one app’s override would work — the other would get ignored or break.
+
+So there was a conflict — Frappe couldn’t decide which override to use.
+
+Now with extend_doctype_class, both apps can safely add their logic together without replacing each other. ✅
+
+-----------------------------------------------------------------------------------------------------------------
+
+sy & ex : 
+extend_doctype_class = {
+    "Address": ["app.extensions.address.AddressMixin"]
+}
+
+This means:
+→ “Take the Address DocType’s class and mix in the class AddressMixin from my app.”
+→ So your mixin’s methods and properties become part of the Address object — without replacing Frappe’s own Address class.
+
+-----------------------------------------------------------------------------------------------------------------
+
+main purpose : 
+
+- You extend the core class to add something new. -> after using extend_doctype_class , all custom apps method will call .... but use super() for calling core method . 
+  means normally you know confliting rules - if you override something(core) then if you write new mthod in A or B app only last installed app's new method will work 
+  but if you want to run both A & B's method then use this hook it will allow to run both's new method for core class but use super() for call core method also .
+
+- You call the original (super()) to keep the old logic working.
+
+-----------------------------------------------------------------------------------------------------------------
+
+ex:
+app/extensions/address.py
+
+ class AddressMixin(Document):
+    def validate(self):
+        super().validate()
+        print("Hello")
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+⚠️ Important Notes
+
+- You can list multiple mixins for the same DocType:
+
+extend_doctype_class = {
+    "Address": [
+        "app1.mixin.address.CustomLogic",
+        "app2.mixin.address.TaxLogic"
+    ]
+}
+ 
+    i can write  above code in app1 hooks file it is also valide but it is bad practice , add new function in own apps hook file.
+
+
+- Unlike overrides, this won’t break other apps.
+- Works only in Frappe v16+.
+
+
+
+
+
+
+
+################################################################################################################################################################################################
+
+
+
+
+36. Document Hooks ->  Extend DocType Class -> Multiple Extensions [ extend_doctype_class ]
+
+It means you can add more than one mixin (extra logic) to the same DocType using the extend_doctype_class hook.
+Each mixin(extra logic) adds its own features.
+
+ex: 
+
+extend_doctype_class = {
+    "Address": [
+        "app.extensions.address.GeocodingMixin",
+        "app.extensions.common.ValidationMixin"
+    ],
+    "Contact": [
+        "app.extensions.common.ValidationMixin"
+    ]
+}
+
+
+What happens here:
+
+The Address DocType will get:
+   GeocodingMixin → maybe adds location (latitude, longitude)
+   ValidationMixin → maybe checks if fields are filled correctly
+
+The Contact DocType will get:
+   ValidationMixin only → to reuse the same validation logic
+
+
+💡 Simple meaning : 
+You can reuse the same mixin (like ValidationMixin) in many doctypes,
+and also combine multiple mixins for one doctype (like Address).
+
+
+🧱 In short
+
+| DocType | Mixins added           | What it means                |
+| ------- | ---------------------- | ---------------------------- |
+| Address | Geocoding + Validation | Address gets both features   |
+| Contact | Validation only        | Contact gets only validation |
+
+
+
+################################################################################################################################################################################################
+
+
+37. Document Hooks ->  Extend DocType Class ->  Hooks Resolution Order  [ extend_doctype_class ]
+
+When multiple apps extend the same DocType using extend_doctype_class, Frappe combines the mixins in a specific order.
+
+
+Suppose the apps are loaded in this order:
+frappe → app1 → app2
+
+-----------------------------------------------------------------------------------------------------------------
+
+And both app1 and app2 have mixins for the Address DocType:
+# app1/hooks.py
+extend_doctype_class = {
+    "Address": ["app1.mixin.address.CustomLogic"]
+}
+
+# app2/hooks.py
+extend_doctype_class = {
+    "Address": ["app2.mixin.address.TaxLogic"]
+}
+
+-----------------------------------------------------------------------------------------------------------------
+
+Then Frappe will merge them like this:
+
+class ExtendedAddress(app2.mixin.address.TaxLogic, 
+                      app1.mixin.address.CustomLogic, 
+                      Address):
+    pass
+
+-----------------------------------------------------------------------------------------------------------------
+
+🧠 Key points
+
+- Last app’s mixins come first in the class definition.
+      That’s why App2Mixin is before App1Mixin.
+
+- Original DocType (Address) always comes last.
+      This ensures all original methods still exist.
+
+- Order matters if multiple mixins have methods with the same name.
+      Python uses the first one it finds when calling a method.
+
+-----------------------------------------------------------------------------------------------------------------
+
+💡 Simple meaning
+- Frappe merges mixins from all apps in the app loading order.
+- If two mixins define the same method, the one from the later app in resolution order wins.
+- Original DocType is always the base class.
+
+
+################################################################################################################################################################################################
+
+38. Document Hooks ->  Extend DocType Class ->  Interaction with override_doctype_class 
+
+override_doctype_class :
+   Completely replaces the original DocType class with a custom one.
+   Example: ERPNext replaces the standard Address class with its own ERPNextAddress.
+
+extend_doctype_class :
+   Adds extra functionality (methods, properties, etc.) on top of a class.
+   Can be used to add multiple extensions without breaking other apps.
+   
+
+-----------------------------------------------------------------------------------------------------------------   
+
+🔄 How they work together:
+
+If a DocType is overridden by ERPNext and your app also extends it, Frappe will apply your extensions on top of the overridden class, not the original.
+
+# ERPNext overrides Address
+override_doctype_class = {
+    "Address": "erpnext.setup.doctype.address.address.Address"
+}
+
+# Your apps extend it
+extend_doctype_class = {
+    "Address": ["app1.extensions.Prop1Mixin", "app2.extensions.Prop2Mixin"]
+}
+
+
+-Frappe internally builds the final class like this:
+
+      class ExtendedAddress(Prop2Mixin, Prop1Mixin, ERPNextAddress):
+             pass
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+but read this one - here one important Use case
+
+" ERPNext overrides the DocType → your app extends that overridden class.
+  If you want the original core methods to run, the ERPNext overridden methods themselves must call super().
+  Your extensions (extend_doctype_class) run on top of the overridden class, so using super() in your extended methods ensures the ERPNext override and core methods are also executed. " 
+
+
+
+
+################################################################################################################################################################################################
+
+39. Document Hooks ->  Override DocType Class ( override_doctype_class  )
+
+- this is done in Chagpt chat called - override method in frappe , you can visit there and learn about it ..... or ha also read notes of week 5 
+
+
+################################################################################################################################################################################################
+
+40. Document Hooks -> Override Form Scripts ( doctype_js  )
+
+- this is done in Chagpt chat called - override method in frappe , you can visit there and learn about it ..... or ha also read notes of week 5 
+
+:) If both the core JS and your custom JS define the same event (like validate or refresh), both will run, but the custom JS runs after the core JS. (simple and short 
+   is written in review question text file ...)
+
+################################################################################################################################################################################################
+
+
+41. Document Hooks ->  CRUD Events ( doc_events )
+
+- this is done in Chagpt chat called - override method in frappe , you can visit there and learn about it ..... or ha also read notes of week 5 
+
+:) important code : 
+
+doc_events = {
+    "*": {
+        # will run after any DocType record is inserted into database
+        "after_insert": "app.crud_events.after_insert_all"
+    }
+}						
+
+################################################################################################################################################################################################
+
+42. Document Hooks -> Override Whitelisted Methods ( override_whitelisted_methods )
+
+- this is done in Chagpt chat called - override method in frappe , you can visit there and learn about it ..... or ha also read notes of week 5 
+
+
+################################################################################################################################################################################################
+
+
+43. Document Hooks -> Ignore Links on Delete ( ignore_links_on_delete )
+
+- Normally, when you delete a document in Frappe, it checks for other documents that link to it via a Link field.
+  If linked documents exist, Frappe prevents deletion to avoid breaking data integrity.
+
+- The ignore_links_on_delete hook tells Frappe to skip checking certain DocTypes for links when deleting a document.
+
+Example:
+
+# app/hooks.py
+
+ignore_links_on_delete = ["Communication", "ToDo"]   
+
+ <- Only include DocTypes for which you are okay skipping the link check. or ha Frappe will still check links for other DocTypes not listed here.
+    for example A has Link to B or if you write A in syntax then it will not cheching A , B will be delete
+                       
+                       " A has a Link to B.
+                         If you write ignore_links_on_delete = ["A"], then when you try to delete B, Frappe will not check A for links.
+                         This allows B to be deleted, even though A is still pointing to it.
+                         A will not be deleted; it just ignores the deletion constraint.
+                         In short: writing A in the hook lets you delete B without Frappe stopping you because of links in A.  "
+
+
+- If you delete a Customer, Frappe will not check if any Communication or ToDo is linked to that Customer.
+- Useful when you know certain linked documents can safely remain or be orphaned.
+
+-----------------------------------------------------------------------------------------------------------------
+
+- This does not delete linked docs — it just ignores them when checking for deletion constraints.
+
+
+It means:
+
+- Frappe normally prevents you from deleting a document if other documents are linked to it via a Link field.
+- When you use ignore_links_on_delete, Frappe skips checking those links for the specified DocTypes.
+- Important: It does not delete the linked documents themselves; they stay in the database.
+- It only allows the document you want to delete to be removed without throwing a “linked doc exists” error for those ignored DocTypes.
+
+Example:
+
+- Customer CUST-001 has a ToDo linked to it.
+- ignore_links_on_delete = ["ToDo"]
+- Deleting CUST-001 will succeed, but the linked ToDo still exists — it just points to a now-nonexistent Customer.
+- In short: “ignore links” = skip the safety check, not delete the linked records.
+
+
+################################################################################################################################################################################################
+
+
+44.  Document Hooks ->  Form Timeline ( additional_timeline_content )
+
+What Form Timeline Is
+ - Every document in Frappe has a timeline section.
+ 
+ - By default, it shows things like: 
+     Views
+     Value changes
+     Comments
+     Related emails or communications
+
+
+Why Use additional_timeline_content :
+
+-Sometimes you want to add your own custom actions to a document's timeline.
+
+-For example:
+    -Log a custom event
+    -Show external system updates
+    -Show special notes or status changes
+
+-----------------------------------------------------------------------------------------------------------------
+
+How the Hook Works
+
+sy & ex:
+
+additional_timeline_content = {
+    "*": ["app.timeline.all_timeline"],   # add for all DocTypes
+    "ToDo": ["app.timeline.todo_timeline"] # add only for ToDo DocType
+}
+
+"*" → applies to all DocTypes
+"ToDo" → applies only to the ToDo DocType
+The hook points to a Python function that returns a list of actions to show in the timeline.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Example :
+
+def todo_timeline(doctype, docname):
+    return [
+        {
+            "creation": "2025-10-09 15:00:00",  # date/time of action
+            "template": "custom_timeline_template",  # template to render
+            "template_data": {"key": "value"}  # data passed to template
+        }
+    ]
+
+creation → timeline sorts items based on this.
+template → the JS/HTML template used to display the action in the timeline.
+template_data → the data you want to show in that template.
+
+-----------------------------------------------------------------------------------------------------------------
+
+✅ Key Points
+
+- Each item must have a creation key.
+- You can target all DocTypes or specific DocTypes.
+- It adds content, it does not replace default timeline actions.
+
+
+################################################################################################################################################################################################
+
+45. Scheduler Events ( scheduler_events  )
+
+this is done in Chagpt chat called - Frappe scheduler events Confusion , you can visit there and learn about it ..... or ha also read notes of week 5 
+
+################################################################################################################################################################################################
+
+
+46. Jinja Customization ( jinja )
+
+- Frappe allows you to use Python functions directly in Jinja templates.
+- You can add your own utility functions (methods) or filters to make template logic easier.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Hooks Configuration :
+
+app/hooks.py
+
+jinja = {
+    "methods": [
+        "app.jinja.methods",      # module path containing multiple functions
+        "app.utils.get_fullname"  # single function path
+    ],
+    "filters": [
+        "app.jinja.filters",       # module path containing multiple filter functions
+        "app.utils.format_currency" # single filter function
+    ]
+}
+
+
+methods → regular functions you can call in templates like {{ sum(1,2) }}.
+filters → functions you use in the pipe (|) syntax like {{ amount | format_currency("INR") }}.
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+Example Methods Module -
+
+# app/jinja/methods.py
+def sum(a, b):
+    return a + b
+
+def multiply(a, b):
+    return a * b
+
+
+All functions in this module are automatically available in Jinja templates.
+
+---------------
+
+Example Single Method -
+
+# app/utils.py
+def get_fullname(user):
+    first_name, last_name = frappe.db.get_value("User", user, ["first_name", "last_name"])
+    return first_name + " " + last_name
+
+
+Available as {{ get_fullname(frappe.session.user) }} in templates.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Example Filter - 
+
+# app/utils.py
+def format_currency(value, currency):
+    return currency + " " + str(value)
+
+
+Used in Jinja as: <p>{{ account_balance | format_currency("INR") }}</p>
+
+-----------------------------------------------------------------------------------------------------------------
+
+Usage in Templates
+<h1>Hi, {{ get_fullname(frappe.session.user) }}</h1>
+<p>Your account balance is {{ account_balance | format_currency("INR") }}</p>
+<p>1 + 2 = {{ sum(1, 2) }}</p>
+
+
+get_fullname → method, called directly.
+format_currency → filter, used with |.
+sum → method, called directly.
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+✅ Key Points
+
+Methods: callable functions in templates.
+Filters: pipe-style transformations in templates.
+You can register entire modules or single functions.
+Makes your templates cleaner and reduces logic inside HTML.
+
+
+
+################################################################################################################################################################################################
+
+
+47. Prevent Auto Cancellation of Linked Documents ( auto_cancel_exempted_doctypes )
+
+Purpose :
+In Frappe, when you cancel a document, sometimes all linked documents are automatically cancelled to maintain data consistency.
+
+Example: Canceling a Sales Invoice might auto-cancel related Payment Entries.
+
+Sometimes, you don’t want certain DocTypes to be auto-cancelled. That’s where this hook comes in.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Hook Usage :
+
+# app/hooks.py
+
+auto_cancel_exempted_doctypes = ["Payment Entry"]
+
+
+Here, "Payment Entry" is the DocType you want to protect from automatic cancellation.
+
+When a linked document is cancelled, Frappe will skip auto-cancelling any Payment Entry linked to it.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Example Scenario :
+
+1. You have a Sales Invoice linked to a Payment Entry.
+2. Normally, cancelling the Sales Invoice → would auto-cancel the Payment Entry.
+3. With the hook:
+      auto_cancel_exempted_doctypes = ["Payment Entry"]
+      
+   Cancelling the Sales Invoice → Payment Entry remains active, no auto-cancel.
+
+-----------------------------------------------------------------------------------------------------------------
+
+✅ Key Points
+
+- You only list DocTypes you want to exempt.
+
+- This does not stop normal cancellation if you manually cancel the exempted DocType. 
+
+  means   " Even if a DocType is exempted from auto-cancellation, you can still manually cancel it yourself. 
+            The hook only prevents automatic cancellation triggered by linked documents. "
+
+- Only affects automatic linked cancellations.
+
+
+
+################################################################################################################################################################################################
+
+
+48. Notification configurations ( notification_config )
+
+Purpose :
+This hook lets you customize what appears in the Notification dropdown in Desk (the bell icon in Frappe/ERPNext).
+
+
+How it works :
+
+1️⃣ Hook in hooks.py
+
+# demoapp1/hooks.py
+notification_config = "demoapp1.notification.get_config"
+
+
+2️⃣ Configuration function in notification.py
+# demoapp1/notification.py
+def get_config():
+    return {
+    
+        # 1. Track specific documents based on conditions
+        "for_doctype": {
+            # Show open ToDos
+            "ToDo": {"status": "Open"},
+            # Show active Students
+            "Student": {"status": "Active"}
+        },
+
+        # 2. Map Doctypes to module names (for grouping in dropdown)
+        "for_module_doctypes": {
+            "ToDo": "Demo Module",
+            "Student": "Demo Module"
+        },
+
+        # 3. Map modules to functions returning counts
+        "for_module": {
+            "Demo Module": "demoapp1.notification.get_demo_module_count"
+        }
+    }
+    
+    
+3️⃣ Example function for for_module
+
+
+# demoapp1/notification.py
+import frappe
+
+def get_demo_module_count():
+
+    todo_count = frappe.db.count("ToDo", filters={"status": "Open"})
+    student_count = frappe.db.count("Student", filters={"status": "Active"})
+    
+    return todo_count + student_count
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+What happen after doing this : 
+
+
+1️⃣ for_doctype
+"for_doctype": {
+    "ToDo": {"status": "Open"},
+    "Student": {"status": "Active"}
+}
+
+
+Purpose: Tracks individual documents based on a condition.
+What it does: Shows how many documents of a specific Doctype meet your filter criteria.
+Output example:
+
+Suppose in your database:
+5 ToDo records with status = Open
+3 Student records with status = Active
+
+Then the notification dropdown for Doctype items will show:
+ToDo → 5
+Student → 3
+
+
+2️⃣ for_module_doctypes
+"for_module_doctypes": {
+    "ToDo": "Demo Module",
+    "Student": "Demo Module"
+}
+
+
+Purpose: Groups Doctypes under their module label in the notification dropdown.
+What it does: Frappe will display ToDo and Student counts under the module “Demo Module” instead of separately.
+Output example:
+
+In the dropdown, instead of seeing:
+ToDo → 5
+Student → 3
+
+You will see something like:
+Demo Module → 8  (sum of all doctypes under this module)
+
+3️⃣ for_module
+"for_module": {
+    "Demo Module": "demoapp1.notification.get_demo_module_count"
+}
+
+
+Purpose: Assigns a custom function to compute counts for a module.
+What it does: Instead of automatically summing filtered documents, it calls your function get_demo_module_count() and uses its return value.
+Output example:
+
+Your function does:
+
+todo_count = 5
+student_count = 3
+return todo_count + student_count  # 8
+
+So the Demo Module notification count will show 8.
+
+
+✅ Summary of outputs:
+
+| Part                  | What it tracks                   | Example output        |
+| --------------------- | -------------------------------- | --------------------- |
+| `for_doctype`         | Individual docs with conditions  | ToDo → 5, Student → 3 |
+| `for_module_doctypes` | Groups doctypes under module     | Demo Module → 8       |
+| `for_module`          | Calls custom function for module | Demo Module → 8       |
+
+
+################################################################################################################################################################################################
+
+
+49. Required Apps ( required_apps )
+
+What it does -
+Some apps depend on other apps to function properly.
+The required_apps hook ensures that dependent apps are installed first.
+
+If someone tries to install your app, Frappe will automatically check for the apps listed in required_apps and install them if they are missing.
+
+
+Example
+# app/hooks.py <- for example this is written in my demoapp1
+required_apps = ["erpnext"]
+
+
+This means:
+If someone installs your app, Frappe will ensure ERPNext is installed first, because your app depends on it.
+If ERPNext is already installed, nothing happens — it just continues installing your app.
+
+-----------------------------------------------------------------------------------------------------------------
+
+✅ Key points
+
+Purpose: Prevents errors due to missing dependencies.
+Value: List of app names as strings.
+Effect: Frappe will not allow your app to function without these apps installed.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Example in practice:
+If you have a Demoapp1 app that uses ERPNext’s Customer, Sales Invoice .... doctype, you must list erpnext in required_apps. 
+Otherwise, your app will break if ERPNext is not installed.
+
+This tells Frappe:
+"Before installing demoapp1, make sure ERPNext is installed."
+
+-----------------------------------------------------------------------------------------------------------------
+
+🤔️ What happens when ERPNext is already installed
+Frappe just proceeds with installing your app demoapp1.
+No changes happen to ERPNext — it’s already there.
+
+
+🤔️ What happens when ERPNext is not installed
+Frappe will stop the installation of your app and raise an error saying the dependency is missing.
+In some cases (like using bench install-app demoapp1), it may attempt to install ERPNext automatically if available, depending on your setup.
+Without ERPNext, your app might break because it uses doctypes, modules, or functionality from ERPNext.
+
+
+✅ Key point:
+required_apps does not copy ERPNext into your app — it just ensures the dependent apps exist before your app is installed.	
+
+
+
+
+
+
+################################################################################################################################################################################################
+
+
+50.  User Data Protection & Privacy ( user_data_fields )
+
+
+🧩 Purpose of user_data_fields
+
+This hook: user_data_fields = [...]
+tells Frappe which doctypes in your app contain personal data (like name, email, phone, etc.).
+
+So when a user requests:
+  🗂️ Download my data (Data Export)
+  🧹 Delete my data (Account deletion)
+
+Frappe will look at this list and handle the data properly.
+
+
+✅ In short:
+user_data_fields tells Frappe: “These doctypes contain personal data. Here’s how to clean or export it safely.”
+-----------------------------------------------------------------------------------------------------------------
+
+⚙️ How it works
+
+When a user requests data deletion or export:
+
+1. Frappe reads the user_data_fields list.
+2. It finds all doctypes listed.
+3. For each doctype, it checks which records belong to that user.
+4. Based on your configuration (strict, rename, redact, etc.), it either:
+     Exports them,
+     Deletes them,
+     Or masks sensitive parts (redacts).
+
+-----------------------------------------------------------------------------------------------------------------
+
+All Options :
+
+
+| Option        | Meaning                               | Example                             | Result                                            |
+| ------------- | ------------------------------------- | ----------------------------------- | ------------------------------------------------- |
+| doctype       | Which DocType has user/Personaldata   | `"doctype": "Student"`              | Applies rule to Student docs                      |
+| filter_by     | Field to find user’s data             | `"filter_by": "email_id"`           | Finds Student by email                            |
+| partial       | Redact name & username in text fields | `"partial": True`                   | “John lives in Surat” → “REDACTED lives in Surat” |
+| redact_fields | Fully hide selected fields            | `"redact_fields": ["student_name"]` | student_name → “REDACTED”                         |
+| rename        | Rename doc if name has user info      | `"rename": True`                    | STU-John → STU-ANON                               |
+| strict        | Apply rule to all records             | `"strict": True`                    | Redact data even if not owned by user             |
+
+✅ Quick Summary:
+doctype = where → filter_by = who → partial / redact_fields / rename = what to hide → strict = apply always
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+Example :
+
+🎯 Goal
+Let’s say your Student Doctype has fields like:
+
+| Field        | Value                                         |
+| ------------ | --------------------------------------------- |
+| name         | STU-John-001                                  |
+| student_name | John Smith                                    |
+| email_id     | [john@example.com](mailto:john@example.com)   |
+| phone_number | 9876543210                                    |
+| address      | "John Smith lives in Surat"                   |
+| owner        | [admin@example.com](mailto:admin@example.com) |
+
+
+
+Now — you want to make sure that when a user requests data deletion or download,
+their data from the Student Doctype is properly handled.
+
+user_data_fields = [
+
+    {
+        "doctype": "Student",
+        "filter_by": "email_id",               # match user by email
+        "partial": True,                       # redact user's name & username in text fields
+        "redact_fields": ["student_name", "phone_number"],  # mask these fields
+        "rename": True,                        # rename doc to anonymize it
+        "strict": True                         # apply redaction even if user is not owner
+   
+    }
+    
+]
+
+so,
+
+1️⃣ "doctype": "Student"
+This tells Frappe which doctype contains personal data.
+✅ Meaning: We want to protect user data stored in Student records.
+
+
+2️⃣ "filter_by": "email_id"
+Frappe finds Student records using this field.
+✅ Meaning: Match all Student records where email_id = john@example.com.
+
+So only John’s data will be affected.
+
+
+3️⃣ "partial": True"
+Redacts (removes) user’s name and username from all text fields, even ones not listed in redact_fields.
+
+✅ Example:
+address before → "John Smith lives in Surat"
+after → "REDACTED lives in Surat"
+
+This ensures personal mentions get hidden in comments, descriptions, etc.
+
+
+4️⃣ "redact_fields": ["student_name", "phone_number"]"
+These specific fields get replaced with "REDACTED".
+
+✅ Example:
+student_name → "REDACTED"
+phone_number → "REDACTED"
+
+5️⃣ "rename": True"
+If the document name itself (the name field) contains personal info, it will be renamed.
+
+✅ Example:
+Before: STU-John-001
+After: STU-ANON-001
+
+6️⃣ "strict": True"
+Normally, Frappe only applies this if the user owns the record (owner = user).
+But with strict=True, it redacts data even if someone else owns it.
+
+✅ Example:
+Even if the owner is admin@example.com, John’s data will still be redacted.
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+🔁 Final Result after Data Deletion :
+
+| Field        | Before                                        | After                                         |
+| ------------ | --------------------------------------------- | --------------------------------------------- |
+| name         | STU-John-001                                  | STU-ANON-001                                  |
+| student_name | John Smith                                    | REDACTED                                      |
+| email_id     | [john@example.com](mailto:john@example.com)   | [john@example.com](mailto:john@example.com)   |
+| phone_number | 9876543210                                    | REDACTED                                      |
+| address      | John Smith lives in Surat                     | REDACTED lives in Surat                       |
+| owner        | [admin@example.com](mailto:admin@example.com) | [admin@example.com](mailto:admin@example.com) |
+
+
+🗂️ For Data Download request :
+
+If user requests data download instead of deletion: 
+
+   Frappe will only use doctype + filter_by options 
+   It will export all matching Student data in a downloadable file (e.g. JSON/ZIP)
+   It will not redact or rename in this case
+
+
+💯️In Short :
+
+This configuration ensures that when a user wants their data deleted or exported,
+your app handles Student records safely — without exposing personal info.
+
+
+
+################################################################################################################################################################################################
+
+
+
+51. Signup Form Template ( signup_form_template )
+
+🎯 Purpose
+The signup_form_template hook lets you replace the default Frappe signup form with your own custom HTML form (for example, to collect extra info like phone number, class, etc.).
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+🧩 Example
+
+# in hooks.py
+signup_form_template = "demoapp1/templates/signup-form.html"
+
+
+File: demoapp1/templates/signup-form.html
+
+<form action="/api/method/demoapp1.api.custom_signup" method="post">
+  <input type="text" name="email" placeholder="Email">
+  <input type="text" name="full_name" placeholder="Full Name">
+  <input type="text" name="phone_number" placeholder="Phone Number">
+  <button type="submit">Sign Up</button>
+</form>
+
+
+
+
+⚙️ Backend Function
+
+In your app:
+
+# demoapp1/api.py
+import frappe
+
+
+@frappe.whitelist(allow_guest=True)
+def custom_signup(email, full_name, phone_number):
+    # validate or store new fields
+    user = frappe.get_doc({
+        "doctype": "User",
+        "email": email,
+        "first_name": full_name,
+        "phone_number": phone_number,
+        "enabled": 1
+    })
+    user.insert(ignore_permissions=True)
+    return "User created!"
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+Note :
+
+- If you add new input fields (like phone, address, etc.) in your custom signup form —→ you must also create these same fields in the User doctype (so data can be saved).
+- To add those fields automatically, use fixtures (so they’re included when the app is installed).
+- Because you’re not using Frappe’s default signup anymore, → you must write your own “submit” code (backend function) to save the new user.
+- In that function, you can also check for errors or invalid data (like wrong phone format).
+
+
+
+################################################################################################################################################################################################
+
+
+52. SMS Hooks ( - )
+
+SMS Hooks let you control how Frappe sends SMS messages.
+
+By default, Frappe has a built-in way to send SMS (using SMS Settings), but if you want to use your own SMS API (like Twilio, MSG91, etc.), you can use this hook 
+to replace or extend the default logic.
+
+📦 Example use case:
+
+  - You want all SMS to be sent using Twilio API instead of Frappe’s default system.
+  - So you write your own Python function that connects to Twilio and send messages.
+  - Then, you link that function using the SMS hook in hooks.py.
+
+👉 In short:
+You use SMS Hooks to connect your custom or third-party SMS provider to Frappe’s system.
+
+################################################################################################################################################################################################
+
+
+52.1 Send SMS ( send_sms  )
+
+This hook — send_sms — lets you replace Frappe’s default SMS sending system with your own custom logic.
+
+So whenever Frappe tries to send an SMS (for example, from notifications or bulk SMS),
+it will call your function instead of the built-in one.
+
+
+
+📦 Example Flow:
+
+1. You define this in hooks.py →  send_sms = "demoapp1.overrides.sms.send_sms"
+
+2. Then you create the function →
+
+def send_sms(receiver_list, msg, sender=None, success_msg=True):
+    # send SMS using your custom API
+    
+    custom_sms_provider.send_sms(to=receiver_list, message=msg)
+
+3. Now, whenever Frappe sends an SMS, it uses your function instead of the core system
+
+-----------------------------------------------------------------------------------------------------------------
+
+Arguments : 
+
+| Argument        | Type                 | Description                                                                              | Example                                          |
+| --------------- | -------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `receiver_list` | `str` or `list[str]` | The recipient mobile number(s). Can be a single number or a list of numbers.             | `"9876543210"` or `["9876543210", "9123456780"]` |
+| `msg`           | `str`                | The SMS message content you want to send.                                                | `"Your OTP is 1234"`                             |
+| `sender`        | `str` (optional)     | The sender ID or phone number that appears as the sender of the SMS.                     | `"MyApp"`                                        |
+| `success_msg`   | `bool` (optional)    | Whether to show a success message to the user after sending the SMS. Defaults to `True`. | `True` or `False`                                |
+
+
+################################################################################################################################################################################################
+
+
+52.2  Send Token via SMS ( send_token_via_sms )
+
+
+What it is :
+- The send_token_via_sms hook allows you to customize how OTPs (one-time passwords) are sent to users’ phones. These OTPs are used for:
+      - Mobile login
+      - Two-factor authentication (2FA)
+
+By default, Frappe can send OTPs via its internal SMS system. But if you want to use a third-party SMS service or implement custom OTP logic, you can override this using this hook.
+
+
+📦 Example Flow:
+
+1. # Tell Frappe to use your custom OTP sender -> 
+
+send_token_via_sms = "demoapp1.overrides.sms.send_token_via_sms"
+
+2. demoapp1/overrides/sms.py
+
+import frappe
+
+def send_token_via_sms(otpsecret, token=None, phone_no=None):
+    """
+    Simple example: send OTP via print (instead of real SMS)
+    """
+    if not phone_no:
+        return False  # no phone number, cannot send
+
+    # Generate a simple OTP from token (for demo)
+    otp_code = str(token).zfill(6)  # pad token to 6 digits
+
+    # Instead of sending via SMS, just print it
+    print(f"Sending OTP {otp_code} to phone {phone_no}")
+
+    # You could integrate a real SMS provider here
+    # e.g., twilio, fast2sms, etc.
+
+    return True  # indicate SMS sent successfully
+    
+    
+Note :
+- This hook is only for OTPs, not general SMS notifications.
+- It’s useful when you want custom authentication flows or a specific SMS service for sending OTPs. 
+
+-----------------------------------------------------------------------------------------------------------------
+
+Arguments :
+
+| Argument    | Type  | Description                                                                                    | Example              |
+| ----------- | ----- | ---------------------------------------------------------------------------------------------- | -------------------- |
+| `otpsecret` | `str` | Secret key used to generate the OTP (HOTP/TOTP).                                               | `"JBSWY3DPEHPK3PXP"` |
+| `token`     | `int` | Counter or token value used in HOTP generation. Optional; if not provided, defaults may apply. | `1`, `2`, etc.       |
+| `phone_no`  | `str` | The mobile number to which the OTP will be sent.                                               | `"9876543210"`       |
+
+
+################################################################################################################################################################################################
+
+
+END :)
+
+
+

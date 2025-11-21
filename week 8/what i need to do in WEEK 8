@@ -1,0 +1,59 @@
+
+
+
+1.DATABASE API
+2.REST API
+   -https://docs.frappe.io/framework/user/en/api/rest
+   
+   for custom API:
+   - https://discuss.frappe.io/t/frappe-rest-api-custom-rest-api/99643/3
+   
+3.WorkFlow ( watch videos + use documenation both link )
+   - https://docs.frappe.io/erpnext/user/manual/en/workflows
+   - https://docs.frappe.io/erpnext/user/manual/en/workflow
+         
+   step-1 : watch video with practical implementation
+   step-2 : if time left then you can watch documentation
+   
+   you do anything just you must know about workflow or ERPNext cycle
+   
+4.ERPNext ( https://school.frappe.io/lms/courses/erpnext-training )
+   - understand/look cycle of ERPNEXT basics from Chagpt
+   
+is watch videos of workflow - yes
+
+
+Sheet Tasks : review all code .... including assessment questions
+
+1. Learn Rest api or doc api from videos and frappe documentation and write all api methods in your local bench (Frappe Documentation Topic Cover Python API or JS API) 
+2. Learn workflow and workflow notification and create one doctype workflow in your local-bench (Frappe Documentation Topic Cover Python API or JS API)
+3. Learn Erpnext and their report with full cycle overview ( manufacturing )
+
+
+Tasks need to do :
+
+1. rest api - create student record - Done
+2.  rest api - fetch fulterd customer record  - Done
+
+3. create documentation for sales order all fields meaning , change site logo , hide drop down button in sales order
+ assessment question : 
+ 
+1.  thory
+2. add custom button list view ... in customer  - Done
+3. done - schedule job for 2 am
+4. done - if primary address then it shows in pop up
+
+5. same as sheet so look at ... - Done
+6. Task.1 - Done
+7. Task.2 - Done
+
+9. same as sheet so look at whe doing ( find and understand vishwa's sheet) - theory question
+
+
+
+8. workflow for sales order ( i think from code ) - Done
+
+
+
+
+

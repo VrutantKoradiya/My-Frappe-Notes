@@ -1,0 +1,191 @@
+
+
+
+
+
+Client Script(Form Events) ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+// Triggered once when the form is created for the first time
+      setup(frm) {
+            console.log("Hello from setup");
+      },
+
+// Triggered before the form is about to load
+      before_load(frm) {
+            console.log("Hello from before_load");
+      },
+
+// Triggered when the form is loaded and is about to render
+      onload(frm) {
+            console.log("Hello from onload");
+      },
+
+// Triggered after the form is loaded and rendered
+      onload_post_render(frm) {
+            console.log("Hello from onload_post_render");
+      },
+
+// Triggered when the form is fully loaded and displayed
+      refresh(frm) {
+            console.log("Hello from refresh");
+      },
+
+// Field value change (example: called whenever a field value changes)
+      enable(frm) {
+            console.log("Hello from enable value changed");
+      },
+
+//  Table row opened as a form
+      family_members_on_form_rendered(frm) {
+            console.log("Hello from my_table_field_on_form_rendered");
+      },
+
+//Triggered before save is called
+      before_save(frm) {
+            console.log("Hello from before_save");
+      },
+
+// Triggered before validate (validate is called before save internally)
+      validate(frm) {
+            console.log("Hello from validate");
+      },
+
+//Triggered after the form is saved
+      after_save(frm) {
+            console.log("Hello from after_save");
+      },
+
+// Triggered before submit is called
+      before_submit(frm) {
+            console.log("Hello from before_submit");
+      },
+
+// Triggered after submit is done
+      on_submit(frm) {
+            console.log("Hello from on_submit");
+      },
+
+ //Triggered before cancel is called
+      before_cancel(frm) {
+            console.log("Hello from before_cancel");
+      },
+
+// Triggered after cancel
+      after_cancel(frm) {
+            console.log("Hello from after_cancel");
+      },
+
+// Triggered before discard
+      before_discard(frm) {
+            console.log("Hello from before_discard");
+      },
+
+ // Triggered after discard
+      after_discard(frm) {
+            console.log("Hello from after_discard");
+      },
+
+//Triggered after the timeline is rendered
+      timeline_refresh(frm) {
+            console.log("Hello from timeline_refresh");
+      },
+
+// 📧 Email dialog related
+      get_email_recipient_filters(frm, field) {
+            frappe.msgprint(`Hello from get_email_recipient_filters for ${field}`);
+            return {}; // Example: return filters
+      },
+
+      get_email_recipients(frm, field) {
+            frappe.msgprint(`Hello from get_email_recipients for ${field}`);
+            return []; // Example: return list of emails
+      }
+      
+      
+      
+
+
+server Script(Document) Events ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+      #after_save is not available
+      #after_submit is not available
+      #after_cancel is not available
+      #befor_delete is not available
+      
+      
+      
+      def before_insert(self):
+            frappe.msgprint(f"Before Insert")
+
+      def after_insert(self):
+            frappe.msgprint(f"After Insert")
+
+      def before_validate(self):
+            frappe.msgprint(f"Before Validate")
+
+      def before_save(self):
+            frappe.msgprint(f" Before Save")
+
+
+      def before_submit(self):
+            frappe.msgprint(f"Before Submit")
+
+
+      def before_cancel(self):
+            frappe.msgprint(f"Before Cancel")
+ 
+      def after_delete(self):
+            frappe.msgprint(f"After Delete")
+
+      def before_print(self , method):
+            frappe.msgprint(f"before print event is called")
+
+      def on_trash(self):
+            frappe.msgprint("deleted , on trash events")   
+
+      def on_cancel(self):
+            frappe.msgprint("on cancel")
+
+      def on_submit(self):
+            frappe.msgprint("on submit event")
+
+      def validate(self):
+            frappe.msgprint("validate events")
+
+      def before_save(self):
+            frappe.msgprint("before save is called")
+
+      def on_update(self):
+            frappe.msgprint("on update")      
+      
+      
+      
+      
+Child Table Event :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     
+
+
+      
+
+
+

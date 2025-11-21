@@ -1,0 +1,2157 @@
+
+
+Selling Module ------- in practical, also doing practical for return or check its reports like money credit/debit .... ( you can rewatch main video of selling from 1:26:00 to 1:46:00 )
+
+
+- The Selling Module helps a company manage its entire sales process, from getting a new lead to collecting payment after selling a product or service.
+
+Main Goal : To track how your product/service moves from interest → quotation → order → delivery → payment.
+Used By : Sales Team, Sales Managers, and sometimes Accountants.
+Connected Modules :
+   🔗 CRM (for leads & opportunities)
+   📦 Stock (for delivery)
+   💰 Accounts (for invoices & payments)
+   🏭 Buying (for linked supplier sales, if any)
+   
+   
+   
+🧠 Why Selling Module is Important
+
+|   **Reason**               | 💬 **Meaning (Simple)**                                                                                 |
+| ---------------------------| ------------------------------------------------------------------------------------------------------- |
+| 1️⃣ Centralized Control     | You can track every step of the sales process in one place.                                             |
+| 2️⃣ Improves Accuracy       | No need to manage quotations, invoices, or delivery notes separately. ERPNext links them automatically. |
+| 3️⃣ Saves Time              | One click converts a **Quotation → Sales Order → Delivery Note → Invoice**.                             |
+| 4️⃣ Customer Insights       | You can see which customers buy often, what they buy, and when.                                         |
+| 5️⃣ Stock & Accounting Sync | Sales automatically affect stock and accounts (e.g., reduces stock, increases revenue).                 |
+
+
+
+🧭 Simple Example (Real-World View)	
+Let’s say you sell Laptops 🖥️
+
+| Step | What Happens                       | ERPNext Document             |
+| ---- | ---------------------------------- | ---------------------------- |
+| 1️⃣  | You get a new interested person    | **Lead**                     |
+| 2️⃣  | You qualify it as a potential sale | **Opportunity**              |
+| 3️⃣  | You send them a price offer        | **Quotation**                |
+| 4️⃣  | Customer confirms the deal         | **Sales Order**              |
+| 5️⃣  | You deliver the product            | **Delivery Note**            |
+| 6️⃣  | You send invoice for payment       | **Sales Invoice**            |
+| 7️⃣  | Payment received                   | **Payment Entry (Accounts)** |
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Selling Cycle -
+
+
+| Step                  | Real-Life Example                                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Le.**               | A school principal calls your company asking, “Do you sell computers for labs?” You record this person as a lead.                                    |
+| **Opp.**              | You talk to them more and find out they want 20 computers next month. You create an opportunity — the deal has a good chance of happening.           |
+| **Quo.**              | The principal asks for prices. You make a quotation — it includes items, price, tax, and delivery time. You email it to them.                        |
+| **Bl. Ord. (opt.)**   | The school says, “We’ll buy 100 computers this year but order 20 each month.” You create a blanket order to fix the long-term agreement.             |
+| **SO**                | After a few days, the school confirms: “Yes, send 20 computers as per quotation.” You convert the quotation to a sales order. Stock is now reserved. |
+| **Pay. (Adv.)**       | The school pays 50% in advance. You record this as an advance payment entry linked to the sales order.                                               |
+| **DN**                | Your warehouse packs and sends 20 computers to the school. You create a delivery note — stock quantity reduces automatically.                        |
+| **Pack. Slip (opt.)** | Your logistics team prints a packing slip that lists what’s inside each box — useful for large shipments.                                            |
+| **SI**                | Once items are delivered, you create a sales invoice — the legal document asking for remaining payment.                                              |
+| **Pay. (Final)**      | The school pays the remaining 50%. You record this as a payment entry. The invoice is marked as paid.                                                |
+
+
+flow :
+
+Lead {
+  → Opportunity {
+      → Quotation {
+          → Sales Order {
+              → Payment Entry (Advance) [optional]
+              → Delivery Note {
+                  → Packing Slip [optional]
+                  → Sales Invoice
+              }
+              → Sales Invoice {
+                  → Payment Entry
+              }
+          }
+      }
+  }
+}
+
+or 
+
+Blanket Order {
+  → Sales Order {
+  ...... 
+}
+
+here,
+- blanket order is optional main cycle is from Lead
+
+other :
+
+
+1. Blanket Order : 
+- Blanket Order is used when a customer or supplier agrees to buy or sell a specific quantity of items over a period of time 
+  — but they’ll send actual orders (Sales Orders or Purchase Orders) in parts, not all at once.
+
+- Think of it as a long-term contract between you and your customer (or supplier).
+
+🧾 Example (Sales side)
+
+Suppose a school says: “We’ll buy 100 computers this year, but we’ll order 20 each month.”
+
+You can:
+- Create a Blanket Order (Sales) for:
+     Customer: The school
+     Item: Computer
+     Total Quantity: 100
+     Rate: $500 each
+     Validity Period: Jan–Dec 2025
+
+- Each month, when they confirm, you create a Sales Order for 20 computers.
+- ERPNext automatically tracks how many items from the blanket order are fulfilled and how many are remaining.
+
+🔸 Purchase Example
+- If you’re buying from a supplier: “We’ll buy 1,000 keyboards this year at $10 each, delivered in batches of 200.”
+- You’d create a Blanket Order (Purchase), and later generate Purchase Orders from it.
+
+
+⚙️ ERPNext Behavior
+- Quotation = pricing and negotiation stage
+- Blanket Order = commitment stage (optional but helpful for recurring business)
+- Sales Order = execution stage (actual delivery + stock reservation)
+
+
+🚫 Common Mistake
+“Should I enter only 20 computers in the Blanket Order?”
+❌ No —
+- A Blanket Order should reflect the total committed quantity (100 in your case).
+- The Sales Orders you create later (20 each) are the actual partial orders linked to it.
+
+ERPNext automatically reduces the “remaining quantity” after each Sales Order.
+
+
+flow :
+
+Seller → creates → Lead → for Potential Customer
+Seller → converts → Lead → to Opportunity
+Seller → sends → Quotation → to Customer
+Customer → confirms → Quotation
+Seller → creates → Sales Order → for Customer
+Customer → makes (optional) → Advance Payment
+Seller → delivers → Goods → via Delivery Note
+Seller → (optional) → creates → Packing Slip
+Seller → sends → Sales Invoice → to Customer
+Customer → makes → Final Payment Entry
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+here only fields are available, for more you can visit chat
+
+1. Blanket Order :
+
+
+📘 Order Details 
+
+Field Name               | Meaning / Use
+------------------------ | -----------------------------------------------
+Series ⭐                | Auto-naming pattern for Blanket Order. Example: MFG-BLR-.YYYY.- means Year-based naming.
+Order No                 | Auto-generated document number (based on series).
+Order Type ⭐            | Defines type of sales order (e.g. Sales, Maintenance, or Service).
+From Date ⭐             | Starting date of the blanket order period (when agreement starts).
+To Date ⭐               | End date of the blanket order period (when agreement ends).
+
+
+📘 Item Table 
+
+Field Name               | Meaning / Use
+------------------------ | -----------------------------------------------
+No.                      | Serial number for item row.
+Item Code ⭐             | Select which item is agreed for bulk supply.
+Quantity                 | Total quantity agreed to be supplied over time.
+Rate ⭐                  | Price agreed per unit item.
+Ordered Quantity         | Shows how much quantity is already ordered from this blanket order (auto-updated when Sales Orders are linked).
+Add Row / Add Multiple   | Buttons to add one or many item rows.
+
+
+📘 Terms and Conditions 
+
+Field Name                   | Meaning / Use
+------------------------     | -----------------------------------------------
+Terms                        | You can select predefined “Terms and Conditions Template” from the list.
+Terms and Conditions Details | Detailed editable box where you can write or customize agreement terms (like payment schedule, delivery condition, etc.)
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+2. Quotation
+
+
+💡 Doctype: Quotation
+Purpose: To send a price offer to a customer or lead before confirming a sale.
+
+📘 Details
+
+Field Name                  | Meaning / Use
+-----------------------------|--------------------------------------------------
+Series ⭐                    | Defines document naming pattern (ex: SAL-QTN-.YYYY.-).
+Date ⭐                      | Date when quotation is created.
+Order Type ⭐                | Type of sales (e.g., Sales, Maintenance, or Service).
+Quotation To ⭐              | Defines who the quotation is sent to (Customer, Lead, etc.).
+Valid Till ⭐                | Expiry date for this quotation (after this date, it’s invalid).
+Customer ⭐                  | Selects the customer/lead to whom quotation is sent.
+Get Items From (Button)     | Fetches items automatically from Opportunity or Blanket Order.
+Currency and Price List     | Section for currency settings and price lists used for pricing.
+Scan Barcode                | Allows scanning of item barcode to auto-add it in list.
+Items ⭐                     | Table where you add products/services being quoted.
+  → No.                     | Row number.
+  → Item Code ⭐             | Product/item identifier.
+  → Quantity ⭐              | How many items are being quoted.
+  → Rate ⭐                  | Unit price for the item.
+  → Amount (INR)            | Auto-calculated (Quantity × Rate).
+Add Row / Add Multiple      | Buttons to insert one or many items quickly.
+Total Quantity              | Shows total number of items in all rows.
+Total (INR)                 | Total amount before taxes/discounts.
+Download / Upload           | To export/import item list via Excel.
+
+other :
+1. In ERPNext, the checkbox “Ignore Pricing Rule” means: ✅ If checked, the system will not apply any Pricing Rules to this transaction or item.
+
+
+📘 Address & Contact
+
+Field Name                  | Meaning / Use
+-----------------------------|--------------------------------------------------
+Customer Address             | Customer’s billing address.
+Contact Person               | Default contact person for the customer.
+Place of Supply              | Used for GST/location-based tax calculation.
+Shipping Address             | Address where goods will be delivered.
+Company Address Name          | Company’s registered address for the document.
+Company Contact Person        | Employee responsible for this quotation.
+
+
+
+📘 Taxes and Charges
+
+Field Name                  | Meaning / Use
+-----------------------------|--------------------------------------------------
+Tax Category                 | Category used for selecting correct taxes.
+Shipping Rule                | Defines shipping cost rule or method.
+Incoterm                     | International shipping/payment term (optional).
+Sales Taxes and Charges Template | Predefined template for tax setup.
+Sales Taxes and Charges Table | Manually add tax entries if not using template.
+  → Type ⭐                   | Tax type (On Net Total, On Previous Row, etc.).
+  → Account Head ⭐           | Ledger account where tax will be posted.
+  → Tax Rate ⭐               | Percentage of tax applied.
+  → Amount                   | Calculated tax value.
+Total Taxes and Charges (INR) | Sum of all tax rows.
+
+
+
+📘 Totals
+
+Field Name                  | Meaning / Use
+-----------------------------|--------------------------------------------------
+Grand Total (INR) ⭐          | Final total including all taxes.
+Rounding Adjustment (INR)    | Any manual rounding change applied.
+Rounded Total (INR)          | Rounded value of final total.
+Disable Rounded Total        | Tick to disable rounding feature.
+
+
+📘 Additional Discount
+
+Field Name                  | Meaning / Use
+-----------------------------|--------------------------------------------------
+Apply Additional Discount On  | Choose base for discount (Net Total or Grand Total).
+Additional Discount Percentage | Discount in percentage form.
+Additional Discount Amount (INR) | Discount in absolute amount.
+Coupon Code                   | Used for promotional or referral discounts.
+Referral Sales Partner         | Used to track which sales partner referred the sale.
+
+
+
+📘 Terms
+
+Field Name                  | Meaning / Use
+-----------------------------|--------------------------------------------------
+Payment Terms Template        | Choose template defining payment schedule.
+Payment Schedule              | Table for each payment term.
+  → No.                       | Row number.
+  → Payment Term              | Term name (e.g., 50% advance, 50% on delivery).
+  → Description               | Additional info.
+  → Due Date ⭐               | Date by which payment is expected.
+  → Invoice Portion           | Portion of invoice (in %).
+  → Payment Amount ⭐         | Amount to be paid under this term.
+Terms and Conditions          | Select predefined terms template.
+Term Details                  | Write or edit detailed quotation terms (text editor).
+
+
+
+📘 More Info
+
+Field Name                  | Meaning / Use
+-----------------------------|--------------------------------------------------
+Print Settings Section        | Settings related to print layout.
+  → Letter Head               | Company letterhead used for print.
+  → Print Heading             | Heading printed on quotation.
+  → Group Same Items          | Tick if you want identical items merged in print.
+Lost Reasons Section           | For noting competitors or reasons quotation was lost.
+  → Competitors               | Add competitor name or reason if deal lost.
+Additional Info Section        | Miscellaneous fields for campaign/tracking.
+  → Status ⭐                 | Document status (Draft, Submitted, etc.).
+  → Campaign                 | Link to marketing campaign (if applicable).
+  → Supplier Quotation        | Reference to related supplier quotation (optional).
+  → Territory ⭐              | Customer region (helps for reports).
+  → Source                   | How the lead was acquired (Online, Referral, etc.).
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+3. Sales Order
+
+
+
+💡 Doctype: Sales Order
+Purpose: Used when a customer confirms a quotation or places an order. It finalizes the sale before delivery and invoicing.
+
+
+📘 Details
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Series ⭐                       | Naming pattern for Sales Order (ex: SAL-ORD-.YYYY.-).
+Date ⭐                         | Date of creating the sales order.
+Customer’s Purchase Order       | Reference number from customer’s own order system.
+Customer ⭐                     | Customer who placed the order.
+Delivery Date ⭐                | Planned date to deliver goods.
+Order Type ⭐                   | Type of order (Sales, Maintenance, Service, etc.).
+Get Items From (Button) ⭐      | Fetches items from existing Quotation (auto-fills item list).
+Cost Center                    | Department or cost division responsible for sale.
+Project                        | Link to related project if sale is project-based.
+
+
+
+📘 Currency and Price List
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Currency ⭐                     | Defines currency for pricing (default INR).
+Price List ⭐                   | Selects price source (e.g., Standard Selling).
+Ignore Pricing Rule             | If checked, ignores automatic price rules.
+
+
+
+📘 Items
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Scan Barcode                    | Scan product barcode to add quickly.
+Set Source Warehouse             | Warehouse from where stock will be taken for delivery.
+Items Table ⭐                   | Main section for listing sold items.
+  → No.                         | Row number.
+  → Item Code ⭐                 | Product identifier from item master.
+  → Delivery Date ⭐             | Delivery date for each item.
+  → Quantity ⭐                  | Ordered quantity for each item.
+  → Rate (INR) ⭐                | Unit price of the item.
+  → Amount (INR)                | Auto-calculated (Quantity × Rate).
+Add Row / Add Multiple           | Buttons for adding items manually or in bulk.
+Total Quantity                   | Sum of all item quantities.
+Total (INR)                      | Sum of all item amounts (before tax/discount).
+Download / Upload                | For importing/exporting item data using Excel.
+
+
+
+📘 Taxes
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Tax Category                    | Tax type for this sale (ex: GST Category).
+Shipping Rule                   | Shipping cost rule or delivery condition.
+Incoterm                        | International trade term (optional).
+Sales Taxes and Charges Template | Predefined template for tax calculations.
+Sales Taxes and Charges Table    | Add or modify taxes manually.
+  → No.                         | Row number.
+  → Type ⭐                      | Type of tax (On Net Total, On Previous Row, etc.).
+  → Account Head ⭐              | Ledger where tax is recorded.
+  → Tax Rate ⭐                  | Tax percentage.
+  → Amount                      | Calculated value of tax.
+Total Taxes and Charges (INR)    | Final total of all taxes.
+
+
+
+📘 Totals
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Grand Total (INR) ⭐             | Sum of all items + taxes.
+Rounding Adjustment (INR)       | Manual rounding difference.
+Rounded Total (INR)             | Rounded final amount.
+Advance Paid                    | Shows total advance received from customer.
+
+
+
+📘 Additional Discount
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Apply Additional Discount On     | Choose base (Net Total / Grand Total).
+Additional Discount Percentage   | Discount in percentage form.
+Additional Discount Amount (INR) | Fixed discount amount.
+Coupon Code                      | Used for promo or coupon tracking.
+
+
+
+📘 Terms
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Payment Terms Template           | Template for defining payment rules.
+Payment Schedule                 | Table listing payment milestones.
+  → No.                         | Row number.
+  → Payment Term                 | Name of the payment term.
+  → Description                  | Short explanation.
+  → Due Date ⭐                  | Payment due date.
+  → Invoice Portion              | % of invoice for each payment.
+  → Payment Amount ⭐             | Actual amount expected.
+Terms & Conditions Template      | Choose standard terms.
+Terms and Conditions Details     | Editable box for writing sales agreement text.
+
+
+
+📘 More Info
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Status ⭐                        | Current document state (Draft, Submitted, Closed, etc.).
+Sales Partner                    | Partner or agent linked to this sale.
+Amount Eligible for Commission    | Value used to calculate sales commission.
+Commission Rate                  | Commission % to be applied.
+Total Commission                 | Final commission amount.
+Sales Team Table ⭐               | Assign multiple salespeople and their contribution.
+  → No.                         | Row number.
+  → Sales Person ⭐              | Employee name.
+  → Contribution (%)             | % contribution in sale.
+  → Contribution to Net Total    | Net contribution amount.
+  → Commission Rate              | Commission % for each salesperson.
+  → Incentives                   | Any reward/incentive for salesperson.
+
+
+📘 Auto Repeat
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Auto Repeat                     | Enables repeating order automatically after a time period.
+From Date                       | Start date for auto repetition.
+To Date                         | End date for auto repetition.
+
+
+
+📘 Print Settings
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Letter Head                     | Company letterhead for printed format.
+Print Heading                   | Custom title printed on document.
+Group Same Items                 | Merge identical items into a single line in print.
+
+
+
+📘 Additional Info
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Is Internal Customer             | Used if customer is another company branch.
+Source                           | How order was obtained (Online, Referral, etc.).
+Campaign                         | Linked marketing campaign name.
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+4. Delivery Note
+
+
+
+💡 Doctype: Delivery Note
+Purpose: Record the physical delivery of goods to the customer. It updates stock and links with the Sales Order or Invoice.
+
+📘 Details
+
+Field Name                      | Meaning / Use
+------------------------------- |--------------------------------------------------
+Series ⭐                       | Naming pattern for Delivery Note (ex: DN-.YY.-).
+Date ⭐                         | Date when goods are being delivered.
+Is Return                       | Tick if this is a return from the customer.
+Customer ⭐                     | Name of the customer receiving the goods.
+Posting Time ⭐                 | Exact time of delivery posting.
+Edit Posting Date and Time      | Allow changing posting time/date manually.
+Special Note                    | Write any special remark for delivery.
+
+
+
+📘 Accounting Dimensions
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Cost Center                     | Department under which sale is recorded.
+Project                         | Link if delivery is part of a specific project.
+
+
+
+📘 Currency and Price List
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Currency ⭐                     | Currency used in transaction (default INR).
+Price List ⭐                   | Select pricing source (e.g., Standard Selling).
+Ignore Pricing Rule             | Ignore auto price rule if checked.
+
+
+
+📘 Items
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Get Items From (Button) ⭐      | Used to fetch items automatically from Sales Order or Pick List.
+Scan Barcode                    | Scan product barcode for quick entry.
+Set Source Warehouse             | Select the warehouse from which stock will be deducted.
+Delivery Note Item Table ⭐      | Main section listing delivered goods.
+  → No.                         | Row number.
+  → Item Code ⭐                 | Product identifier.
+  → Quantity ⭐                  | Delivered quantity.
+  → UOM ⭐                       | Unit of Measure (e.g., Nos, Kg, Box).
+  → Rate (INR)                  | Unit price.
+  → Amount (INR)                | Auto-calculated (Quantity × Rate).
+Add Row / Add Multiple           | Add one or many item rows.
+Total Quantity                   | Total items in this delivery.
+Total (INR)                      | Total value before tax/discount.
+Download / Upload                | Export or import item list using Excel.
+
+
+
+📘 Taxes and Charges
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Tax Category                    | Category to apply correct tax (GST, VAT, etc.).
+Shipping Rule                   | Defines shipping method and charges.
+Incoterm                        | International delivery/payment term (optional).
+Sales Taxes and Charges Template | Template for pre-defined tax settings.
+Sales Taxes and Charges Table    | Add or edit taxes manually.
+  → Type ⭐                      | Tax type (On Net Total, On Previous Row, etc.).
+  → Account Head ⭐              | Ledger account for the tax.
+  → Tax Rate ⭐                  | Percentage applied.
+  → Amount                      | Calculated tax amount.
+Total Taxes and Charges (INR)    | Total of all taxes applied.
+
+
+
+📘 Totals
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Grand Total (INR) ⭐             | Total amount after taxes and discounts.
+Rounding Adjustment (INR)       | Manual rounding difference.
+Rounded Total (INR)             | Final rounded total.
+
+
+
+📘 Additional Discount
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Apply Additional Discount On     | Choose base (Net Total / Grand Total).
+Additional Discount Percentage   | Discount % applied on total.
+Additional Discount Amount (INR) | Flat discount value.
+
+
+
+📘 Address & Contact
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Shipping Address ⭐              | Customer address where goods are sent.
+Dispatch Address Name            | Address from where goods are dispatched.
+Company Address Name             | Company’s registered or branch address.
+Company Contact Person           | Contact person for the company side.
+
+
+
+📘 Terms
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Terms ⭐                         | Select predefined Terms and Conditions.
+Terms and Conditions Details     | Editable text area for custom delivery terms (e.g., packaging rules).
+
+
+
+📘 More Info
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Status ⭐                        | Current status of the document (Draft, Submitted, etc.).
+Transporter Info Section         | Details about goods transport.
+  → Transporter ⭐              | Transport company name.
+  → Mode of Transport ⭐         | Type (Road, Air, Ship, etc.).
+  → GST Transporter ID           | Transporter’s GST number.
+  → Driver                       | Driver code or ID.
+  → Driver Name                  | Name of the delivery driver.
+  → Transport Receipt No         | Receipt or challan number for transport.
+  → Transport Receipt Date       | Date of that transport receipt.
+  → Vehicle No ⭐                | Vehicle registration number.
+  → GST Vehicle Type             | Type of vehicle (Regular, Over Dimensional Cargo, etc.).
+  → Distance (in km)             | Distance travelled (used in e-way bill).
+Customer PO Details Section      | Info about customer’s purchase order.
+  → Customer’s Purchase Order No | Customer’s order reference.
+  → Customer’s Purchase Order Date | Date when customer gave PO.
+Commission Section               | Sales commission info.
+  → Sales Partner                | Name of sales agent or partner.
+  → Commission Rate (%)          | Percentage of commission applied.
+  → Amount Eligible for Commission | Total eligible sale value.
+  → Total Commission              | Final calculated commission.
+Sales Team Section ⭐             | Assign multiple salespeople.
+  → No.                         | Row number.
+  → Sales Person ⭐              | Employee name.
+  → Contribution (%)             | % contribution in sale.
+  → Contribution to Net Total    | Calculated contribution.
+  → Commission Rate              | Commission % for each salesperson.
+  → Incentives                   | Any bonus or incentive.
+
+
+
+📘 Print Settings
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Letter Head ⭐                   | Company letterhead for document print.
+Print Heading                   | Custom title printed on the delivery note.
+Print Without Amount             | Tick if you want to print without showing item prices.
+Group Same Items                 | Combine same items into single line in print.
+
+
+
+📘 Additional Info
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Is Internal Customer             | Check if customer is another company branch.
+Inter Company Reference          | Link between companies if using multi-company.
+Territory ⭐                     | Customer’s geographic area.
+Source                           | Origin of order (Online, Referral, etc.).
+Campaign                         | Related marketing campaign name.
+Instructions                     | Internal delivery instructions for warehouse or driver.
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+Sales Invoice 
+
+
+
+💡 Doctype: Sales Invoice
+Purpose: Created when goods/services are billed to the customer. It finalizes revenue and updates accounts receivable.
+
+
+
+📘 Details
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Series ⭐                       | Naming format for invoice (ex: SINV-.YY.-).
+Date ⭐                         | Invoice creation date.
+Include Payment (POS)           | Tick if payment is made instantly (Point of Sale).
+Is Return (Credit Note)         | Tick if invoice is for returning items to customer.
+Is Rate Adjustment Entry (Debit Note) | Used for issuing Debit Notes for rate correction.
+Customer ⭐                     | Name of customer being billed.
+Posting Time ⭐                 | Time of posting invoice.
+Edit Posting Date and Time      | Allows editing invoice posting time manually.
+Payment Due Date ⭐             | Date by which payment must be received.
+
+other:
+
+1. 🧾 “Is Return (Credit Note)” — Meaning in ERPNext
+- In ERPNext, the checkbox “Is Return (Credit Note)” is used to mark a Sales Invoice (or Purchase Invoice) as a return document 
+  — meaning it’s being created to reverse or adjust a previous sale or purchase.
+  
+🧠 In Simple Terms: ✅ Tick this box when the customer is returning items and you need to issue a credit note (a negative invoice).
+
+📦 Example Scenario
+Let’s say you sold 10 laptops to a customer and created a Sales Invoice (SI-0001) for ₹100,000.
+A few days later, the customer returns 2 defective laptops.
+
+Here’s what you do:
+- Create a new Sales Invoice.
+- Tick “Is Return (Credit Note)”.
+- In the Return Against field, link it to the original Sales Invoice (SI-0001).
+- Add the 2 laptops as items with the same rate and taxes.
+- Save and submit the invoice.
+
+ERPNext will automatically:
+- Create a negative stock movement (if perpetual inventory is enabled).
+- Adjust the customer’s outstanding balance (reduce receivables).
+- Generate an accounting entry that reverses the original sale for those 2 laptops.
+
+----------------------
+
+2. Is Rate Adjustment Entry (Debit Note)
+- In ERPNext, the checkbox “Is Rate Adjustment Entry (Debit Note)” is used when you need to issue a Debit Note 
+  — not because of returned items, but because of a rate correction (price difference) after the original invoice was submitted.
+  
+🧠 In Simple Terms: ✅ Tick “Is Rate Adjustment Entry (Debit Note)” when the rate (price) in the original invoice was incorrect,
+                       nd you need to adjust the value — without affecting the quantity or stock movement.
+                       
+🔍 Example Scenario
+
+Let’s say you created a Sales Invoice for: 10 Laptops @ ₹50,000 each = ₹5,00,000
+Later, you realize the correct rate should have been ₹55,000.
+Now you need to increase the invoice amount by ₹50,000 (difference for 10 laptops × ₹5,000).
+
+Here’s how you handle it:
+- Create a new Sales Invoice.
+- Tick “Is Rate Adjustment Entry (Debit Note)”.
+- Link it to the original invoice in the Return Against field.
+- Add the same items — but only for the rate difference (not quantity).
+- Save and submit.                       
+                       
+                       
+                       
+                       
+        
+             
+📘 Accounting Dimensions
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Cost Center                     | Department or branch responsible for sale.
+Project                         | Related project if sale belongs to a project.
+
+
+
+📘 Items
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Scan Barcode                    | Scan product barcode to add automatically.
+Update Stock ⭐                  | Tick to update stock automatically (creates stock ledger entry).
+Items Table ⭐                   | List of items sold in this invoice.
+  → No.                         | Row number.
+  → Item ⭐                     | Item code/name.
+  → Quantity ⭐                  | Sold quantity.
+  → Rate (INR) ⭐               | Unit price of item.
+  → Amount (INR)                | Auto-calculated (Quantity × Rate).
+Add Row / Add Multiple           | Add items manually or in bulk.
+Total Quantity                   | Sum of all item quantities.
+Total (INR)                      | Total before taxes or discounts.
+Download / Upload                | Export/import item list through Excel.
+
+
+
+📘 Taxes and Charges
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Tax Category                    | Category of tax applicable (GST, VAT, etc.).
+Shipping Rule                   | Defines shipping method and cost.
+Incoterm                        | International trade term (optional).
+Sales Taxes and Charges Template | Template with predefined tax setup.
+Sales Taxes and Charges Table    | Add or adjust taxes manually.
+  → Type ⭐                      | Tax type (On Net Total, On Previous Row, etc.).
+  → Account Head ⭐              | Ledger for the tax (ex: Output GST 18%).
+  → Tax Rate ⭐                  | % applied to base.
+  → Amount                      | Auto-calculated tax amount.
+Total Taxes and Charges (INR)    | Sum of all applied taxes.
+
+
+
+📘 Totals
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Grand Total (INR) ⭐             | Total after taxes and discounts.
+Rounding Adjustment (INR)       | Manual rounding correction.
+Use Company Default Cost Center for Round Off | Use company-level setting for rounding.
+Rounded Total (INR)             | Rounded total amount.
+Total Advance                    | Advance payments received before invoice.
+Outstanding Amount ⭐            | Remaining amount customer has to pay.
+
+
+
+📘 Additional Discount
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Apply Additional Discount On     | Choose base (Net Total / Grand Total).
+Additional Discount Percentage   | % discount applied.
+Additional Discount Amount (INR) | Fixed discount value.
+Is Cash or Non Trade Discount    | Mark if discount is cash-based or non-commercial.
+
+
+
+📘 Time Sheet List
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Time Sheets                     | Used for service-based billing (links employee time logs).
+  → No.                         | Row number.
+  → Activity Type               | Type of work done.
+  → Description                 | Description of task/service.
+  → Billing Hours               | Hours worked.
+  → Billing Amount              | Amount billed for those hours.
+
+
+
+📘 Payments
+	
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Allocate Advances Automatically (FIFO) | Automatically allocate advance payments by date.
+Get Advances Received (Button)  | Fetch all advance payments made by this customer.
+Advances Table                  | List of advances linked to this invoice.
+  → Reference Name              | Reference number of advance.
+  → Remarks                     | Note or description.
+  → Advance Amount              | Total advance received.
+  → Allocated Amount            | Portion applied to this invoice.
+  → Difference / Posting Date   | Adjustment or mismatch info.
+
+
+
+📘 Loyalty Points Redemption
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Redeem Loyalty Points            | Tick if customer uses loyalty points to reduce invoice amount.
+
+
+
+📘 Address & Contact
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Billing Address ⭐               | Customer’s billing address.
+Contact Person                  | Contact person from customer side.
+Place of Supply ⭐               | State or region where goods are supplied (important for GST).
+Territory ⭐                    | Area or region of customer.
+Shipping Address Name ⭐         | Address where goods are shipped.
+Dispatch Address Name            | Address from where goods are sent.
+Company Address Name ⭐          | Company’s registered address.
+Company Contact Person           | Internal contact person.
+
+
+
+📘 Terms
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Payment Terms Template ⭐        | Predefined rules for payment schedules.
+Payment Schedule Table ⭐        | Create payment milestones for partial payments.
+  → Payment Term               | Name of payment term.
+  → Description                | Explanation of condition.
+  → Due Date ⭐                | When payment is due.
+  → Invoice Portion            | % of invoice to be paid.
+  → Payment Amount ⭐          | Amount per milestone.
+Terms and Conditions Section ⭐  | Legal and commercial terms of sale.
+  → Terms ⭐                   | Choose from pre-defined terms.
+  → Terms and Conditions Details | Rich text field for writing custom terms.
+
+
+
+📘 More Info
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Customer PO Details              | Link to customer’s purchase order.
+  → Customer’s Purchase Order   | Customer’s PO number.
+  → Customer’s Purchase Order Date | Date when PO was raised.
+Accounting Details               | Account-related settings.
+  → Debit To ⭐                 | Customer’s receivable account.
+  → Is Opening Entry            | Mark if this is a historical invoice.
+Commission Section               | Commission info for sales agents.
+  → Sales Partner               | Sales agent name.
+  → Commission Rate (%)         | % commission applied.
+  → Amount Eligible for Commission | Value on which commission is calculated.
+  → Total Commission            | Final commission amount.
+Sales Team Section ⭐             | Assign multiple salespeople.
+  → No.                         | Row number.
+  → Sales Person ⭐              | Employee name.
+  → Contribution (%)             | % contribution.
+  → Contribution to Net Total    | Value of contribution.
+  → Commission Rate              | Commission %.
+  → Incentives                   | Bonus amount.
+
+
+other:
+
+1. Debit To
+- In ERPNext, the “Debit To” field specifies which account will be debited (increased) when the Sales Invoice is submitted.
+- In simpler terms: It’s the receivable account where the customer’s outstanding balance (amount they owe you) will be recorded.
+
+
+
+
+
+📘 Transporter Info
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Transporter ⭐                  | Name of transport company.
+Mode of Transport ⭐            | Transport type (Road, Air, Rail, etc.).
+GST Transporter ID              | Transporter’s GST number.
+Driver                          | Driver’s code/ID.
+Driver Name                     | Driver’s full name.
+Transport Receipt No            | Transport challan/receipt number.
+Transport Receipt Date ⭐        | Date of challan.
+Vehicle No ⭐                   | Vehicle registration number.
+GST Vehicle Type ⭐             | Regular / Over Dimensional Cargo.
+Distance (in km)                | Transport distance for e-way bill.
+
+
+
+📘 Subscription
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Subscription                    | Link to recurring invoice or subscription plan.
+From Date                       | Start date of subscription billing.
+To Date                         | End date of subscription billing.
+
+
+
+📘 Print Settings
+
+Field Name                     | Meaning / Use
+-------------------------------|--------------------------------------------------
+Letter Head ⭐                   | Select company letterhead.
+Invoice Copy                     | Choose invoice type (Original, Duplicate, Triplicate).
+Print Heading                    | Custom heading for printed invoice.
+Group Same Items                 | Combine same items in print preview.
+
+
+
+🎯 Button: Get Items From
+
+| Option Name      | Purpose / When to Use                                                                | What It Fetches                                                       |
+| ---------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| 🕒 Timesheet     | Used in service-based companies that bill customers based on employee working hours. | Activity Type, Description, Billing Hours, Billing Amount             |
+| 📦 Sales Order   | Used when invoice is created after a Sales Order confirmation.                       | Item details, Quantity, Rate, Taxes, Discounts, and Delivery Schedule |
+| 🚚 Delivery Note | Used when goods have already been delivered and now billing is required.             | Delivered items and their quantities                                  |
+| 🧾 Quotation     | Used for direct invoicing (without Sales Order/Delivery Note).                       | Item description, Rate, Quantity, and Tax details                     |
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+Selling Settings
+
+
+💼 Doctype: Selling Settings  
+Purpose → Controls default behavior and configurations for all Selling transactions
+(Quotation, Sales Order, Delivery Note, and Sales Invoice).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📘 CUSTOMER DEFAULTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name                | Description                                                                 |
+|----------------------------|------------------------------------------------------------------------------|
+| Customer Naming By         | Choose how customers are named → by "Customer Name" or "Customer ID".        |
+| Default Territory          | Sets the default sales territory (region or zone) for reporting and analytics.|
+| Default Customer Group     | Default group assigned to new customers (e.g., Retail, Wholesale).           |
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📘 ITEM PRICE SETTINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name                                          | Description                                                                 |
+|-----------------------------------------------------|------------------------------------------------------------------------------|
+| Default Price List                                  | Default price list for all selling transactions (e.g., Standard Selling).    |
+| Maintain Same Rate Throughout Sales Cycle           | Keeps same item rate from Quotation → Invoice (prevents manual rate change). |
+| Allow User to Edit Price List Rate in Transactions  | Lets users manually change item rates in documents.                         |
+| Validate Selling Price Against Purchase/Valuation   | Prevents selling below cost price to avoid losses.                          |
+| Calculate Product Bundle Price (Child Item Rates)   | Calculates bundle price based on prices of its child items.                 |
+| Allow Negative Rates for Items                      | Allows entry of negative rates (used for special discounts or returns).      |
+
+here,
+1. Allow User to Edit Price List Rate in Transactions 
+ex. 
+
+| Item     | Price |
+| -------- | ----- |
+| ITEM-001 | ₹100  |
+
+Now, in a Sales Order:
+- If the checkbox is unchecked, the rate will stay ₹100 — can’t be changed.
+- If the checkbox is checked, the user can modify it to ₹95 or ₹110 as needed.
+
+----------
+
+2. Validate Selling Price Against Purchase/Valuation
+- This option ensures that the selling price (Rate in transactions like Sales Order, Sales Invoice, etc.) is not lower than your purchase or valuation rate.
+
+----------
+
+3.Calculate Product Bundle Price (Child Item Rates)
+- This setting decides how ERPNext calculates the total price of a Product Bundle in your selling transactions (Quotation, Sales Order, Sales Invoice, etc.).
+
+A Product Bundle = A main (parent) item + multiple child items.
+Example:
+👉 “Desktop Computer Set” = CPU, Monitor, Keyboard, Mouse
+
+Parent Item: Desktop Computer Set
+Child Items: CPU, Monitor, Keyboard, Mouse
+
+
+so, When This Checkbox is Unchecked (Default)
+The price of the bundle is taken from the parent item’s price (the Product Bundle item itself).
+
+| Item                 | Type   | Rate    | Used For Calculation |
+| -------------------- | ------ | ------- | -------------------- |
+| Desktop Computer Set | Parent | ₹50,000 | ✅ Taken              |
+| CPU                  | Child  | ₹20,000 | ❌ Ignored            |
+| Monitor              | Child  | ₹15,000 | ❌ Ignored            |
+| Keyboard             | Child  | ₹5,000  | ❌ Ignored            |
+| Mouse                | Child  | ₹2,000  | ❌ Ignored            |
+
+Total = ₹50,000 (from parent)
+
+⚙️ When This Checkbox is Checked (Enabled)
+- ERPNext calculates the price of the Product Bundle based on the total of all child item rates instead of the parent item’s rate.
+
+| Item                 | Type   | Rate    | Used For Calculation |
+| -------------------- | ------ | ------- | -------------------- |
+| Desktop Computer Set | Parent | ₹0      | ❌ Ignored            |
+| CPU                  | Child  | ₹20,000 | ✅ Included           |
+| Monitor              | Child  | ₹15,000 | ✅ Included           |
+| Keyboard             | Child  | ₹5,000  | ✅ Included           |
+| Mouse                | Child  | ₹2,000  | ✅ Included           |
+
+Total = ₹42,000 (sum of child items)
+
+----------
+
+4. Allow Negative Rates for Items
+- This setting controls whether you can enter a negative rate (i.e., a rate < 0) in sales transactions (like Sales Order, Sales Invoice, Delivery Note, etc.).
+
+- ERPNext normally doesn’t allow negative rates, because that would mean you’re selling an item and paying the customer — which is usually a mistake.
+- But in some special use cases, it’s intentionally required.
+
+ex.
+| Item      | Qty | Rate | Explanation                                           |
+| --------- | --- | ---- | ----------------------------------------------------- |
+| Product A | 1   | 500  | Normal sale                                           |
+| Product A | 1   | -500 | Negative rate — e.g., return, discount, or adjustment |
+
+⚙️ When Checkbox is Unchecked (Default)
+- Negative rate is not allowed.
+- If you try to enter one, ERPNext throws validation like: “Rate cannot be negative for item X.”
+
+
+⚙️ When Checkbox is Checked (Enabled)
+- System allows you to enter negative rates freely.
+- Mostly used for:
+   Credit adjustments
+   Promotional discounts (item-wise instead of total)
+   Return transactions
+   Reverse entries
+   
+   
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📘 TRANSACTION SETTINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name                                            | Description                                                                 |
+|-------------------------------------------------------|------------------------------------------------------------------------------|
+| Is Sales Order Required for Sales Invoice & Delivery  | If set to “Yes” → Sales Order must exist before creating Invoice/Delivery.   |
+| Is Delivery Note Required for Sales Invoice Creation  | If “Yes” → Invoice can only be made after Delivery Note.                     |
+| Sales Update Frequency in Company and Project         | Updates sales data on Every Transaction or Daily.                            |
+| Blanket Order Allowance (%)                           | Allowed percentage to exceed quantity in Blanket Orders (e.g., 5%).          |
+| Allow Item to be Added Multiple Times in Transaction  | Allows same item to appear multiple times (e.g., different rates/batches).   |
+| Allow Multiple Sales Orders per Customer PO           | Allows multiple orders for one customer purchase order.                      |
+| Allow Sales Order Creation for Expired Quotation      | Enables creating Sales Orders even if quotation has expired.                 |
+| Don’t Reserve Sales Order Qty on Sales Return         | Prevents return quantity from reducing reserved stock.                       |
+| Hide Customer’s Tax ID from Sales Transactions        | Hides customer tax ID fields in selling documents.                           |
+| Enable Discount Accounting for Selling                | Creates separate accounting entry for discounts (for accurate finance).      |
+| Allow Quotation with Zero Quantity                    | Allows saving quotations with 0 quantity (for rate contracts).               |
+| Allow Sales Order with Zero Quantity                  | Allows Sales Orders with 0 quantity (useful in long-term fixed-rate deals).  |
+
+
+
+Other :
+
+1. Don’t Reserve Sales Order Qty on Sales Return” in ERPNext
+
+🧩 Example
+Scenario:
+- You have a Sales Order for 10 units.
+- You delivered 10 units (Sales Order fully delivered).
+- Customer returns 2 units (Sales Return created).
+
+Now, depending on the checkbox:
+
+| Checkbox Status | Effect on Sales Order       | Explanation                                                                                      |
+| --------------- | --------------------------- | ------------------------------------------------------------------------------------------------ |
+| ❌ **Unchecked** | Reserved qty increases by 2 | ERPNext assumes you might re-deliver those 2 units, so it “reopens” part of the Sales Order.     |
+| ✅ **Checked**   | No change in reserved qty   | ERPNext treats the return as a final reversal — it won’t plan to re-deliver those 2 items again. |
+
+
+
+🧠 When to Check This Option
+
+Check this if:
+- You don’t want to re-open or re-reserve Sales Orders when items are returned.
+- Your business treats returns as final and manages replacements as new orders.
+
+Leave it unchecked if:
+- You want to allow re-delivery from the same Sales Order after a return (common in replacement workflows).
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+Customer 
+
+
+📘 Doctype: Customer
+Purpose → To store and manage information about your customers in ERPNext.  
+Used in → All Selling Transactions (Quotation, Sales Order, Delivery Note, Sales Invoice).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏷️ DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name             | Description                                                                 |
+|-------------------------|------------------------------------------------------------------------------|
+| Customer Name           | Full name of the customer or business.                                      |
+| Territory               | Region/zone this customer belongs to (e.g., All Territories, West India).  |
+| Customer Type           | Type of customer (Company / Individual).                                   |
+| From Lead               | Link to Lead document if this customer was converted from a Lead.           |
+| From Opportunity        | Link to Opportunity document if created from an Opportunity.                |
+| From Prospect           | Link to Prospect if created from Prospect stage.                            |
+| Customer Group          | Classification of customer (e.g., Retail, Distributor).                     |
+| Account Manager         | Employee responsible for handling this customer.                            |
+| Alphanumeric Code       | Optional custom code to identify the customer.                              |
+
+🔸 Defaults (Inside Details)
+| Field Name                 | Description                                                                 |
+|-----------------------------|------------------------------------------------------------------------------|
+| Billing Currency            | Default currency for this customer’s invoices.                              |
+| Default Price List          | Default selling price list used for transactions.                           |
+| Default Company Bank Account| Company bank account used when transacting with this customer.              |
+
+🔸 Internal Customer
+| Field Name           | Description                                                                 |
+|--------------------  |------------------------------------------------------------------------------|
+| Is Internal Customer | Check if the customer is internal (e.g., between your own branches).       |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏠 ADDRESS & CONTACT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name              | Description                                                                 |
+|--------------------------|------------------------------------------------------------------------------|
+| Customer Primary Address | Default billing or shipping address for the customer.                       |
+| Customer Primary Contact | Main contact person linked to the customer.                                 |
+| Note                     | When edited, these fields can be reselected to reflect the latest data.     |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 TAX DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name               | Description                                                                 |
+|---------------------------|------------------------------------------------------------------------------|
+| GSTIN / UIN              | Customer’s GST Identification Number.                                       |
+| GST Category             | Type of GST registration (e.g., Registered, Unregistered).                  |
+| PAN                      | Permanent Account Number (for Indian tax).                                  |
+| Tax ID                   | Other Tax identification numbers if applicable.                             |
+| Tax Category             | Category used for applying taxes.                                           |
+| Tax Withholding Category | Defines TDS/TCS applicability for the customer.                             |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 ACCOUNTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name / Table             | Description                                                           |
+| ------------------------------ | --------------------------------------------------------------------- |
+| Default Payment Terms Template | Default template for payment timelines.                               |
+| Credit Limit Table             | Defines per-company credit limit and whether to bypass credit checks. |
+| Default Account Table          | Assigns non-standard receivable account for each company.             |
+| Loyalty Program                | Assigns customer to a specific loyalty program.                       |
+
+
+
+here,
+
+1. Credit Limit = how much a customer can buy on credit (without paying yet).
+
+Think of it like this:
+- You (the company) sell items to your customer, but they don’t pay immediately — they’ll pay later.
+- To avoid risk, you set a limit (a “credit limit”) for how much they can buy without paying.
+- Once their unpaid total reaches that limit, ERPNext will stop new sales orders or invoices for that customer (depending on your settings) until they pay some amount.
+
+
+👉 Example:
+You set a customer’s credit limit to ₹10,000.
+
+- They buy items worth ₹6,000 — okay.
+- They buy more worth ₹4,000 — total ₹10,000, still okay.
+- They try to buy ₹2,000 more — ERPNext will warn or block it because they’ve hit the limit.
+
+now what is Bypass Credit Limit Check at Sales Order ?
+-> When this box is checked, ERPNext will ignore the customer’s credit limit when creating a Sales Order.
+
+
+Normally, ERPNext checks if the customer’s total unpaid amount has crossed their credit limit.
+- If it’s crossed, ERPNext would stop you from making a new Sales Order.
+
+- But if you tick “Bypass Credit Limit Check at Sales Order”, ERPNext will not stop or warn you — it will allow you to make the Sales Order anyway.
+
+💡 Example:
+- Customer credit limit = ₹10,000
+- Customer already owes ₹9,500
+- You make a new Sales Order of ₹2,000
+
+Normally → ERPNext will block it (because ₹9,500 + ₹2,000 = ₹11,500 > ₹10,000)
+If “Bypass Credit Limit Check at Sales Order” is ticked → ERPNext will allow it
+
+
+------------------
+
+2. Default Accounts
+
+| Field                          | Meaning                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------- |
+| **Company**                    | The company this setting applies to                                             |
+| **Default Receivable Account** | The account where this customer’s unpaid invoices (money they owe) are recorded |
+
+
+Example
+
+| Company     | Default Receivable Account |
+| ----------- | -------------------------- |
+| ABC Pvt Ltd | Debtors - ABC              |
+| XYZ LLP     | Debtors - XYZ              |
+
+Then:
+- When you make a Sales Invoice for this customer under ABC Pvt Ltd, ERPNext will automatically post it to Debtors - ABC.
+- When you make it under XYZ LLP, it will use Debtors - XYZ.
+
+
+----------
+
+3. what is Loyalty Program ?
+
+A Loyalty Program is a system that gives reward points to customers when they buy things —
+and then lets them use those points to get discounts on future purchases.
+
+💡 Example
+- Let’s say you set up a Loyalty Program like this:
+- For every ₹100 spent, the customer gets 1 point.
+- Every 1 point = ₹1 discount.
+
+Now:
+- A customer buys for ₹500 → gets 5 points.
+- Next time, they buy again for ₹200 and use 5 points → they get ₹5 off.
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👥 SALES TEAM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name / Table | Description                                                                                  |
+|--------------------|-------------                                                                                 |
+| Sales Team Table   | Defines sales persons working with this customer, their contribution %, and commission rate. |
+| Sales Partner      | Partner or reseller associated with the customer.                                            |
+| Commission Rate    | Default commission rate for this partner.                                                    |
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚙️ SETTINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name                                         | Description                                                                 |
+|----------------------------------------------------|-----------------------------------------------------------------------------|
+| Allow Sales Invoice Creation Without Sales Order   | Allows invoices to be made without an existing Sales Order.                 |
+| Allow Sales Invoice Creation Without Delivery Note | Allows invoices to be made without Delivery Note.                           |
+| Is Frozen                                          | Prevents editing once frozen (for inactive customers).                      |
+| Disabled                                           | Marks customer as inactive; removes from dropdowns.                         |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌐 PORTAL USERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name / Table    | Description                    
+|--------------------   |-------------
+| Customer Portal Users | List of users who can log in to the ERPNext portal on behalf of this customer. 
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 MORE INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name       | Description                                                                  
+|-------------------|---------------------------------------------------------------------------- 
+| Market Segment    | Defines the market type (e.g., Retail, Wholesale, Government, Lower/Middle/upper income).            
+| Industry          | Type of business or industry category (e.g., Manufacturing, IT).            
+| Website           | Official website of the customer.                                           
+| Print Language    | Language to be used when printing documents for this customer.              
+| Customer Details  | Additional notes or remarks about the customer.                             
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+Sales Partner
+
+
+
+Purpose → Used to record and manage details about external or internal sales partners (dealers, distributors, agents, resellers, etc.)  
+- They help promote or sell your products and may receive a commission on successful sales.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏷️ BASIC DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name          | Description                                                                 |
+|----------------------|------------------------------------------------------------------------------|
+| Sales Partner Name   | Name of the sales partner (e.g., “ABC Distributors”, “John & Co.”).          |
+| Commission Rate (%)  | Default commission percentage this partner earns on each sale.               |
+| Partner Type         | Type of partner → could be *Distributor*, *Reseller*, *Sales Agent*, etc.    |
+| Territory            | Defines the region or zone assigned to this partner (e.g., All Territories). |
+
+💡 *Example:*  
+If you sell laptops via “TechHub Dealers” with 5% commission →  
+Sales Partner Name = TechHub Dealers, Commission Rate = 5%, Type = Distributor, Territory = South India.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 SALES PARTNER TARGET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name         | Description                                                                 |
+|---------------------|------------------------------------------------------------------------------|
+| Item Group          | Defines the product category the partner is responsible for (e.g., Electronics, Furniture). |
+| Fiscal Year         | Year in which the target applies (e.g., 2025–2026).                         |
+| Target Qty          | Sales quantity target for this partner.                                     |
+| Target Amount       | Total revenue target (monetary).                                            |
+| Target Distribution | Defines how targets are distributed — can be Monthly, Quarterly, etc.       |
+
+💡 *Example:*  
+- Item Group: “Laptops”  
+- Fiscal Year: 2025-2026
+- Target Qty: 500 Units  
+- Target Amount: ₹50,00,000  
+- Target Distribution: Monthly  
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌐 WEBSITE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name       | Description                                                                 |
+|-------------------|------------------------------------------------------------------------------|
+| Show in Website   | If checked → Partner profile will be displayed publicly on your website.     |
+| Referral Code     | A unique tracking code assigned to this partner to monitor sales made through their referrals. |
+| Note (Under Referral Code) | Helps track inbound purchases from this partner’s referral code.     |
+
+💡 *Example:*  
+Referral Code = “SP123”  
+→ When customers buy using this code, ERPNext automatically attributes the sale to this partner.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sales Partner Doctype is used to:
+- Maintain list of agents, resellers, or distributors.  
+- Assign sales territories and commission rates.  
+- Track targets (sales quantity, revenue goals).  
+- Use referral codes to monitor partner performance and inbound leads.  
+- Integrate with website for public partner listing (if enabled).
+
+📈 Example Workflow:
+1️⃣ Create Sales Partner “ABC Distributors” → Commission Rate: 5%  
+2️⃣ Add them to Customer → “Sales Partner” field  
+3️⃣ When invoice is created, system auto-calculates commission  
+4️⃣ Track partner performance via reports → “Sales Partner Target Achievement”
+
+
+
+
+
+| ----------------- | ------------------------------------------------------------------------------------------------ |
+| **Sales Partner** | An **external entity** (like a distributor, agent, or reseller) who helps you generate business. |
+| **Sales Person**  | An **internal employee** (or team member) directly responsible for sales.                        |
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Sales Person
+
+
+ 
+Purpose → Used to manage details of company sales representatives (employees who handle customers, orders, and achieve targets).  
+- This helps track performance, set targets, and calculate commissions.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏷️ NAME AND EMPLOYEE ID
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name           | Description                                                                 |
+|-----------------------|------------------------------------------------------------------------------|
+| Sales Person Name     | Name of the sales representative (e.g., “Rahul Sharma”).                     |
+| Employee              | Links the Sales Person record to the Employee doctype (if applicable).       |
+| Parent Sales Person   | Used to define hierarchy — for example, Sales Manager > Senior Executive.    |
+| Commission Rate (%)   | Default commission percentage earned by this salesperson.                    |
+| Is Group              | Check if this record is a group (used for organizing multiple salespeople).  |
+| Enabled               | If checked, salesperson is active and available for assignment.              |
+
+💡 *Example:*  
+If Rahul works under Manager Meena:  
+→ Meena = Parent Sales Person, Rahul = Child Sales Person.  
+→ Rahul gets 2% commission per sale.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 SALES PERSON TARGETS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name         | Description                                                                 |
+|---------------------|------------------------------------------------------------------------------|
+| Item Group          | Product category assigned to this salesperson (e.g., Electronics, Furniture). |
+| Fiscal Year         | Target’s applicable financial year (e.g., 2025–26).                         |
+| Target Qty          | Quantity target (number of units to sell).                                  |
+| Target Amount       | Total sales value target in currency (e.g., ₹5,00,000).                     |
+| Target Distribution | How the target is distributed — Monthly, Quarterly, or Annually.            |
+
+💡 *Example:*  
+- Item Group: Mobiles  
+- Fiscal Year: 2025-2026  
+- Target Qty: 200 units  
+- Target Amount: ₹15,00,000  
+- Target Distribution: Monthly  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sales Person Doctype helps to:
+- Maintain all your sales staff and their structure.  
+- Assign and track individual or group sales targets.  
+- Set default commission rates.  
+- Use in Sales Order, Sales Invoice, or Customer to track who closed the deal.  
+- Generate reports like “Sales Person Target Variance” to analyze performance.
+
+📈 Example Workflow:
+1️⃣ Create Sales Person “Rahul Sharma” with 2% commission.  
+2️⃣ Assign him in Customer or Sales Order.  
+3️⃣ System auto-calculates his commission on invoice creation.  
+4️⃣ Track progress against assigned targets for the year.
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Loyalty Program
+
+
+
+  
+Purpose → To define how customers earn and redeem loyalty points based on their purchases.  
+Used In → Sales Invoices, POS, and Customer records.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏷️ BASIC DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name          | Description                                                                 |
+|----------------------|------------------------------------------------------------------------------|
+| Loyalty Program Name | Name of the loyalty scheme (e.g., “Gold Rewards”, “Silver Points”).          |
+| Customer Group       | Select which customer groups are eligible for this loyalty program.          |
+| Customer Territory   | Territory of customers who can participate (e.g., All Territories).          |
+| Loyalty Program Type | Defines whether it’s a *Single Tier* (same rules for all) or *Multi Tier* program. |
+| From Date            | Date from which this loyalty program becomes active.                         |
+| To Date              | Expiry date of this loyalty program.                                         |
+| Auto Opt In (For all customers) | If checked, all customers are automatically enrolled when program is saved. |
+
+💡 *Example:*  
+If your company wants all retail customers to earn 1 point for every ₹100 spent —  
+→ Loyalty Program Type = Single Tier  
+→ Customer Group = Retail Customers  
+→ Auto Opt In = ✅  
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 COLLECTION TIER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name         | Description                                                                 |
+|---------------------|------------------------------------------------------------------------------|
+| Tier Name           | Name of the tier (e.g., Silver, Gold, Platinum).                             |
+| Collection Factor (=1 LP) | Defines how much spending gives 1 Loyalty Point (e.g., ₹100 = 1 LP).  |
+
+💡 *Example:*  
+- Tier Name: Gold  
+- Collection Factor: ₹50 = 1 LP  
+Means → For every ₹50 spent, customer earns 1 loyalty point.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 REDEMPTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name                      | Description                                                                 |
+|----------------------------------|------------------------------------------------------------------------------|
+| Conversion Factor                | Defines the redemption rate (1 LP = how much currency).                     |
+| Expense Account                  | Expense account used for loyalty redemption cost (e.g., “Marketing Expense”). |
+| Expiry Duration (in days)        | Number of days before loyalty points expire. Keep 0 for unlimited expiry.    |
+| Company                          | The company under which this loyalty program runs.                           |
+
+💡 *Example:*  
+- Conversion Factor = ₹1  
+- Expiry Duration = 365 days  
+→ Customer can redeem 1 LP as ₹1 within one year.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 ACCOUNTING DIMENSIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name | Description                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| Cost Center | Assigns cost center for expense tracking related to loyalty point redemptions. |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 HELP SECTION (NOTES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Note Description                                                                 |
+|----------------------------------------------------------------------------------|
+| Loyalty Points are calculated from total spend in Sales Invoice using collection factor. |
+| Multiple tiers are allowed; redemption conversion remains same for all tiers.     |
+| Customers are auto-assigned to a tier based on their total spending.              |
+| For unlimited expiry → keep Expiry Duration = 0 or blank.                         |
+| Auto Opt-In automatically links all customers with this program upon save.        |
+| A customer can belong to only one loyalty program at a time.                      |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Loyalty Program helps you to:
+- Reward repeat customers via points for each purchase.  
+- Define earning and redemption logic clearly.  
+- Create multi-tier programs (e.g., Silver, Gold, Platinum).  
+- Track and auto-expire loyalty points after defined duration.  
+- Control accounting for redemption via expense and cost center setup.  
+
+📈 Example Workflow:
+1️⃣ Create Loyalty Program “Gold Rewards”.  
+2️⃣ Define ₹100 = 1 LP (Collection Factor).  
+3️⃣ Define 1 LP = ₹1 (Conversion Factor).  
+4️⃣ Assign to “Retail Customers”.  
+5️⃣ When customer buys items → system automatically awards points.  
+6️⃣ Points can be redeemed as discount in future Sales Invoices.
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+Item Price
+
+
+
+Purpose → Defines the price of an item (either buying or selling) for a specific Price List.  
+Used In → Sales and Purchase transactions (Quotation, Order, Invoice, etc.).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏷️ BASIC DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name           | Description                                                                 |
+|-----------------------|------------------------------------------------------------------------------|
+| Item                  | Select the item whose price you want to define.                             |
+| UOM (Unit of Measure) | Defines the measurement unit (e.g., Nos, Kg, Box) applicable for this price. |
+| Packing Unit          | Quantity that must be sold or bought per UOM. For example, 1 Box = 10 Nos.  |
+| Quantity That Must Be Bought or Sold per UOM | Minimum or standard quantity applicable for this price. |
+
+💡 *Example:*  
+If “Laptop Charger” is sold per piece, UOM = Nos.  
+If it’s sold in boxes of 10 → Packing Unit = 10.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 PRICE LIST DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name     | Description                                                                 |
+|-----------------|------------------------------------------------------------------------------|
+| Price List      | Name of the price list (e.g., “Standard Selling”, “Wholesale Buying”).      |
+| Buying          | Check if this price is used for purchase transactions.                      |
+| Selling         | Check if this price is used for sales transactions.                         |
+| Batch No        | If item has batches, specify which batch this price applies to.              |
+
+💡 *Example:*  
+If you want a selling price for customers → Selling ✅  
+If you want a buying price for suppliers → Buying ✅
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💱 CURRENCY & RATE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name | Description                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| Currency    | Currency in which the price is defined (e.g., INR, USD, EUR).                |
+| Rate        | Price per UOM (the main price value).                                        |
+
+💡 *Example:*  
+Rate = ₹500 → means ₹500 per Nos (if UOM = Nos).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📆 VALIDITY & OTHER SETTINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name        | Description                                                                 |
+|--------------------|------------------------------------------------------------------------------|
+| Valid From         | Start date from which this price is effective.                              |
+| Valid Upto         | End date until which this price remains valid.                              |
+| Lead Time in Days  | Number of days required to fulfill an order for this item.                   |
+
+💡 *Example:*  
+Valid From = 01-11-2025, Valid Upto = 31-12-2025 → Price valid for Nov-Dec 2025.  
+Lead Time = 7 → Delivery takes 7 days.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 NOTES & REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name | Description                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| Note        | Add any internal note or remarks about this price (e.g., special discount reason). |
+| Reference   | External or internal document reference (e.g., Quotation No, Agreement ID).  |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Item Price Doctype helps you to:
+- Maintain separate buying and selling prices for each item.  
+- Manage multiple price lists (Retail, Wholesale, Distributor).  
+- Define validity periods for temporary discounts or offers.  
+- Control prices automatically in transactions (no manual entry needed).  
+- Handle multiple currencies for global transactions.
+
+📈 Example Workflow:
+1️⃣ Create Price List “Standard Selling”.  
+2️⃣ Create Item Price: Item = “Laptop”, Rate = ₹60,000, UOM = Nos, Price List = Standard Selling.  
+3️⃣ While creating a Sales Invoice → price auto-fills from this record.  
+4️⃣ If you update the price, new transactions reflect the updated rate automatically.
+
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Item Group
+
+
+📘 Doctype: Item Group  
+Purpose → Used to categorize or group items in ERPNext.  
+It helps organize products (for pricing, reporting, taxation, and easier selection in transactions).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚙️ GENERAL SETTINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name        | Description                                                                 |
+|--------------------|------------------------------------------------------------------------------|
+| Item Group Name    | The name of the group or category (e.g., “Electronics”, “Furniture”).        |
+| Parent Item Group  | Used to build a hierarchy (e.g., “Electronics” → “Mobile Phones”).           |
+| Is Group           | If checked, this item group can contain sub-groups (not used directly in sales). |
+
+💡 *Example:*  
+- Electronics (Is Group ✅)  
+- Mobile Phones (Is Group ❌, under Electronics)  
+
+Only *leaf nodes* (non-group items) are allowed in sales or purchase transactions.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 DEFAULTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name         | Description                                                                 |
+|---------------------|------------------------------------------------------------------------------|
+| HSN/SAC             | HSN (Harmonized System Nomenclature) or SAC (Service Accounting Code) for tax classification. |
+| Item Group Defaults | Set company-specific defaults for Warehouse and Price List.                 |
+
+📋 *Sub-fields under Item Group Defaults:*
+| Sub-field Name      | Description                                                                 |
+|----------------------|------------------------------------------------------------------------------|
+| Company              | Select the company to apply these defaults.                                 |
+| Default Warehouse    | Default warehouse for items belonging to this group.                        |
+| Default Price List   | Default price list used when selling or buying items from this group.       |
+
+💡 *Example:*  
+If your “Electronics” group always sells from “Main Warehouse” with “Standard Selling” price list —  
+you can define it here once.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💸 ITEM TAX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name          | Description                                                                 |
+|----------------------|------------------------------------------------------------------------------|
+| Item Tax Template    | Link a tax template to apply automatically for all items in this group.     |
+| Tax Category         | Specify the tax category (e.g., GST 18%, VAT, etc.).                        |
+| Valid From           | Date from which this tax rate is applicable.                                |
+| Minimum Net Rate     | Lowest allowed rate for an item in this group.                              |
+| Maximum Net Rate     | Highest allowed rate for an item in this group.                             |
+
+💡 *Example:*  
+For “Mobile Phones” →  
+Tax Template: GST 18%,  
+Valid From: 01-01-2025,  
+Min Rate: ₹5,000, Max Rate: ₹1,50,000.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Item Group Doctype helps you:
+- Organize items into logical categories.  
+- Maintain a hierarchical structure (Parent → Child Groups).  
+- Apply tax templates and HSN/SAC codes easily.  
+- Define company-specific defaults like warehouse or price list.  
+- Improve report filtering, pricing, and tax management.
+
+📈 Example Workflow:
+1️⃣ Create Item Group “Electronics” (Is Group ✅).  
+2️⃣ Create Sub-Group “Laptops” (Is Group ❌, Parent = Electronics).  
+3️⃣ Set HSN Code: 8471 (Computers).  
+4️⃣ Assign Tax Template: GST 18%.  
+5️⃣ Assign Default Warehouse: “Main Warehouse”.  
+Now, all items under “Laptops” will automatically inherit these settings.
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+Product Bundle
+
+
+
+
+  
+Purpose → Used to group multiple individual items into one “bundle” for selling as a package.  
+Example: Laptop + Bag + Mouse sold together as “Laptop Combo Offer”.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚙️ BASIC DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name   | Description                                                                 |
+|---------------|------------------------------------------------------------------------------|
+| Parent Item   | The main item name (the bundle itself). It represents the combined product sold. |
+| Description   | Short description about the bundle (e.g., “Includes laptop, mouse, and bag”). |
+| Disabled      | Tick this if you want to deactivate or stop using this bundle.               |
+
+💡 *Example:*  
+Parent Item = “Laptop Combo Offer”  
+Description = “Includes 1 Laptop, 1 Mouse, 1 Laptop Bag”.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 ITEMS (CHILD TABLE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name  | Description                                                                 |
+|--------------|------------------------------------------------------------------------------|
+| Item         | The actual stock items included in the bundle.                              |
+| Qty          | Quantity of each included item in the bundle.                               |
+| Description  | Description of the specific item (optional).                                |
+| UOM          | Unit of Measure (e.g., Nos, Box, Kg).                                       |
+
+💡 *Example:*  
+| Item            | Qty | UOM | Description        |
+|-----------------|-----|-----|--------------------|
+| Laptop          | 1   | Nos | HP 15" Laptop      |
+| Laptop Bag      | 1   | Nos | HP Branded Bag     |
+| Wireless Mouse  | 1   | Nos | Logitech Mouse     |
+
+So, when you sell *“Laptop Combo Offer”*, ERPNext automatically deducts 1 Laptop, 1 Bag, and 1 Mouse from stock.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📖 ABOUT PRODUCT BUNDLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Product Bundle = Aggregate group of *Items* under one *Parent Item*.
+
+- Useful when you want to sell a package but maintain stock of each individual item.  
+- ERPNext does not track stock for the bundle itself — only for the items inside it.  
+- When a Sales Invoice is made for the bundle → system automatically pulls and reduces stock for its components.
+
+🧩 Important System Behavior:
+| Field                | Value  | Meaning                                         |
+|-----------------------|--------|------------------------------------------------|
+| Is Stock Item         | No     | The bundle itself is not a stock item.         |
+| Is Sales Item         | Yes    | The bundle can be sold as a single product.    |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 PRACTICAL EXAMPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Let’s say your company sells:
+- Laptop (₹50,000)
+- Laptop Bag (₹1,000)
+- Mouse (₹500)
+
+You want to create a combo called **“Laptop Combo Offer”** for ₹51,000.  
+
+**Setup:**
+- Create a new Item: “Laptop Combo Offer”  
+  → Set *Is Stock Item = No*, *Is Sales Item = Yes*.  
+- Go to Product Bundle:  
+  → Parent Item = “Laptop Combo Offer”  
+  → Add 3 items: Laptop (1), Laptop Bag (1), Mouse (1)
+
+Now, when you create a **Sales Invoice** for “Laptop Combo Offer” →  
+ERPNext automatically lists the child items (Laptop, Bag, Mouse) and deducts stock for them individually.
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Product Bundle helps you:
+- Sell multiple items as one combined package.  
+- Maintain stock of individual components, not the bundle.  
+- Offer combo deals or promotional sets easily.  
+- Simplify sales process by grouping products under one main item.
+
+📈 Example Workflow:
+1️⃣ Create individual items → Laptop, Bag, Mouse.  
+2️⃣ Create a non-stock sales item → “Laptop Combo Offer”.  
+3️⃣ Use Product Bundle to link all three items.  
+4️⃣ Add “Laptop Combo Offer” in Sales Invoice.  
+→ ERPNext automatically fetches and updates stock of the 3 child items.
+
+
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+Shipping Rule
+
+
+
+
+Purpose → Used to define how shipping charges are calculated and applied automatically in Sales or Purchase documents.  
+It helps automate freight cost addition (like courier, transport, delivery fee, etc.).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚙️ BASIC DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name          | Description                                                                 |
+|----------------------|------------------------------------------------------------------------------|
+| Shipping Rule Label  | Name or title for the shipping rule (e.g., “Domestic Delivery”, “Free Shipping”). |
+| Shipping Rule Type   | Choose if the rule is for **Selling** or **Buying**.                        |
+| Disabled             | Check this box to deactivate the rule (won’t apply in transactions).        |
+
+💡 *Example:*  
+If this rule is for customer delivery → Type = Selling  
+If this rule is for supplier transport → Type = Buying
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 ACCOUNTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name         | Description                                                                 |
+|---------------------|------------------------------------------------------------------------------|
+| Company             | Select the company for which this shipping rule applies.                     |
+| Shipping Account    | The expense or income account where shipping charges will be booked.         |
+
+💡 *Example:*  
+- For selling: “Freight and Delivery Charges - INCOME”  
+- For buying: “Freight and Transportation - EXPENSE”
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 ACCOUNTING DIMENSIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name  | Description                                                                 |
+|--------------|------------------------------------------------------------------------------|
+| Cost Center  | Cost Center to track where the shipping charge revenue/expense is recorded. |
+
+💡 *Example:*  
+If your company has multiple branches, you can track shipping charges branch-wise.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 SHIPPING CALCULATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name        | Description                                                                 |
+|--------------------|------------------------------------------------------------------------------|
+| Calculate Based On | How the shipping charge is calculated. Options:                             |
+|                    | - Fixed → Always apply a fixed charge.                                      |
+|                    | - Net Total → Based on order total amount.                                 |
+|                    | - Weight → Based on total weight of items.                                 |
+|                    | - Quantity → Based on total quantity of items.                             |
+| Shipping Amount    | The actual shipping charge amount (if Fixed).                              |
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌍 RESTRICT TO COUNTRIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name      | Description                                                                 |
+|------------------|------------------------------------------------------------------------------|
+| Valid for Countries | Restrict this shipping rule to specific countries.                       |
+
+💡 *Example:*  
+- “India” → apply for domestic deliveries only.  
+- “United States” → apply for international shipping.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Shipping Rule helps you:
+- Automate shipping charge calculation.  
+- Define company-wise shipping logic.  
+- Apply shipping only for specific regions or transactions.  
+- Track income/expense from shipping separately in accounts.  
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📈 PRACTICAL EXAMPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Scenario:**  
+You offer free shipping for orders above ₹5,000 and ₹100 delivery charge for others.
+
+**Setup:**
+1️⃣ Create Shipping Rule → Label = “Domestic Delivery”  
+2️⃣ Type = Selling  
+3️⃣ Company = Vrutant  
+4️⃣ Shipping Account = “Freight Charges - INCOME”  
+5️⃣ Calculate Based On = Fixed  
+6️⃣ Shipping Amount = ₹100  
+7️⃣ Country = India  
+
+Now, when you make a **Sales Invoice** →  
+ERPNext automatically adds ₹100 as a “Shipping Charge” (or ₹0 if order > ₹5,000, if condition set). here condition is set by from or to field in table 
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔹 NOTE:
+Shipping Rule can also be linked dynamically with:
+- **Customer Group** (for customer-specific delivery fees).  
+- **Territory or Country** (for region-based shipping).  
+- **Item Weight or Value** (for courier or logistics-based pricing).
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+Coupon Code
+
+
+
+  
+Purpose → Used to create discount or promotional codes that apply specific pricing rules during checkout or sales transactions.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚙️ BASIC DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name    | Description                                                                 |
+|----------------|------------------------------------------------------------------------------|
+| Coupon Name    | Internal name for identifying the coupon (e.g., “New Year Discount”).        |
+| Coupon Code    | The unique code customers will enter to get the discount (e.g., SAVE20).    |
+| Coupon Type    | Defines the coupon’s purpose:                                               |
+|                | - **Promotional:** General discount coupon for marketing (e.g., “NEWUSER10”). |
+|                | - **Loyalty:** Reward-based for returning customers.                         |
+|                | - **Gift:** Issued for gifting or compensations.                            |
+| Pricing Rule   | Link to a **Pricing Rule** that defines how much discount will be given.     |
+
+💡 *Example:*  
+Coupon Name = Diwali Offer  
+Coupon Code = DIWALI20  
+Coupon Type = Promotional  
+Pricing Rule = “20% Off on Orders above ₹1000”
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📅 VALIDITY AND USAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name    | Description                                                                 |
+|----------------|------------------------------------------------------------------------------|
+| Valid From     | Start date from which coupon can be used.                                   |
+| Valid Upto     | Expiry date — after this date coupon becomes invalid.                       |
+| Maximum Use    | Total number of times this coupon can be used by all users combined.        |
+| Used           | Shows how many times this coupon has already been used. Auto-updated.       |
+
+💡 *Example:*  
+Valid From = 01-Nov-2025  
+Valid Upto = 30-Nov-2025  
+Maximum Use = 100  
+Used = 47 (auto-updated after 47 redemptions)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 COUPON DESCRIPTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+| Field Name          | Description                                                                 |
+|----------------------|------------------------------------------------------------------------------|
+| Coupon Description   | A short note or rule details for users or staff — explains coupon terms.   |
+
+💡 *Example:*  
+"Get 20% off on all products. Minimum purchase ₹1000. Offer valid until 30 Nov 2025."
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Coupon Code Doctype helps you:
+- Offer discounts to customers with unique codes.  
+- Connect with existing **Pricing Rules** for automated discount calculation.  
+- Set start/end dates and usage limits to control coupon lifespan.  
+- Track how many times each coupon is used.  
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📈 PRACTICAL EXAMPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Scenario:**  
+Your company “Vrutant Electronics” wants to give 15% off on all accessories for November.
+
+**Setup Steps:**
+1️⃣ Create a **Pricing Rule** →  
+   → Apply 15% discount on Item Group “Accessories”.  
+   → Condition: Minimum order ₹500.  
+2️⃣ Create a **Coupon Code** →  
+   - Coupon Name: “November15”  
+   - Coupon Code: “SAVE15”  
+   - Coupon Type: “Promotional”  
+   - Link the same Pricing Rule.  
+   - Valid From: 01-Nov-2025 → Valid Upto: 30-Nov-2025  
+   - Maximum Use: 200  
+
+Now, when a customer enters **SAVE15**, ERPNext automatically applies the linked discount rule in Quotation, Sales Order, or Sales Invoice.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 NOTES:
+- Coupons can be single-use or multi-use (controlled via “Maximum Use”).  
+- Coupons won’t work without an active and valid **Pricing Rule**.  
+- ERPNext automatically prevents use after the expiry date or when the limit is reached.
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+📊 SELLING MODULE REPORTS (ERPNext)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEY REPORTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+| Report Name                           | Description / Use                                                                 |
+|----------------------------------     |----------------------------------------------------------------------------------|
+| Sales Analytics                       | Analyze total sales by item, customer, territory, or time period. Helps measure sales performance and trends. |
+| Sales Order Analysis                  | Detailed view of all Sales Orders with their status, items, and pending deliveries. Useful for tracking fulfillment. |
+| Sales Funnel                          | Shows conversion flow — Lead → Opportunity → Quotation → Order → Invoice. Helps analyze conversion rates. |
+| Sales Order Trends                    | Displays how Sales Orders vary over time (daily/monthly). Useful for demand forecasting. |
+| Quotation Trends                      | Shows trends of sent, accepted, and lost quotations. Helps track quotation success rate. |
+| Customer Acquisition and Loyalty      | Tracks new and returning customers. Helps understand loyalty and repeat purchase behavior. |
+| Inactive Customers                    | Lists customers who haven’t purchased for a long time. Helps target re-engagement campaigns. |
+| Sales Person-wise Transaction Summary | Compares total sales achieved by each salesperson. Useful for performance evaluation. |
+| Item-wise Sales History               | Shows product-wise sales quantity and amount over time. Helps identify best and worst-selling items. |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OTHER REPORTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+| Report Name                                    | Description / Use                                                              |
+|------------------------------------------------|--------------------------------------------------------------------------------|
+| Customer Addresses and Contacts                | Displays all customer addresses and contacts in one place. Useful for data validation or CRM updates. |
+| Available Stock for Packing Items              | Shows available stock for items that need to be packed or delivered. Helps in shipment readiness. |
+| Pending SO Items for Purchase Request          | Lists Sales Order items that need to be purchased to fulfill delivery. Helps purchasing team plan. |
+| Delivery Note Trends                           | Displays delivery patterns and frequency over time. Useful for logistics planning. |
+| Sales Invoice Trends                           | Analyzes billing patterns and total invoices raised. Helps monitor revenue cycle. |
+| Customer Credit Balance                        | Shows outstanding or advance balances per customer. Helps in credit control management. |
+| Customers Without Any Sales Transactions       | Lists customers who have not made any purchase ever. Helps identify inactive or test accounts. |
+| Sales Partners Commission                      | Displays total commission earned by sales partners based on their sales. Useful for partner accounting. |
+| Territory Target Variance (Item Group-wise)    | Compares actual vs target sales in each territory per item group. Helps in territory performance tracking. |
+| Sales Person Target Variance (Item Group-wise) | Shows difference between actual and target sales achieved by each salesperson. |
+| Sales Partner Target Variance (Item Group-wise)| Compares target vs actual achievement for sales partners. Useful for commission-based reporting. |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

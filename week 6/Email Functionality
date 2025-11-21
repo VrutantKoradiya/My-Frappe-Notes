@@ -1,0 +1,163 @@
+Email Functionality ::::::::::::::::::
+
+1. Sending Emails from UI - 
+-> you can send email from ui by click on any reocrd in any doctype 
+
+Send Email - Click Send.
+
+Behind the scenes:
+A Communication record is created with type “Communication”.
+Email is queued in Email Queue.
+If a worker is running (bench worker), it will be sent immediately.
+Email appears in the timeline of the Library Transaction record.
+
+########################################################################################################################################################################################
+
+2. Sending Emails using Code (Server Side)
+
+frappe.sendmail() → simple, quick emails
+
+syntax : 
+
+frappe.sendmail(
+    recipients=["recipient@example.com"],  # list of emails
+    subject="Email Subject",
+    message="Email content in HTML or plain text",
+    reference_doctype="DocType",          # optional, to attach to timeline
+    reference_name="DOC-0001",            # optional
+    attachments=None                       # optional, list of file paths
+)
+
+
+or 
+
+Sending Attachments:
+
+frappe.sendmail(
+    recipients=[doc.borrower_email],
+    subject="Your Receipt",
+    message="Please find attached your PDF receipt.",
+    attachments=[frappe.get_print(doc.doctype, doc.name)],  # generates PDF
+    reference_doctype=doc.doctype,
+    reference_name=doc.name
+)
+frappe.get_print() renders the document as PDF.
+Automatically attached to email.
+
+example :
+
+import frappe
+
+def send_due_reminder(doc):
+    frappe.sendmail(
+        recipients=[doc.borrower_email],
+        subject=f"Reminder: Book '{doc.book_name}' Due on {doc.due_date}",
+        message=f"""
+            Hello {doc.borrower_name},<br><br>
+            This is a friendly reminder that your book "<b>{doc.book_name}</b>" is due on {doc.due_date}.<br>
+            Please return it by the due date to avoid late fees.<br><br>
+            Thanks,<br>
+            Library Management
+        """,
+        reference_doctype="Library Transaction",
+        reference_name=doc.name
+    )
+
+
+what are the way to execute .
+1. Trigger Email Automatically on Events :
+
+in hooks.py -> 
+
+doc_events = {
+    "Doctype name": {
+        "event_name": "library_management.library.send_due_reminder"
+    }
+}
+
+2.From a Whitelisted Method (Callable via frappe.call)
+3.Using Background Jobs (frappe.enqueue)
+4.From Scheduled Jobs / Cron (Hooks: scheduler_events)
+
+
+########################################################################################################################################################################################
+
+
+3. Sending Emails Using Client Side (JS)
+In Frappe, you can trigger server-side methods from the client using frappe.call(). This allows you to:
+Send emails without reloading the page.
+Trigger emails when users click a button or perform an action.
+Use existing Python methods that send emails (frappe.sendmail() or custom methods).
+
+
+
+
+
+Bonus: Trigger Automatically on Form Save
+Instead of a button, you can call the email on form save:
+
+########################################################################################################################################################################################
+
+
+4. Email Templates in Frappe (we can also create email template which we can use in our method ... )
+-> Email templates in Frappe allow you to predefine email content (subject, body, attachments) so you don’t have to write the same email repeatedly. 
+They can also use dynamic fields from your documents with Jinja templating.
+
+
+########################################################################################################################################################################################
+
+5. Automatic Emails (Notifications) yt video : https://youtu.be/cTtTFmHTSsg?si=miHMi9A2B7yNApww
+Notifications in Frappe are rule-based email triggers.
+You configure them from the UI (no code).
+They can automatically send emails based on events (Insert, Save, Submit, Cancel) or conditions (e.g., status = "Approved").
+They can also use Email Templates or direct Jinja expressions inside subject/body.
+
+
+steps : 
+1. Go to Settings → Email → Notification → New
+2. Fill in the fields:
+      here -> Send Alert On : it is field where you need no specify an event when this should call ... 
+      
+in the Notification Log list you can see all notifications ...       
+   
+   
+########################################################################################################################################################################################
+
+6. Email Queue & Background Jobs
+When you send an email using frappe.sendmail() or via UI, Frappe does not send it immediately (unless in dev mode with flush).
+Instead, it creates a record in the Email Queue doctype.
+Then, background workers (via frappe.enqueue or scheduler) pick these queued emails and deliver them.
+
+This is done so that:
+Sending large numbers of emails doesn’t block the user request.
+If email server is down, Frappe retries automatically.
+You can track failed/delayed emails.
+
+
+if you want to send bulk emails so its look like it - 
+import frappe
+
+def send_bulk_admission_mails():
+    students = frappe.get_all("Student", fields=["name", "email"])
+    for s in students:
+        frappe.enqueue(
+            method=frappe.sendmail,
+            queue="short",        # short/long queue
+            timeout=300,
+            recipients=[s.email],
+            subject="Admission Confirmation",
+            message=f"Hello {s.name}, your admission is confirmed!"
+        )
+
+   
+
+
+
+
+
+
+
+
+
+
+

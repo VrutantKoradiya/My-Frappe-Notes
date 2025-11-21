@@ -1,0 +1,2525 @@
+
+also called " Production Planning & Execution " 
+
+Do: create first Main Item then create raw materials as a to create that Main item
+
+
+####################################################################################################################################################################################
+
+	
+
+
+✅ Doctypes Understanding
+
+
+
+1. Bill of Materials (BOM) ----
+
+🔹 Purpose / Role: 
+
+- The Bill of Materials defines the recipe or blueprint for manufacturing a product.
+- It lists which raw materials, in what quantity, and what operations are needed to make one finished item.
+- It acts as the foundation for all manufacturing activities — like production planning, costing, and work orders.
+
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+Let’s say your company manufactures Laptops.
+
+To make 1 Laptop, you need: 1 Motherboard, 1 Screen, 1 Keyboard, 1 Battery, 1 Laptop Body
+
+
+- In ERPNext, you create a Bill of Materials for the item Laptop.
+- This BOM will define all these raw materials (and optionally operations like “Assemble Components”, “Install OS”, “Final Testing”).
+
+- Later, when you create a Work Order, ERPNext will use this BOM to know what materials to consume and how many units to produce.
+
+➡️ BOM = Recipe for making your Laptop.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+2. Production Plan
+
+
+🔹 Purpose / Role :
+
+- A Production Plan helps you organize and schedule manufacturing based on upcoming sales or material demands.
+- It’s used when you need to produce multiple finished goods or plan production for a specific period — ensuring enough raw materials and capacity are available.
+
+It basically answers the question: “What items should we manufacture, in what quantity, and when?”
+
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+
+- Your company receives multiple sales orders for 100 Laptops next month.
+- Instead of creating Work Orders one by one, you create a Production Plan for 100 Laptops.
+
+ERPNext then:
+
+- Automatically checks the Bill of Materials (BOM) of the Laptop.
+- Calculates how many raw materials (like motherboards, screens, batteries, etc.) are required.
+- Suggests creating Material Requests if stock is short.
+- Generates Work Orders in bulk to manage production efficiently.
+
+
+
+➡️ Production Plan = Big picture manufacturing schedule that ensures you have enough materials and resources to make your Laptops on time.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+3. Work Order
+
+🔹 Purpose / Role :
+
+- A Work Order represents the actual production job — it’s a detailed instruction to manufacture a specific quantity of a finished item using a selected BOM.
+- It tracks the entire process from starting production to consuming materials and creating the finished goods.
+
+Think of it as the execution document in the manufacturing process.
+
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+
+- After finalizing the Production Plan for 100 Laptops, you create a Work Order for, say, 50 Laptops first.
+
+
+
+This Work Order:
+- Refers to the Laptop BOM (recipe).
+- Reserves required materials — like 50 motherboards, 50 screens, etc.
+- Tells the shop floor team to start assembly.
+- Tracks stages like Assembly, Quality Check, and Completion.
+- Finally allows you to manufacture and update stock of 50 finished Laptops.
+
+
+➡️ Work Order = The actual factory instruction that turns the BOM plan into real, physical Laptops.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+4. Operation
+
+🔹 Purpose / Role
+
+- An Operation defines a specific step or task in the manufacturing process — like assembling parts, testing, or packaging.
+- Each operation represents a work activity that takes time, cost, and manpower, and can be assigned to a workstation.
+
+It’s used inside the BOM and Work Orders to calculate time and cost more accurately.
+
+
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+
+In your Laptop production process, there are several stages involved, such as:
+
+1. Assemble Components – Fitting motherboard, battery, and screen into the laptop body.
+2. Software Installation – Installing the operating system and required drivers.
+3. Quality Testing – Checking display, keyboard, and performance.
+4. Packaging – Boxing and labeling the final product.
+
+Each of these stages is an Operation.
+
+You’ll define them in ERPNext, so when a Work Order is created, ERPNext knows what steps to follow and can calculate total operation time and cost.
+
+
+
+➡️ Operation = Step-by-step activity that transforms raw materials into the finished Laptop.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+5. Workstation Type
+
+- A Workstation Type represents a category or class of workstations that perform similar kinds of operations.
+- It helps standardize and organize your manufacturing setup — especially when you have multiple workstations doing the same type of job.
+
+You can set default settings (like hourly rate, energy cost, capacity, etc.) at the Workstation Type level, and then individual workstations can inherit those properties.
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+- In your Laptop factory, you might have multiple Assembly Tables or Testing Benches:
+
+Workstation Type: Assembly Table → for assembling components.
+Workstation Type: Testing Bench → for performing quality tests.
+Workstation Type: Packaging Unit → for packing the finished Laptops.
+
+So instead of defining rates and capacity for each individual workstation separately, you can define them once in Workstation Type and then assign that type to multiple workstations.
+
+
+
+
+➡️ Workstation Type = Template or category used to group similar workstations in your Laptop production line.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+6. Workstation
+
+🔹 Purpose / Role
+
+- A Workstation represents the physical place or machine where a specific operation is performed in the manufacturing process.
+- It helps track where the work happens, how much time and cost it takes, and what its capacity is.
+
+Each workstation belongs to a Workstation Type and can be linked to multiple Operations in the BOM.
+
+
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+- In your Laptop factory, you have multiple physical setups where operations take place:
+
+Workstation 1: Assembly Table A → used for assembling laptop components
+Workstation 2: Testing Bench 1 → used for performing hardware and software tests
+Workstation 3: Packaging Unit 2 → used for final packing
+
+When a Work Order is executed, ERPNext uses these workstations to:
+- Allocate each Operation (like assembly or testing) to the right place
+- Track how long each operation takes
+- Calculate production cost based on workstation rate and time used
+
+
+
+➡️ Workstation = Actual place or equipment where a specific Laptop manufacturing step physically happens.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+7. Routing
+
+
+🔹 Purpose / Role
+
+- A Routing defines the sequence of operations needed to manufacture an item — in other words, it tells “which operations happen, in what order, and where.”
+- It connects Operations and Workstations together to create a complete production flow.
+
+When you attach a Routing to a BOM, ERPNext knows exactly how the manufacturing will progress — from the first step to the last.
+
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+
+For your Laptop, the manufacturing process goes through several steps:
+
+1. Assemble Components → done at Assembly Table A
+2. Software Installation → done at Software Setup Station
+3. Quality Testing → done at Testing Bench 1
+4. Packaging → done at Packaging Unit 2
+
+You can define all these steps in one Routing called Laptop Production Routing.
+Then, when you create the BOM for Laptop, you link this Routing so ERPNext knows the order of operations and the workstations to use.
+
+
+➡️ Routing = The roadmap or workflow showing how the Laptop moves through different operations and workstations during manufacturing.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+8. Stock Entry ( Material Transfer for Manufacture )
+
+- Material Transfer for Manufacture is a type of Stock Entry used to move raw materials from the main warehouse (or stores) to the production floor/workstation location 
+  before starting manufacturing.
+- It ensures that all required components are available where production actually happens.
+
+It doesn’t consume or produce anything yet — it’s just a transfer step in the manufacturing flow.
+
+
+
+
+Real-World Example (Laptop Manufacturing)
+
+- Your store has raw materials like:
+100 Motherboards
+100 Screens
+100 Keyboards
+100 Batteries
+
+- Now, a Work Order is created to manufacture 50 Laptops.
+
+- Before starting assembly, you need to send materials from the Main Warehouse to the Assembly Area.
+
+So you create a Stock Entry of type “Material Transfer for Manufacture” that moves:
+- 50 Motherboards
+- 50 Screens
+- 50 Keyboards
+- 50 Batteries 
+      …to the workstation’s location.
+
+Once the materials reach the production area, actual assembly (manufacturing) can begin.
+
+
+
+➡️ Material Transfer for Manufacture = Moving raw materials from the main store to the production floor before Laptop assembly starts.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+9. Job Card
+
+- A Job Card represents the actual work record for a specific operation in the manufacturing process.
+- It tracks who performed the task, at which workstation, how long it took, and how much quantity was completed.
+
+It’s created automatically (or manually) from a Work Order, based on the operations defined in its BOM or Routing.
+
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+
+You have a Work Order to make 50 Laptops.
+According to your Routing, the first operation is “Assemble Components” done at Assembly Table A.
+
+ERPNext automatically creates a Job Card for this operation.
+Your technician — say Rahul — starts the job, records:
+- Start Time and End Time
+- Quantity completed (e.g., 50 Laptops assembled)
+- Any downtime or remarks
+
+After completion, this Job Card serves as a record of that operation’s work.
+Then the next Job Card (for Software Installation) can begin, and so on, until all operations are completed.
+
+
+➡️ Job Card = Work log for each operation step, tracking time, employee, and progress during Laptop manufacturing.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+10. Stock Entry ( Manufacture )
+
+
+🔹 Purpose / Role
+
+- A Stock Entry of type “Manufacture” represents the completion of the production process — it consumes raw materials and adds the finished product to stock.
+- It’s the final step in manufacturing where ERPNext updates the inventory to show that finished goods are now ready.
+
+This entry is usually created when a Work Order is completed.
+
+
+
+🔹 Real-World Example (Laptop Manufacturing)
+
+After all operations (Assembly, Software Installation, Testing, Packaging) are done for 50 Laptops, you’re ready to record the finished goods.
+
+You create a Stock Entry (Manufacture) that:
+
+Consumes:
+- 50 Motherboards
+- 50 Screens
+- 50 Keyboards
+- 50 Batteries
+- 50 Laptop Bodies
+
+Produces:
+- 50 Finished Laptops
+
+
+ERPNext automatically calculates the cost of production based on consumed items and operation costs, and adds 50 Laptops to the Finished Goods Warehouse.
+
+
+➡️ Stock Entry (Manufacture) = The final production entry that converts raw materials into finished Laptops and updates stock accordingly.
+
+
+
+
+
+####################################################################################################################################################################################
+
+for practical implementation ( item + raw materials )
+
+Items
+├── Finished Goods ( product )
+│   └── Laptop
+└── Raw Materials ( raw materials )
+    ├── Electronics
+    │   ├── Motherboard
+    │   ├── Screen
+    │   ├── Keyboard
+    │   ├── Battery
+    │   ├── SSD
+    └── Accessories
+        ├── Laptop Body
+        ├── Charger
+        ├── Packaging Box
+        
+
+here i dont create any Electronics, Accessories just create all raw materials
+
+
+####################################################################################################################################################################################
+
+
+ ✅ Doctyoe with Each Field =====
+
+
+
+1. Bill of Materials (BOM) ----  
+
+1️⃣ PRODUCTION ITEM SECTION
+
+| Field                                      | Meaning                                                |
+| ------------------------------------------ | ------------------------------------------------------ |
+| Item                                       | Finished product to be manufactured/repacked.          |
+| Item UOM                                   | Unit of measure of finished product.                   |
+| Quantity                                   | Quantity of finished product produced per BOM.         |
+| Is Active                                  | BOM is usable in manufacturing.                        |
+| Is Default                                 | System will use this BOM automatically.                |
+| Allow Alternative Item                     | Allows raw material substitution.                      |
+| Set rate of sub-assembly item based on BOM | Use BOM cost for sub-assemblies instead of item price. |
+| Project                                    | Link BOM to a project.                                 |
+
+
+here,
+
+1. Set rate of sub-assembly item based on BOM :
+- In ERPNext, when an item inside a BOM has its own BOM (a sub-assembly), the system automatically sets its rate using the total cost calculated 
+  from that sub-assembly’s BOM instead of using the item’s purchase rate or valuation rate.
+
+⭐ Expanded Definition (Clear & Practical)
+When building a BOM in ERPNext:
+- If an item is a raw material → ERPNext uses its valuation rate or last purchase rate.
+- If an item is a sub-assembly (it has its own BOM) → ERPNext uses the total cost of its BOM as the rate.
+
+
+ERPNext calculates this by:
+- Reading the sub-assembly’s BOM.
+- Summing all material + operation costs.
+- Assigning this cost as the “Rate” in the parent BOM.
+
+For example, 
+
+finished good BOM - 
+
+| Sub-Assembly / Raw Item | Qty | Rate Source    | Rate | Amount |
+| ----------------------- | --- | -------------- | ---- | ------ |
+| Motherboard Assembly    | 1   | Valuation Rate | 91   | 91     |
+| Screen Assembly         | 1   | **From BOM**   | 60   | 60     |
+| Keyboard                | 1   | Valuation Rate | 15   | 15     |
+| Battery Pack            | 1   | Valuation Rate | 30   | 30     |
+| SSD                     | 1   | Valuation Rate | 20   | 20     |
+| Laptop Body             | 1   | Valuation Rate | 25   | 25     |
+| Charger                 | 1   | Valuation Rate | 12   | 12     |
+| Packaging Box           | 1   | Valuation Rate | 5    | 5      |
+
+now for screen assembly we have BOM for that
+
+| Item      | Qty | Rate | Amount |
+| --------- | --- | ---- | ------ |
+| LCD Panel | 1   | 50   | 50     |
+| Touch Pad | 1   | 10   | 10     |
+
+👉 Total Screen Cost = 60
+
+ ERPNext sets:  Rate(Screen Assembly) = 60
+
+
+---------------------
+
+2. ALternative items
+
+In ERPNext, “Alternative Item in BOM” is always for raw materials or components, NOT for finished goods or sub-assemblies.
+
+When creating a Work Order, ERPNext checks stock:
+- If Battery Pack A is in stock → use it
+- If Battery Pack A is out of stock → ERPNext shows:
+
+“Alternative Item Available: Battery Pack B”
+You can choose Battery Pack B with one click.
+
+note :
+- Battery A and Battery B must both be RAW MATERIAL items.
+- you need to set it in the Item Alternative doctype, Then in the BOM, Battery A (raw material) can be replaced with Battery B (another raw material).
+
+
+---------------------
+
+3. Quantity
+- “Quantity (Finished Items)” is the number of final products produced from a single execution of this BOM and its materials.”
+
+
+⭐ Simple Rule to Remember
+✔ If BOM produces 1 item → enter raw materials for 1 unit
+✔ If BOM produces 10 items → enter raw materials for 10 units
+✔ ERPNext DOES NOT multiply raw materials automatically inside the BOM
+
+
+
+📌 Important Point (Very Important)
+❗In the BOM, the raw material table shows the actual quantity needed for the BOM’s total output.
+
+ERPNext only divides or multiplies later (during costing or work order), not inside the BOM.
+
+calculation on costing :
+- ERPNext divides the raw material cost by this quantity to get the cost per finished item.
+
+Example:
+
+Total material cost = ₹500
+Quantity = 5
+Cost per unit = 500 ÷ 5 = ₹100
+
+------------------------
+
+
+2️⃣ COST CONFIGURATION
+
+| Field                      | Meaning                                                                                     |
+| -------------------------- | -------------------------------------------                                                 |
+| Rate of Materials Based On | How raw material prices are selected. ( valuation rate, last purchase rate, price list)     |
+| Currency                   | Currency in which BOM costs are calculated.                                                 |
+
+
+3️⃣ RAW MATERIALS (Items Table)
+
+
+| Field     | Meaning                            |
+| --------- | ---------------------------------- |
+| Item Code | Raw material used in production.   |
+| Qty       | Quantity of raw material required. |
+| UOM       | Unit of measure of raw material.   |
+| Rate      | Cost of one unit of raw material.  |
+| Amount    | Total cost of raw material row.    |
+
+
+4️⃣ OPERATIONS TAB
+
+
+| Field                     | Meaning                                   |
+| ------------------------- | ----------------------------------------- |
+| With Operations           | Enable operation and workstation costing. |
+| Transfer Material Against | Determines how materials are issued. ( work order, job card )     |
+| Routing                   | Predefined group of operations.           |
+
+Operations Child Table
+
+| Field            | Meaning                                         |
+| ---------------- | ----------------------------------------------- |
+| Operation        | Step performed during manufacturing.            |
+| Workstation Type | Machine/workstation used.                       |
+| Operation Time   | Time required to perform operation.             |
+| Fixed Time       | Minimum time required irrespective of quantity. |
+| Operating Cost   | Cost of performing operation.                   |
+
+
+OR
+
+
+| Field                                   | Meaning                                                                                                                         |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Finished Goods based Operating Cost** | Operation cost is calculated **per finished item**, not per operation/time.                                                     |
+| **Operating Cost Per BOM Quantity**     | Enter total operating cost for the BOM output. If filled, ERPNext **ignores operation-wise cost** and uses this value directly. |
+
+here,
+
+1. Finished Goods based Operating Cost
+- If this is checked, ERPNext calculates the operating (labor/overhead) cost per finished item, instead of calculating it based on " operation time or workstation rate ".
+
+ex. 
+BOM produces 10 laptops
+
+  Total operating cost = ₹500
+
+If this setting is ON:
+- Operating cost per laptop = 500 ÷ 10 = ₹50
+
+--------------------
+
+2. Operating Cost Per BOM Quantity
+- This is the total operating (labor/overhead) cost for producing the entire BOM quantity. If you enter a value here, ERPNext will ignore 
+  operation-wise time and workstation costs and use this value directly.
+  
+⭐ Simplest Explanation
+You manually tell ERPNext: 👉 “This whole BOM costs X amount in labor/operations.”
+- ERPNext will not calculate operation cost automatically.  
+
+so it is : A manual override field to directly set the total operating cost for the BOM’s output.
+
+note :
+1. 
+- Operating Cost Per BOM Quantity is for the whole BOM batch, not per finished item.
+ 
+So if your BOM produces 2 laptops, and you set: Operating Cost Per BOM Quantity = 200
+
+
+Then ERPNext will treat it like this:
+- Total operating cost for producing 2 laptops = 200
+- Operating cost per laptop = 200 ÷ 2 = 100
+
+
+---------------------
+
+
+3. Transfer Material Against
+✅ When Transfer Material Against = Work Order
+- You usually create ONE stock entry (Material Transfer for Manufacture).
+- This stock entry transfers all required raw materials for the entire production batch.
+- Materials are issued once per Work Order.
+
+✔ One Work Order → One Material Transfer for Manufacture
+
+👉 Example
+1 Work Order → 1 Material Transfer for Manufacture → All Job Cards can begin.
+
+
+✅ When Transfer Material Against = Job Card
+- You create a stock entry for each operation, based on the Job Card.
+
+- Each job card can require different materials.
+- Materials are issued operation-wise, not all at once.
+
+✔ Multiple operations → Multiple Material Transfer for Manufacture entries
+
+Example:
+If you have 3 operations in the routing:
+Cutting
+Welding
+Painting
+
+You may end up creating 3 stock entries, one per job card.
+
+👉 Example
+Operation 1 → 1 Material Transfer for Manufacture
+Operation 2 → 1 Material Transfer for Manufacture
+Operation 3 → 1 Material Transfer for Manufacture
+
+- always Stock Entry Type = Material Transfer for Manufacture
+
+
+
+5️⃣ SCRAP & PROCESS LOSS
+
+WHAT IS SCRAP ITEM ? 
+
+When you manufacture something:
+- Some material is used
+- Some material becomes scrap (waste, off-cuts, unusable pieces, leftover material)
+- ERPNext allows you to define this scrap in the BOM so it can be:
+
+✔ Tracked
+✔ Added to stock (if reusable)
+✔ Valued
+✔ Sold later
+
+
+Scrap Items Table
+
+| Field     | Meaning                          |
+| --------- | -------------------------------- |
+| Item Code | Scrap generated from production. |
+| Qty       | Quantity of scrap.               |
+| Rate      | Value of scrap.                  |
+
+Process Loss
+
+| Field          | Meaning                                        |
+| -------------- | ---------------------------------------------- |
+| % Process Loss | Percentage of material lost during production. |
+
+
+6️⃣ MORE INFO TAB
+
+| Field                       | Meaning                                |
+| --------------------------- | -------------------------------------- |
+| Item Name                   | Name of finished product (read-only).  |
+| Item Description            | Description of finished product.       |
+| Quality Inspection Required | Enable quality check after production. |
+| Quality Inspection Template | Template used for inspection.          |
+
+
+7️⃣ WEBSITE TAB
+
+| Field               | Meaning                                        |
+| ------------------- | ---------------------------------------------- |
+| Show in Website     | Display this BOM/item on website.              |
+| Route               | Website URL for this item.                     |
+| Website Image       | Image shown on website.                        |
+| Website Description | HTML description of the item.                  |
+| Show Items          | Show raw materials on website page.            |
+| Show Operations     | Show manufacturing operations on website page. |
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+2. Production Plan
+
+
+1️⃣ SECTION: MAIN DETAILS
+
+| Field              | Meaning                                                        |
+| ------------------ | -------------------------------------------------------------- |
+| **Naming Series**  | Pattern used to auto-generate Production Plan ID.              |
+| **Company**        | Company for which the plan is prepared.                        |
+| **Posting Date**   | Date of creating the production plan.                          |
+| **Get Items From** | Source to fetch items (Sales Orders, Material Requests, etc.). |
+
+
+
+2️⃣ SECTION: SELECT ITEMS TO MANUFACTURE
+
+| Field                        | Meaning                                        |
+| ---------------------------- | ---------------------------------------------- |
+| **Item Code**                | Item to be produced.                           |
+| **BOM No**                   | BOM used for producing the item.               |
+| **Planned Qty**              | Quantity planned to manufacture.               |
+| **UOM**                      | Unit of measure for the planned quantity.      |
+| **Finished Goods Warehouse** | Warehouse where finished goods will be stored. |
+| **Planned Start Date**       | Date on which production should start.         |
+
+
+
+3️⃣ SUB ASSEMBLY ITEMS
+
+Checkboxes
+
+| Field                                 | Meaning                                                |
+| ------------------------------------- | ------------------------------------------------------ |
+| **Consolidate Sub Assembly Items**    | Combine same sub-assembly items from multiple BOMs.    |
+| **Skip Available Sub Assembly Items** | Do not create MRP for sub-assemblies already in stock. |
+
+Other Fields
+
+| Field                      | Meaning                                             |
+| -------------------------- | --------------------------------------------------- |
+| **Sub Assembly Warehouse** | Warehouse where sub-assembly stock will be checked. |
+| **Get Sub Assembly Items** | Button to fetch required sub-assembly items.        |
+
+Sub Assembly Items Table
+
+| Field                      | Meaning                                               |
+| -------------------------- | ----------------------------------------------------- |
+| **Sub Assembly Item Code** | Sub-assembly required for production.                 |
+| **Target Warehouse**       | Warehouse where sub-assembly will be produced/stored. |
+| **Schedule Date**          | Planned date of sub-assembly production.              |
+| **Required Qty**           | Quantity required.                                    |
+| **BOM No**                 | BOM for the sub-assembly.                             |
+| **Manufacturing Type**     | Indicates whether in-house or subcontracted.          |
+
+here in the table,
+
+- You don’t need to manually enter data in these tables.
+- ERPNext automatically fetches all required items using the “Get Items” buttons.
+
+so When you click Get Sub Assembly Items, system auto-fetches all sub-assemblies from the BOM tree.
+➡️ No manual entry required.
+
+here,
+
+1. Consolidate Sub Assembly Items
+- merges the same sub-assembly items into a single combined requirement so you can create one Work Order for the total quantity.
+
+   If multiple finished products need the same sub-assembly, ERPNext will merge them into one line instead of many separate lines.
+
+
+🧩 Think of it like this
+
+You are making:
+ Laptop A = 5 units
+ Laptop B = 3 units
+
+Both laptops use the same sub-assembly: Battery Pack
+
+- Without consolidation, ERPNext lists this:
+
+Battery Pack – 5 (for Laptop A)
+Battery Pack – 3 (for Laptop B)
+
+- With consolidation ON:
+
+Battery Pack – 8 (combined)
+
+
+If an item has a BOM → ERPNext thinks it must be MANUFACTURED → so it creates a Work Order.
+If an item has NO BOM → ERPNext thinks it is a RAW MATERIAL → no Work Order.
+
+That's it.
+
+
+🧩 Case 1 — Battery has no BOM
+
+Battery = raw material
+Expected behavior:
+
+❌ No Work Order
+✔ Only Material Request (purchase/transfer)
+
+🧩 Case 2 — Battery has its own BOM
+
+Battery Pack = assembled from cells and wiring
+Battery Pack = sub-assembly
+Expected behavior:
+
+✔ ERPNext will create a Work Order
+❌ It will NOT show it in raw materials
+✔ It will show it under Sub-Assembly Items
+
+
+
+note : 
+✅ If Battery is a Sub-Assembly (has its own BOM)
+
+AND you use it as a raw material inside Laptop BOM…**
+👉 ERPNext WILL create a Work Order for each required Battery.
+
+Why?
+
+Because ERPNext thinks: “Battery is not a raw material. Battery has a BOM, so it must be MANUFACTURED.”
+
+So yes:
+
+✔ If you link a sub-assembly item inside Laptop BOM
+✔ ERPNext will generate Work Orders for that sub-assembly
+✔ Either 1 work order per unit or a consolidated one (if consolidation is ON)
+
+
+
+
+🧩 Example
+Battery Pack (Sub-Assembly)
+- Has BOM
+- Requires lithium cells, wiring, BMS module
+- Marked as “Is Manufactured Item”
+
+Laptop BOM:
+- Uses Battery Pack as a component
+
+Production Plan:
+- If you produce 5 laptops →
+
+ERPNext will say: Make 5 Battery Packs (Work Order)
+
+
+Because Battery Pack is not a raw material,
+it is a manufactured sub-assembly.
+
+
+so in simple ::::::::::
+
+✅ 1️⃣ When you TICK “Consolidate Sub Assembly Items”
+
+ERPNext will create ONE Work Order for the total required quantity.
+
+Example:
+
+You produce 5 Laptops
+Each laptop needs 1 Battery Pack (sub-assembly)
+
+With Consolidate ON:
+
+👉 ERPNext creates ONE Work Order:
+
+Work Order:
+Battery Pack – Qty: 5
+
+✔ Clean
+✔ Single WO
+✔ Easy to manage
+
+You are right.
+
+
+
+❌ 2️⃣ When you DO NOT TICK “Consolidate Sub Assembly Items”
+ERPNext creates SEPARATE Work Orders for each demand.
+
+Example:
+Laptop 1 → Battery Pack (WO 1)
+Laptop 2 → Battery Pack (WO 2)
+Laptop 3 → Battery Pack (WO 3)
+Laptop 4 → Battery Pack (WO 4)
+Laptop 5 → Battery Pack (WO 5)
+
+👉 5 different Work Orders
+(very messy)
+
+You are right again.	
+
+Final THought : ✅ “Consolidate Sub Assembly Items” is ONLY useful when your main BOM contains sub-assemblies.
+
+
+
+ 
+--------------------------
+
+2. Skip Available Sub Assembly Items
+
+:) If this checkbox is ON (✔ Skip Available Sub Assembly Items):
+
+ERPNext says: “We already have 4 in stock…
+
+- So create Work Order only for the missing 6.”
+- It creates: Work Order → Battery Pack → Qty 6
+
+:) If this checkbox is OFF (❌ unchecked):
+
+- ERPNext ignores the stock and creates:
+
+Work Order → Battery Pack → Qty 10
+
+- Even though 4 are already available — this wastes resources.
+
+
+------------------------------
+
+Sub Assembly Warehouse = The warehouse where ERPNext checks stock of sub-assembly items
+
+
+
+4️⃣ MATERIAL REQUEST PLANNING
+
+Main Checkboxes
+
+| Field                                                | Meaning                                                     |
+| ---------------------------------------------------- | ----------------------------------------------------------- |
+| **Include Non Stock Items**                          | Also include items not maintained in stock.                 |
+| **Include Subcontracted Items**                      | Include items supplied to subcontractors.                   |
+| **Consider Minimum Order Qty**                       | Apply supplier’s minimum order quantity rule.               |
+| **Include Safety Stock in Required Qty Calculation** | Add safety stock to required raw materials.                 |
+| **Ignore Available Stock**                           | Create material request even if stock is already available. |
+
+Other Fields
+
+| Field                              | Meaning                                                     |
+| ---------------------------------- | ----------------------------------------------------------- |
+| **Raw Materials Warehouse**        | Warehouse used for raw material availability check.         |
+| **Get Raw Materials for Purchase** | Button to fetch required purchase items.                    |
+| **Get Raw Materials for Transfer** | Button to fetch items to be transferred between warehouses. |
+
+
+Raw Materials Table ( in this we have two button : Get Raw Material For Purchase / Transfer but select warehouse to check )
+
+| Field                   | Meaning                             |
+| ----------------------- | ----------------------------------- |
+| **Item Code**           | Raw material required.              |
+| **For Warehouse**       | Target warehouse for raw material.  |
+| **Type**                | Whether to Purchase or Transfer.    |
+| **Plan to Request Qty** | Quantity system will request.       |
+| **Qty As Per BOM**      | Quantity required according to BOM. |
+| **Required By**         | Date raw material is needed.        |
+
+here diffrence b/w plan to request qty & qty as per bom
+
+| Field                   | Meaning                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------- |
+| **Qty As Per BOM**      | Exact requirement from BOM only. No adjustments.                                              |
+| **Plan to Request Qty** | Final quantity after applying safety stock, stock availability, MOQ, transfer/purchase logic. |
+
+- ERPNext automatically decides whether you need to Purchase or Transfer.
+
+here,
+
+1. Include Non Stock Items
+
+Meaning:
+If some items are services or non-stock (not stored in warehouse), include them in planning.
+
+Example: Design Fee, Inspection Service, Packaging Service
+- Normally they are not stock items, but checking this will include them.
+
+
+- ERPNext normally plans only stock items (items stored in a warehouse).
+But sometimes your BOM contains items that are: Services (not physical), Non-stock items (not stored in warehouse), One-time charges
+
+If you check Include Non Stock Items, ERPNext will ALSO plan these items during Material Request Planning.
+
+
+⭐ Why is this useful?
+Because some production processes cannot continue without these services.
+
+Example:
+- Laptop motherboard must be programmed, done by an external service.
+- Laptop body requires painting, done by a painting vendor.
+- Packaging boxes need printing, done by a print shop.
+
+If ERPNext ignores these services, your production plan will be incomplete.
+
+----------------
+
+2. Include Subcontracted Items
+
+Meaning:
+Include items that must be sent to a subcontractor.
+
+Example:
+- If Motherboard Assembly is completed by a subcontractor → ERPNext will consider raw materials for subcontracting.
+
+⭐ What happens when checkbox is ON?
+
+ERPNext will:
+
+✔ Calculate how many IC chips are needed
+✔ Plan to buy them
+✔ Plan to send them to subcontractor
+✔ Ensure subcontractor can produce the sub-assembly
+✔ Ensure you receive the finished motherboard
+✔ Ensure final laptop assembly continues smoothly
+
+This makes the entire production flow correct.
+
+🧩 REAL Example (very simple)
+
+You want to produce 10 laptops.
+
+Motherboard Assembly (subcontracted) needs:
+1 PCB Board
+5 IC chips
+20 capacitors
+
+If the checkbox is ON:
+
+ERPNext calculates total qty needed:
+PCB Board = 10
+IC Chips = 50
+Capacitors = 200
+
+- ERPNext creates Material Requests to buy these items.
+- You send them to subcontractor → subcontractor builds motherboard → you assemble laptop.
+
+----------------
+
+3. Consider Minimum Order Qty
+
+Meaning:
+Apply supplier’s MOQ rule.
+
+Example:
+You need 5 screens
+Supplier’s MOQ = 10
+ERPNext will request 10, not 5.
+
+where set this MOQ :
+
+1. Go to: Item
+2. Open the item (example: Screen)
+3. Scroll to section: Purchase
+4. Inside it you will see: Item Supplier Table
+5. In each supplier row you will find a field called: Minimum Order Qty
+
+
+----------------
+
+4. Include Safety Stock in Required Qty Calculation
+
+Meaning:
+Add safety stock to the required raw materials.
+
+Example:
+BOM requires 20 batteries
+Safety stock = 5
+ERPNext will request 25 batteries.
+
+
+In Item Master, the item has: Safety Stock = 5 Batteries
+----------------
+
+5. Ignore Available Stock
+
+Meaning:
+Create Material Request even if you already have stock.
+
+Example:
+You need 10 SSDs
+Stock available = 20
+
+If this is ON:
+ERPNext will still create a request for 10 more.
+Useful when you want fresh materials or dedicated stock.
+
+----------------
+
+5️⃣ OTHER DETAILS
+| Field                  | Meaning                                             |
+| ---------------------- | --------------------------------------------------- |
+| **Total Planned Qty**  | Sum of all planned quantities in the plan.          |
+| **Total Produced Qty** | Total quantity actually produced (auto-calculated). |
+| **Status**             | Current status (Draft, Submitted, Completed, etc.). |
+
+
+----------------------------------
+
+other fields :  
+
+1. 
+Consolidate Sales Order Items
+- When this checkbox is enabled, ERPNext will:
+✔ Merge / combine identical items from different Sales Orders
+✔ Create ONE Work Order for total quantity instead of multiple
+✔ Reduce duplication
+✔ Plan production more efficiently
+
+
+Suppose you have 3 Sales Orders
+
+| Sales Order | Item   | Qty |
+| ----------- | ------ | --- |
+| SO-001      | Laptop | 10  |
+| SO-002      | Laptop | 5   |
+| SO-003      | Laptop | 7   |
+
+👉 With Consolidate Sales Order Items = Checked
+ERPNext will combine all 3: Laptop → total qty 22
+
+And create one Work Order for 22 units
+(or as many as allowed by maximum work order quantity).
+
+
+👉 With Consolidate Sales Order Items = Unchecked
+- ERPNext will create separate Work Orders:
+Work Order for 10
+Work Order for 5
+Work Order for 7
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+3. Work Order
+
+
+
+1️⃣ TAB: PRODUCTION ITEM
+
+| Field                   | Meaning                                      |
+| ----------------------- | -------------------------------------------- |
+| **Series**              | Auto-naming format for Work Order.           |
+| **Company**             | Company under which Work Order is created.   |
+| **Item To Manufacture** | Final product to be produced.                |
+| **Qty To Manufacture**  | Quantity of product to be produced.          |
+| **Item Name**           | Name of the item (read-only).                |
+| **BOM No**              | BOM used for production.                     |
+| **Project**             | Link Work Order to a project.                |
+| **Sales Order**         | Link Work Order to a sales order (optional). |
+
+
+
+Required Items Table
+
+| Field                | Meaning                                            |
+| -------------------- | -------------------------------------------------- |
+| **Item Code**        | Raw material needed.                               |
+| **Source Warehouse** | Warehouse from which raw materials will be issued. |
+| **Required Qty**     | Quantity needed for production.                    |
+| **Transferred Qty**  | Quantity transferred to WIP.                       |
+| **Consumed Qty**     | Quantity actually consumed in production.          |
+| **Returned Qty**     | Return of unused material.                         |
+
+
+
+
+2️⃣ TAB: CONFIGURATION
+
+Switches / Flags
+
+| Field                                                       | Meaning                                              |
+| ----------------------------------------------------------- | ---------------------------------------------------- |
+| **Allow Alternative Item**                                  | Allow use of alternative raw materials.              |
+| **Use Multi-Level BOM**                                     | Plan raw materials for sub-assemblies also.          |
+| **Skip Material Transfer to WIP Warehouse**                 | Do not require stock transfer to WIP.                |
+| **Backflush Raw Materials From Work-in-Progress Warehouse** | Auto-consume materials from WIP warehouse at finish. |
+| **Update Consumed Material Cost In Project**                | Update cost of materials to project accounting.      |
+
+here,
+1. 
+1. Allow Alternative Item
+✔️ This allows the system to use alternative raw materials if the original item is unavailable.
+
+--------------------
+
+2. Use Multi-Level BOM
+✔️ If enabled, ERPNext will plan materials not only for the final item, but also for all sub-assemblies inside the main BOM.
+📌 Without this, the system uses only the top-level BOM and assumes sub-assemblies already exist.
+
+Real-World Example:
+You manufacture a bicycle.
+
+Final bicycle BOM contains:
+Frame Assembly
+Wheel Assembly
+Handle Assembly
+
+Each assembly has its own BOM (multi-level).
+
+If this option is enabled:
+→ ERPNext will plan raw materials for each assembly (e.g., spokes, rim, ball bearings, rods).
+
+If disabled:
+→ ERPNext expects Frame Assembly, Wheel Assembly, etc. to already be in stock.
+
+
+--------------------
+
+3. Skip Material Transfer to WIP Warehouse
+✔️ When checked, ERPNext will not require moving materials to a Work-In-Progress (WIP) warehouse before production.
+
+👍 Useful if:
+- You don't track WIP warehouses, or
+- Materials go directly to the production floor.
+
+Real-World Example:
+
+A bakery produces bread.
+
+They store flour, sugar, and yeast in their main warehouse.
+They don't track a special "WIP Warehouse" for mixing dough.
+
+If this option is enabled:
+→ Workers can directly consume flour & ingredients from the main warehouse.
+→ No need to do a stock entry to move materials into a WIP warehouse.
+
+👍 So, do you still need to create Material Transfer for Manufacture?
+No.
+
+- If you enable Skip Material Transfer, you do NOT need to create a Material Transfer stock entry.
+
+You will create only one stock entry: Manufacture
+
+And ERPNext automatically consumes materials directly from their source warehouse.
+
+so- > you CAN create Job Cards without Material Transfer if this option is enabled
+
+---------------
+
+4. Backflush Raw Materials From Work-in-Progress Warehouse
+✔️ Automatically consumes (deducts) raw material stock only at the time of finishing the Work Order.
+🔄 You don’t need to manually create stock entries for each consumption step.
+⚠️ Works best when your production process is simple and material usage closely matches BOM.
+
+
+Real-World Example:
+
+An electronics company is making 100 LED bulbs.
+
+Materials needed per bulb:
+- 1 LED chip
+- 1 plastic body
+- 2 wires
+
+Instead of manually consuming materials each time:
+- They finish production
+- Submit the Work Order
+- ERPNext automatically reduces raw materials based on BOM qty × 100 bulbs
+
+In normal manufacturing:
+- You first transfer raw materials to WIP Warehouse.
+- Later ERPNext consumes (backflushes) them from the WIP Warehouse.
+
+This option allows:
+- Auto-consumption of materials already sitting in WIP Warehouse.
+
+some error - if i do skip option then blackflush will not work because erp never consume raw materials from different warehouses if focus only one .... 
+--------------
+	
+5. Update Consumed Material Cost In Project
+✔️ If the Work Order is linked to a Project, the cost of raw materials consumed will be added to the Project’s cost.
+💰 Helps with project profitability tracking and accounting accuracy.
+
+
+
+Warehouses
+
+| Field                          | Meaning                                        |
+| ------------------------------ | ---------------------------------------------- |
+| **Source Warehouse**           | Warehouse where raw materials exist.           |
+| **Target Warehouse**           | Warehouse where finished goods will be stored. |
+| **Work-in-Progress Warehouse** | Warehouse used during production.              |
+| **Scrap Warehouse**            | Warehouse to store scrap materials.            |
+
+
+
+3️⃣ TAB: OPERATIONS
+
+| Field                | Meaning                                     |
+| -------------------- | ------------------------------------------- |
+| **Operation**        | Manufacturing step.                         |
+| **Completed Qty**    | Quantity completed under this operation.    |
+| **Process Loss Qty** | Quantity lost in this operation.            |
+| **BOM**              | BOM (read-only reference).                  |
+| **Workstation**      | Workstation used for operation.             |
+| **Time**             | Operation time assigned from BOM / routing. |
+
+
+Time Fields
+
+| Field                      | Meaning                                 |
+| -------------------------- | --------------------------------------- |
+| **Planned Start Date**     | Expected start date for the Work Order. |
+| **Planned End Date**       | Expected end date.                      |
+| **Actual Start Date**      | Actual time when production started.    |
+| **Actual End Date**        | Actual time when production ended.      |
+| **Expected Delivery Date** | Expected completion/delivery date.      |
+
+
+4️⃣ TAB: MORE INFO
+
+| Field                                    | Meaning                                          |
+| ---------------------------------------- | ------------------------------------------------ |
+| **Stock UOM**                            | Base UOM of the manufacturing item.              |
+| **Material Request**                     | Linked Material Request (if created).            |
+| **Manufacture Against Material Request** | Shows if production is tied to Material Request. |
+
+
+5️⃣ TAB: CONNECTIONS
+
+| Field              | Meaning                                                |
+| ------------------ | ------------------------------------------------------ |
+| **Items Produced** | Shows production records created from this Work Order. |
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+4. Operation
+
+1️⃣ BASIC DETAILS
+
+| Field                       | Meaning                                             |
+| --------------------------- | --------------------------------------------------- |
+| **Name**                    | Name of the manufacturing operation (process name). |
+| **Is Corrective Operation** | Marks this operation as corrective/rework type.     |
+| **Default Workstation**     | Workstation automatically used for this operation.  |
+
+here
+
+1. Is Corrective Operation
+
+Scenario:
+
+You run a factory that makes metal brackets.
+
+Normal operations (standard process):
+Cutting
+Bending
+Drilling
+Painting
+Final Inspection
+
+What happens:
+
+During inspection, workers find that 10 brackets have paint defects.
+
+To fix them, they perform:
+Paint Touch-Up
+Re-inspection
+
+These steps are not part of the original BOM operations — they are rework.
+
+So in ERPNext:
+
+You create or add an operation called “Paint Touch-Up”
+→ Check Is Corrective Operation
+
+
+-------------------
+
+
+
+2️⃣ JOB CARD SETTINGS
+
+| Field                                   | Meaning                                                 |
+| --------------------------------------- | ------------------------------------------------------- |
+| **Create Job Card based on Batch Size** | Creates multiple Job Cards depending on batch size.     |
+| **Batch Size**                          | Number of units handled per Job Card.                   |
+| **Quality Inspection Template**         | Template used for quality checks during this operation. |
+
+here,
+
+1. Create Job Card based on Batch Size
+- ERPNext will automatically create multiple Job Cards instead of one, based on the batch size you set.
+
+
+Work Order Quantity: 1000 LED bulbs
+- Your worker can only handle 100 bulbs at a time for the assembly operation.
+
+If you enable:
+- Create Job Card based on Batch Size = YES
+- Batch Size = 100
+
+ERPNext generates 10 Job Cards:
+
+Job Card 1 → 100 bulbs  
+Job Card 2 → 100 bulbs  
+Job Card 3 → 100 bulbs  
+...  
+Job Card 10 → 100 bulbs
+
+
+---------------------
+
+2. Batch Size
+- The number of units to be processed per Job Card.
+
+✅ Real-World Example
+
+Manufacturing Plastic Bottles
+Work Order Qty = 5000 bottles
+Batch Size = 500 bottles
+
+ERPNext will make: 5000 ÷ 500 = 10 job cards
+
+------------------------
+
+
+
+3️⃣ SUB OPERATIONS
+
+| Field              | Meaning                                 |
+| ------------------ | --------------------------------------- |
+| **Operation**      | Smaller step inside the main operation. |
+| **Operation Time** | Time required for the sub-operation.    |
+
+
+4️⃣ OPERATION DESCRIPTION
+
+| Field           | Meaning                                                 |
+| --------------- | ------------------------------------------------------- |
+| **Description** | Detailed explanation or instructions for the operation. |
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+5. Workstation Type
+
+1️⃣ TAB: DETAILS
+
+| Field                | Meaning                                                        |
+| -------------------- | -------------------------------------------------------------- |
+| **Workstation Type** | Name of the workstation type (category of machine/workcenter). |
+
+
+OPERATING COSTS (per hour)
+- (These define the cost of running this workstation type for one hour.)
+
+| Field                           | Meaning                                                        |
+| ------------------------------- | -------------------------------------------------------------- |
+| **Electricity Cost (per hour)** | Cost of electricity consumption for this workstation per hour. |
+| **Rent Cost (per hour)**        | Allocated rental cost per hour for the workstation space.      |
+| **Consumable Cost (per hour)**  | Cost of consumables used during operation per hour.            |
+| **Wages (per hour)**            | Labor cost per hour assigned to this workstation.              |
+
+
+
+2️⃣ TAB: DESCRIPTION
+
+| Field           | Meaning                                                      |
+| --------------- | ------------------------------------------------------------ |
+| **Description** | Additional notes or explanation about this workstation type. |
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+6. Workstation
+
+
+1️⃣ TAB: DETAILS
+
+| Field                | Meaning                                                           |
+| -------------------- | ----------------------------------------------------------------- |
+| **Workstation Name** | Name of the workstation (machine/area used for operations).       |
+| **Job Capacity**     | Number of job cards that can run in parallel on this workstation. |
+| **Workstation Type** | Workstation Type linked, which provides cost structure.           |
+| **Plant Floor**      | Physical plant floor or section where workstation is located.     |
+| **Warehouse**        | Warehouse linked for WIP or material movement.                    |
+
+
+2️⃣ TAB: WORKSTATION STATUS
+
+| Field                            | Meaning                                                            |
+| -------------------------------- | ------------------------------------------------------------------ |
+| **Status**                       | Current status of the workstation (Production, Maintenance, etc.). |
+| **Active Status Illustration**   | Image representing active condition of workstation.                |
+| **Inactive Status Illustration** | Image representing inactive condition of workstation.              |
+
+
+3️⃣ TAB: OPERATING COSTS
+(Cost of running this workstation per hour — used to calculate manufacturing cost)
+
+| Field                           | Meaning                                             |
+| ------------------------------- | --------------------------------------------------- |
+| **Electricity Cost (per hour)** | Hourly electricity consumption cost.                |
+| **Rent Cost (per hour)**        | Hourly allocated rent or facility cost.             |
+| **Consumable Cost (per hour)**  | Hourly cost of consumable materials.                |
+| **Wages (per hour)**            | Hourly labor cost associated with this workstation. |
+
+
+
+4️⃣ TAB: DESCRIPTION 
+
+| Field           | Meaning                                                |
+| --------------- | ------------------------------------------------------ |
+| **Description** | Additional notes or explanation about the workstation. |
+
+
+5️⃣ TAB: WORKING HOURS
+
+| Field                     | Meaning                                                    |
+| ------------------------- | ---------------------------------------------------------- |
+| **Holiday List**          | Holiday list applied to this workstation.                  |
+| **Working Hours (table)** | Start and end time for workstation daily working schedule. |
+| **Total Working Hours**   | Total working hours calculated from the given schedule.    |
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+7. Routing
+
+| Field            | Meaning                                                  |
+| ---------------- | -------------------------------------------------------- |
+| **Routing Name** | Name of the routing (predefined sequence of operations). |
+
+
+BOM Operation (Operations Table)
+(This table defines the step-by-step manufacturing process used by BOM and Work Order.)
+
+| Field                | Meaning                                        |
+| -------------------- | ---------------------------------------------- |
+| **No.**              | Sequence number for operation order.           |
+| **Operation**        | Operation to perform at this step.             |
+| **Workstation Type** | Workstation category used for this operation.  |
+| **Operation Time**   | Time required for this operation.              |
+| **Fixed Time**       | Minimum setup time regardless of quantity.     |
+| **Operating Cost**   | Calculated cost for performing this operation. |
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+8. Job Card
+
+
+1️⃣ TAB: DETAILS
+
+| Field                   | Meaning                                          |
+| ----------------------- | ------------------------------------------------ |
+| **Naming Series**       | Auto-name format for Job Card.                   |
+| **Posting Date**        | Date on which job card is created.               |
+| **Company**             | Company under which job card is recorded.        |
+| **Work Order**          | Work Order from which the job card is generated. |
+| **Employee**            | Employee responsible for performing operation.   |
+| **Qty To Manufacture**  | Quantity assigned to this job card.              |
+| **Total Completed Qty** | Quantity completed through this job card.        |
+
+
+Scheduled Time
+
+| Field                                | Meaning                                       |
+| ------------------------------------ | --------------------------------------------- |
+| **Expected Start Date**              | Planned starting time of operation.           |
+| **Expected End Date**                | Planned ending time of operation.             |
+| **Expected Time Required (In Mins)** | Estimated time required to complete this job. |
+
+
+Actual Time (Time Logs Table)
+
+| Field             | Meaning                                    |
+| ----------------- | ------------------------------------------ |
+| **Employee**      | Who worked during this time slot.          |
+| **From Time**     | Actual start time.                         |
+| **To Time**       | Actual end time.                           |
+| **Time In Mins**  | Actual minutes spent.                      |
+| **Completed Qty** | Number of units completed within this log. |
+
+
+2️⃣ TAB: OPERATION & WORKSTATION
+
+| Field                           | Meaning                                            |
+| ------------------------------- | -------------------------------------------------- |
+| **Operation**                   | Specific operation this job card is for.           |
+| **Workstation Type**            | Workstation type used.                             |
+| **WIP Warehouse**               | Warehouse for work-in-progress materials.          |
+| **Workstation**                 | Selected workstation where operation is performed. |
+| **Quality Inspection Template** | Template for QC inspection of this job.            |
+
+
+3️⃣ TAB: RAW MATERIALS
+
+| Field                | Meaning                                           |
+| -------------------- | ------------------------------------------------- |
+| **Item Code**        | Raw material used specifically in this operation. |
+| **Source Warehouse** | Warehouse from which material is consumed.        |
+| **Required Qty**     | Required quantity for the operation.              |
+
+
+4️⃣ TAB: SCRAP ITEMS
+
+| Field               | Meaning                                       |
+| ------------------- | --------------------------------------------- |
+| **Scrap Item Code** | Item produced as scrap during this operation. |
+| **Scrap Item Name** | Name of the scrap item.                       |
+| **Qty**             | Quantity of scrap generated.                  |
+
+
+5️⃣ TAB: MORE INFORMATION
+
+| Field                                     | Meaning                                                    |
+| ----------------------------------------- | ---------------------------------------------------------- |
+| **Project**                               | Linked project (if any).                                   |
+| **FG Qty from Transferred Raw Materials** | Finished good qty possible from raw materials transferred. |
+| **Requested Qty**                         | Qty requested for this job from Work Order.                |
+| **Status**                                | Current job card status (Open, WIP, Completed).            |
+| **Remarks**                               | Additional notes or comments.                              |
+| **Serial and Batch Bundle**               | Serial/batch info linked to this job.                      |
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+9. Manufacturing Settings
+
+1️⃣ TAB: BOM AND PRODUCTION
+
+Raw Materials Consumption
+
+| Field                                             | Meaning                                                                    |
+| ------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Allow Continuous Material Consumption**         | Allow consuming raw materials even if finished goods are not yet produced. |
+| **Backflush Raw Materials Based On**              | Determines how raw materials are auto-consumed (BOM or Material Transfer). |
+| **Get Raw Materials Cost from Consumption Entry** | Use cost based on actual consumption entries.                              |
+| **Validate Components and Quantities Per BOM**    | Enforce checking raw materials strictly against BOM.                       |
+
+here,
+
+1. Allow Continuous Material Consumption
+
+by default it is off:
+👉 ERPNext will not reduce raw material stock when you start making something.
+👉 ERPNext will reduce the stock only at the moment you declare the finished item.
+
+Raw materials are consumed gradually during production, even before the product is finished
+
+✔ How ERPNext behaves:
+- You can create multiple Material Consumption Entries(stock entry) while production is ongoing
+- Stock of raw materials goes down step-by-step
+- The finished item is added to stock only at the end
+
+🔧 Stock Entries created:
+- Many small Material Consumption entries
+- One Finished Goods entry at the end
+
+real world example-
+
+A Cookie Bakery
+
+Raw Materials:
+Flour
+Sugar
+Butter
+
+Finished Product:
+1 Batch of Cookies
+
+🟪 When setting is OFF (Default)
+- ERPNext assumes a simple situation:
+- You consume(stock changes) the ingredients only when cookies are fully baked.
+
+
+Real ERPNext flow:
+  1. Start Work Order → stock unchanged
+  2. Mix dough → stock unchanged
+  3. Bake → stock unchanged
+  4. Cookies finished → ERPNext reduces flour, sugar, butter
+  5. ERPNext adds batch of cookies to stock
+
+
+🟩 When setting is ON (Continuous Consumption)
+
+- ERPNext assumes a more complex, realistic scenario: Ingredients are consumed as soon as you put them into the mixing bowl.
+
+Real ERPNext flow:
+
+1. Add flour → ERPNext immediately reduces flour stock
+2. Add sugar → ERPNext reduces sugar stock
+3. Add butter → ERPNext reduces butter stock
+4. Bake cookies
+5. After baking → ERPNext adds finished cookies to stock
+
+note : here i need to create stock entries but ERPNext will automatically create: Finished Goods Stock Entry
+
+-------------------------
+
+2. Backflush Raw Materials Based On
+- This decides HOW ERPNext auto-consumes(stock changes) raw materials when you finish a Work Order.( Stock Entry (Manufacture) )
+
+A. BOM
+- ERPNext will consume raw materials based only on the quantities defined in the BOM.
+
+🧿 Real-world example
+
+BOM says:
+- 5 kg flour
+- 2 kg sugar
+- 1 kg butter
+
+When you finish production, ERPNext automatically consumes 5 + 2 + 1 kg exactly.
+Even if you transferred more or less, ERPNext still uses BOM values.
+
+✔ When choosing BOM:
+- Raw materials are consumed automatically when the Work Order is completed.
+- ERPNext looks at the BOM and deducts materials exactly as listed.
+- No need for Material Transfer entries.
+
+
+B. Material Transfer
+- ERPNext will consume raw materials based on the quantities you actually transferred to the Work Order, not the BOM.
+
+🧿 Real-world example
+
+You transferred:
+12 kg flour
+3 kg sugar
+
+Even if the BOM says flour = 10 kg, ERPNext will consume 12 kg because that’s what was transferred.
+
+
+✔ When choosing Material Transfer:
+- ERPNext waits for your “Material Transfer for Manufacture” stock entries.
+- Whatever quantity you transferred → ERPNext consumes that exact amount.
+- If you transferred 12 kg instead of 10 kg, ERPNext consumes 12 kg.
+
+
+-------------------------
+
+3. Get Raw Materials Cost from Consumption Entry ( open if you choose Allow Continuous Material Consumption )
+
+- ERPNext will calculate the cost of finished goods based on the actual material consumption entries you made, not based on " BOM ".
+
+🏭 Real-World Example
+You make 100 T-shirts
+
+BOM says:
+2 meters cloth per shirt
+Total: 200 meters cloth
+
+But in real production:
+- Workers consumed 210 meters cloth (10 meters wasted)
+
+- You created Material Consumption entries showing 210 meters used.
+
+✔ If Setting is ON
+ERPNext uses 210 meters cost to value finished goods.
+This shows real cost, including wastage.
+
+✘ If Setting is OFF
+ERPNext ignores real consumption.
+It uses 200 meters from BOM, even though you consumed more.
+
+
+-------------------------
+
+
+4. Validate Components and Quantities Per BOM
+- controls whether ERPNext should strictly enforce that all raw materials (components) and their quantities match the Bill of Materials (BOM) whenever you create:
+  Work Orders
+  Stock Entries (Manufacture / Repack)
+  Production Planning
+  Subassemblies 
+  ....
+
+✅ What this setting does
+
+When enabled:
+
+1. Only the exact items listed in the BOM can be used. You cannot add extra raw materials or remove any BOM item.
+
+2. Quantities must match the BOM, unless you explicitly change the BOM or set tolerances.
+-  If your Stock Entry uses more or less than the BOM quantity, ERPNext will throw a validation error.
+
+3. Prevents accidental mistakes like:
+- Using the wrong component
+- Using incorrect qty
+- Producing using an outdated BOM
+
+It enforces strict BOM compliance for controlled manufacturing environments.
+
+
+❌ When disabled :
+
+You are allowed to:
+- Add materials not listed in the BOM
+- Change quantities freely
+- Ignore mismatches between BOM and stock entry / work order consumption
+
+Good for flexible or manual production processes.
+
+
+
+
+BOM
+
+| Field                             | Meaning                                                     |
+| --------------------------------- | ----------------------------------------------------------- |
+| **Update BOM Cost Automatically** | Scheduler updates BOM cost using latest material valuation. |
+
+here,
+
+1. Update BOM Cost Automatically
+- When this option is enabled, ERPNext will automatically recalculate (update) the cost of all Bill of Materials (BOMs) whenever the following change:
+   - Item price changes (valuation rate)
+   - Raw material cost updates
+   - Sub-assemblies’ BOM costs change
+   - A user manually triggers a BOM update
+
+
+✔️ What Happens Internally
+
+If enabled, ERPNext will:
+- Fetch the latest cost of each raw material (based on valuation rate or price list).
+- Recalculate the Total Cost and Per Unit Cost of the BOM.
+- Save the updated cost back to the BOM automatically.
+
+This ensures manufacturing costing stays accurate without needing to manually click "Update Cost" on every BOM.
+
+
+
+
+Default Warehouses for Production
+
+| Field                                  | Meaning                                  |
+| -------------------------------------- | ---------------------------------------- |
+| **Default Work In Progress Warehouse** | Default warehouse for WIP items.         |
+| **Default Finished Goods Warehouse**   | Default warehouse for finished products. |
+| **Default Scrap Warehouse**            | Default warehouse for storing scrap.     |
+
+
+
+
+Overproduction for Sales and Work Order
+
+| Field                                         | Meaning                                                    |
+| --------------------------------------------- | ---------------------------------------------------------- |
+| **Overproduction Percentage For Sales Order** | Allowed extra production percentage above sales order qty. |
+| **Overproduction Percentage For Work Order**  | Allowed extra production percentage above work order qty.  |
+
+here,
+
+ex. 
+
+Sales Order Qty = 100 pcs
+Overproduction Percentage = 10%
+Allowed Production Qty = 100 + 10% = 110 pcs
+
+&
+
+Work Order Qty: 200 units
+Overproduction % for Work Order: 8%
+Allowed Qty to Produce: 200 × 1.08 = 216 units
+
+
+2️⃣ TAB: JOB CARD AND CAPACITY PLANNING
+
+
+Job Card Settings
+
+| Field                                                        | Meaning                                       |
+| ------------------------------------------------------------ | --------------------------------------------- |
+| **Add Corrective Operation Cost in Finished Good Valuation** | Add cost of corrective operations in FG cost. |
+| **Enforce Time Logs**                                        | Force job card to have From Time and To Time. |
+
+here,
+
+1. Add Corrective Operation Cost in Finished Good Valuation
+During manufacturing, a Work Order includes:
+
+Raw Materials cost
+- Operation cost (from Workstations / Operation rates)
+- Additional expenses
+
+Sometimes, during the process, the actual operation cost ends up higher or lower than what was originally estimated.
+- These differences are called Corrective Operation Costs.
+
+If “Add Corrective Operation Cost in Finished Good Valuation” is enabled:
+→ ERPNext includes these corrected (actual) operation costs into the final valuation of the finished goods.
+
+If disabled:
+→ ERPNext ignores the corrected operation costs and only uses the originally estimated operation rates for valuation.
+
+-------------------------
+
+2. Enforce Time Logs
+
+When this setting is enabled, ERPNext forces users to create Time Logs for each operation performed in a Work Order.
+This ensures actual machine/labor time is captured before the operation can be marked complete.
+
+In short:
+You cannot complete manufacturing operations without entering Time Logs.
+
+✔️ What Happens When It Is ENABLED
+ERPNext requires:
+- Job Cards → Time Log entry
+- Actual Start Time / End Time
+- Operation hours
+- Optional: Machine, employee, workstation
+
+
+
+Material Transfer
+
+| Field                              | Meaning                                                       |
+| ---------------------------------- | ------------------------------------------------------------- |
+| **Allow Excess Material Transfer** | Allow transferring more raw materials than required quantity. |
+
+here,
+
+1. Allow Excess Material Transfer 
+- Every Work Order calculates the required quantity of raw materials based on the BOM.
+
+Example:
+If the BOM requires 10 kg of a material, ERPNext expects exactly 10 kg to be transferred from the warehouse to WIP.
+
+When Allow Excess Material Transfer = ON:
+→ You can transfer more than the required quantity, such as 11 kg, 12 kg, etc.
+ERPNext will NOT block the transfer.
+
+When Allow Excess Material Transfer = OFF:
+→ ERPNext will block transfers that exceed the Work Order requirement.
+You will see an error like: “Transferred quantity cannot exceed required quantity.”
+
+
+
+Capacity Planning
+
+| Field                              | Meaning                                                |
+| ---------------------------------- | ------------------------------------------------------ |
+| **Disable Capacity Planning**      | Turn off workstation capacity planning.                |
+| **Allow Overtime**                 | Allow planning work outside workstation working hours. |
+| **Allow Production on Holidays**   | Allow scheduling production on holidays.               |
+| **Capacity Planning For (Days)**   | Number of days to plan manufacturing operations ahead. |
+| **Time Between Operations (Mins)** | Time gap between sequential operations.                |
+
+here,
+
+1. Disable Capacity Planning
+
+When Disable Capacity Planning = ON
+
+ERPNext IGNORES:
+- Workstation capacity (e.g., machine hours per day)
+- Operation scheduling
+- Overlaps or overbooking of machines
+- Production load on workstations
+
+Work Orders can be created and scheduled freely without any capacity checks.
+
+➡️ In simple words: No scheduling → No capacity limits → Just create Work Orders anytime.
+
+
+When Disable Capacity Planning = OFF (capacity planning is enabled)
+
+ERPNext will:
+- Check available machine hours
+- Prevent scheduling beyond available capacity
+- Schedule operations in a Gantt chart or timeline
+- Ensure operations don’t overlap when not allowed
+- Follow workstation timing rules (e.g., 8 hours/day)
+
+If a machine/workstation is fully booked, ERPNext shows errors like: “Not enough capacity on Workstation ‘X’ for this operation.”
+
+-------------------------
+
+2. Allow Overtime
+
+Each Workstation has defined:
+- Working Hours per Day (e.g., 8 hours/day)
+- A Holiday List
+- Capacity planning rules
+
+When ERPNext schedules production, it normally cannot exceed those working hours.
+
+If Allow Overtime = ON → ERPNext can schedule more than the defined capacity.
+If Allow Overtime = OFF → ERPNext blocks or reschedules any production that exceeds available hours.
+
+
+✔️ Example to Understand
+Workstation Capacity:
+- Working Hours: 8 hours/day
+
+Operation Requirement for a Work Order:
+- Required: 10 hours
+
+🔹 If Allow Overtime = OFF
+ERPNext schedules:
+- Day 1 → 8 hrs
+- Day 2 → 2 hrs
+
+Because ERPNext cannot exceed daily capacity.
+
+🔹 If Allow Overtime = ON
+- ERPNext schedules everything in one day, even though 10 hrs > 8 hrs.
+
+Meaning:
+✔ Work Order fully scheduled in 1 day
+✔ Machine is considered to work overtime
+✔ No splitting into multiple days
+
+
+-------------------------
+
+
+3. Allow Production on Holidays
+- Every Workstation in ERPNext has a Holiday List (e.g., Sundays, national holidays, shutdown days).
+
+Normally, ERPNext will avoid scheduling production on those holiday dates.
+
+Allow Production on Holidays = ON -> ERPNext can schedule operations even on holiday dates.
+Allow Production on Holidays = OFF -> ERPNext prevents operations from being scheduled on holidays.
+
+
+-------------------------
+
+
+4. Capacity Planning For (Days)
+-  ERPNext will plan and schedule your production only for the next X days
+
+Example:
+
+If you set Capacity Planning For = 30 days
+ERPNext plans and schedules production 30 days into the future.
+
+If you set Capacity Planning For = 7 days
+ERPNext only schedules production for one week ahead.
+
+
+✔️ Example Scenario
+Assume:
+- Workstation: 8 hrs/day
+- Required operation time: 40 hours
+
+
+🔹 Capacity Planning For = 3 days
+Planning window = 3 days
+Available hours = 8 * 3 = 24 hrs
+
+➡️ ERPNext will only schedule 24 hours worth of operations
+➡️ Remaining 16 hours will not be scheduled (or ERPNext will throw a capacity conflict error)
+
+🔹 Capacity Planning For = 10 days
+Available hours = 8 * 10 = 80 hrs
+
+➡️ ERPNext can easily fit the 40-hour job
+➡️ Schedules it properly over several days
+
+✔️ In Simple Words
+
+| Setting                     | Meaning                      |
+| --------------------------- | ---------------------------- |
+| **Small number (5–7 days)** | Short-term scheduling window |
+| **Medium (15–30 days)**     | Normal production planning   |
+| **Large (60–90 days)**      | Long-term factory scheduling |
+
+
+✔️ When Should You Change This?
+Set LOW value (e.g., 7–14 days) if:
+- Your production changes frequently
+- You want short-term flexible schedules
+- You have dynamic orders
+
+Set HIGH value (30+ days) if:
+- You have long Work Orders
+- You plan production monthly or quarterly
+- You want to schedule long projects in advance
+
+
+note :
+- to schedule remaining days, to complete work order you need to change this days(mention in Capacity Planning For (Days)), erpnext not allow  automatically schedule that work ..
+
+-------------------------
+
+5. Time Between Operations (Mins) 
+- This is the waiting time between two operations in a Work Order.
+
+Example:
+- Operation 1 finishes at 10:00 AM
+- Time Between Operations = 30 minutes
+- Operation 2 will be scheduled to start at 10:30 AM
+
+If you set:
+- Time Between Operations = 15 minutes
+- Then every operation in the Work Order will have a 15-minute gap before the next one starts.
+
+note :
+- this is just for planning, you can still create job card for that operation if gap is not full filled. 
+
+
+
+
+
+
+
+
+Other Settings
+
+| Field                                                    | Meaning                                                                      |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Set Operating Cost / Scrap Items From Sub-assemblies** | Include sub-assembly costs/scrap in finished goods without using a job card. |
+| **Make Serial No / Batch from Work Order**               | Auto-generate serial/batch numbers when work order is submitted.             |
+
+here,
+
+1. Set Operating Cost / Scrap Items From Sub-assemblies
+- This setting tells ERPNext: 
+            When a BOM has sub-assemblies, should ERPNext also include their operating cost and scrap items in the final calculation?
+
+✔️ Breaking It Down
+🔹 1. Sub-assemblies
+- These are BOMs inside another BOM.
+Example:
+
+Main Product BOM
+└── Sub-Assembly A BOM
+└── Sub-Assembly B BOM
+
+Each sub-assembly may have:
+- Operating cost (machine/labor)
+- Scrap items
+
+
+✔ When ENABLED (ON)
+- ERPNext will pull operating cost and scrap items of sub-assemblies into the main BOM / main Work Order.
+
+Meaning:
+- Sub-assembly operation cost is added to final cost
+- Scrap generated in sub-assembly is included
+- Your costing becomes fully accurate
+
+Example
+
+Sub-assembly has:
+- Operating cost = 50
+- Scrap = 2 kg
+
+Main BOM will now include:
++50 operating cost
++2 kg scrap
+
+
+❌ When DISABLED (OFF)
+- ERPNext ignores the operating cost and scrap of sub-assemblies.
+
+Meaning:
+- Only direct BOM operations & scrap are counted
+- Sub-assembly costs are NOT included
+- Costing becomes simpler but maybe less accurate
+
+-------------------------
+
+2. Make Serial No / Batch from Work Order
+- This setting tells ERPNext:
+        Automatically create Serial Numbers or Batch Numbers for the finished goods when you complete a Work Order.
+
+
+✔️ Why This Matters
+- Many factories produce items that must have:
+Serial Numbers (unique per piece)
+Batch Numbers (group of pieces made together)
+
+ERPNext can create these automatically during manufacturing if this setting is ON.
+
+
+✔️ What Happens When Setting is ON
+When you complete a Work Order:
+- ERPNext will generate Serial Numbers (if the item is serialized)
+- ERPNext will generate a Batch Number (if the item is batched)
+
+You don’t need to manually create them.
+
+
+Example:
+
+Finished Item: “Pump Motor”
+Item has Serial Number Required = Yes
+
+Work Order produces 10 units
+➡️ ERPNext automatically creates 10 serial numbers
+➡️ They get assigned to the finished goods stock entry
+
+(Same for Batch items)
+
+
+✔️ What Happens When Setting is OFF
+- ERPNext will NOT create serial or batch numbers automatically.
+
+You must:
+- create Batch manually
+- or create Serial Numbers manually
+- or select an existing Batch
+
+If you forget → ERPNext blocks the stock entry.
+
+
+✔️ Ultra Simple Examples
+✔ When ON: Produce 100 bottles → system creates a new Batch without asking you.
+✔ When OFF: You must choose or create the Batch manually before submitting.
+
+
+⭐ Summary (Very Simple)
+
+ON = ERPNext auto-creates Serial/Batch numbers when finishing Work Order.
+OFF = You must create them manually.
+
+
+note : 
+1. To use “Make Serial No / Batch from Work Order”, your item must already be marked as:
+
+   Has Serial No → if the item needs serial numbers
+   Has Batch No → if the item needs batch numbers
+
+Otherwise ERPNext cannot create serial or batch numbers automatically.
+
+
+
+################################################ END
+
+
+
+stock entries :
+
+✔️ Material Transfer = just moving items, NOT consuming
+✔️ Manufacture = consuming materials + creating finished goods
+
+
+work order main cycel :: start ->  job crad -> finish
+
+################################################
+
+Multi Lavel BOM ( details + practical notes )
+
+
+
+✅ Finished Item
+
+iPhone 15 Pro (Finished Product) → ₹ 1,20,000 (Standard Selling)
+
+✅ Sub-Assemblies (just 4 — perfect for multi-level BOM)
+
+Display Assembly → ₹ 9,000
+Logic Board Assembly → ₹ 7,000
+Rear Body Assembly → ₹ 3,500
+Battery Pack → ₹ 1,500
+
+✅ Raw Materials (only the essentials — minimal but realistic)
+
+- For Display Assembly
+OLED Screen Panel → ₹ 6,000
+Touch Sensor Film → ₹ 800
+Display Flex Cable → ₹ 300
+
+- For Logic Board Assembly
+Main CPU Chip → ₹ 3,000
+Memory Chip (Flash/RAM) → ₹ 1,200
+Logic Board PCB → ₹ 500
+WiFi/Bluetooth IC → ₹ 300
+
+- For Rear Body Assembly
+Aluminum Body Frame → ₹ 2,000
+Camera Module → ₹ 1,000
+Button Set (Volume + Power) → ₹ 200
+
+- For Battery Pack
+Battery Cell → ₹ 800
+Battery Protection IC → ₹ 300
+Battery Connector Flex → ₹ 150
+
+- extra
+Screw Set → ₹ 50
+Adhesive Strip Roll → ₹ 30
+Packaging Box → ₹ 20
+
+
+Operation : 
+
+Display Assembly Process
+Logic Board Assembly Process
+Rear Body Assembly Process
+Battery Pack Assembly
+Final iPhone Assembly
+Quality Check
+Packaging
+
+
+Workstation type :
+
+1. Assembly Station
+(Used for Display Assembly, Rear Body Assembly, Final Assembly)
+
+2. Electronics Station
+(For Logic Board Assembly, Battery Pack Assembly)
+
+3. Quality Inspection Station
+(For Quality Check)
+
+4. Packaging Station
+(For Packaging)
+
+
+
+
+Workstation :
+
+1. Display Assembly Station
+Workstation Type: Assembly Station
+
+Hourly Operating Cost Breakdown:
+Electricity: ₹ 50/hr
+Wages: ₹ 200/hr
+Consumables: ₹ 30/hr
+Rent/Overhead: ₹ 70/hr
+
+Total: ₹ 350/hr
+
+2. Logic Board Assembly Station (More expensive because electronics work uses ESD tables + microscopes)
+Workstation Type: Electronics Station
+
+Electricity: ₹ 70/hr
+Wages: ₹ 300/hr
+Consumables: ₹ 50/hr
+Rent/Overhead: ₹ 80/hr
+
+Total: ₹ 500/hr
+
+3. Rear Body Assembly Station
+Workstation Type: Assembly Station
+
+Electricity: ₹ 40/hr
+Wages: ₹ 150/hr
+Consumables: ₹ 20/hr
+Rent/Overhead: ₹ 60/hr
+
+Total: ₹ 270/hr
+
+4. Battery Pack Station
+Workstation Type: Electronics Station
+
+Electricity: ₹ 60/hr
+Wages: ₹ 250/hr
+Consumables: ₹ 40/hr
+Rent/Overhead: ₹ 70/hr
+
+Total: ₹ 420/hr
+
+5. Final Assembly Station
+(Most work done here)
+
+Workstation Type: Assembly Station
+Electricity: ₹ 60/hr
+Wages: ₹ 300/hr
+Consumables: ₹ 40/hr
+Rent/Overhead: ₹ 80/hr
+
+Total: ₹ 480/hr
+
+6. QC Station
+Workstation Type: Quality Inspection Station
+
+Electricity: ₹ 30/hr
+Wages: ₹ 150/hr
+Consumables: ₹ 10/hr
+Rent/Overhead: ₹ 50/hr
+
+Total: ₹ 240/hr
+
+7. Packaging Station
+Workstation Type: Packaging Station
+
+Electricity: ₹ 20/hr
+Wages: ₹ 100/hr
+Consumables: ₹ 20/hr
+Rent/Overhead: ₹ 40/hr
+
+Total: ₹ 180/hr
+
+
+
+
+
+Routing :
+
+
+1. Routing: Display Assembly Routing
+Operations in sequence:
+a. Display Assembly Process → Display Assembly Station (Time: 15 min)
+
+2. Routing: Logic Board Assembly Routing
+Operations:
+a. Logic Board Assembly Process → Logic Board Assembly Station (Time: 20 min)
+
+
+3. Routing: Rear Body Assembly Routing
+Operations:
+a. Rear Body Assembly Process → Rear Body Assembly Station (Time: 10 min)
+
+
+4. Routing: Battery Pack Routing
+Operations:
+a. Battery Pack Assembly → Battery Pack Station (Time: 12 min)
+
+
+5. Routing: Final iPhone Assembly Routing
+Operations in sequence:
+a. Final iPhone Assembly → Final Assembly Station (Time: 25 min)
+b. Quality Check → QC Station (Time: 5 min)
+c. Packaging → Packaging Station (Time: 8 min)
+
+
+
+
+
+
+BOM :
+
+🔧 BOM 1 — Display Assembly
+
+Item: Display Assembly
+Quantity: 1
+Routing: Display Assembly Routing
+
+
+| Item               | Qty |
+| ------------------ | --- |
+| OLED Screen Panel  | 1   |
+| Touch Sensor Film  | 1   |
+| Display Flex Cable | 1   |
+
+
+
+🔧 BOM 2 — Logic Board Assembly
+
+Item: Logic Board Assembly
+Quantity: 1
+Routing: Logic Board Assembly Routing
+
+
+| Item                    | Qty |
+| ----------------------- | --- |
+| Main CPU Chip           | 1   |
+| Memory Chip (Flash/RAM) | 1   |
+| Logic Board PCB         | 1   |
+| WiFi/Bluetooth IC       | 1   |
+
+
+
+🔧 BOM 3 — Rear Body Assembly
+Item: Rear Body Assembly
+Quantity: 1
+Routing: Rear Body Assembly Routing
+
+
+| Item                | Qty |
+| ------------------- | --- |
+| Aluminum Body Frame | 1   |
+| Camera Module       | 1   |
+| Button Set          | 1   |
+
+
+
+
+🔧 BOM 4 — Battery Pack
+
+Item: Battery Pack
+Quantity: 1
+Routing: Battery Pack Routing
+
+| Item                   | Qty |
+| ---------------------- | --- |
+| Battery Cell           | 1   |
+| Battery Protection IC  | 1   |
+| Battery Connector Flex | 1   |
+
+
+
+
+🔥 BOM 5 — iPhone 15 Pro (Final BOM)
+
+Item: iPhone 15 Pro
+Quantity: 1
+Routing: Final iPhone Assembly Routing
+
+
+
+| Sub-Assembly         | Qty |
+| -------------------- | --- |
+| Display Assembly     | 1   |
+| Logic Board Assembly | 1   |
+| Rear Body Assembly   | 1   |
+| Battery Pack         | 1   |
+
+
+Extra Raw Materials
+
+
+| Item                | Qty |
+| ------------------- | --- |
+| Screw Set           | 1   |
+| Adhesive Strip Roll | 1   |
+| Packaging Box       | 1   |
+
+
+
+
+what happen when you doing this :
+1. in production plan we have section "Sub Assembly Items", inside this we have button "Get Sub Assembly Items"
+-> after clicking this button it fatches sub asssemblies raw material automatically from main BOM  (erp know which is raw material or sub assemblies )
+-> it also fetch other raw materials from Main BOM
+
+
+2. What happen when you done material req. but create work order
+-> it create work order for each sub assemblies or one main workoder for final item
+
+
+
+
+
+

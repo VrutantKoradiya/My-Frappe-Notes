@@ -1,0 +1,6 @@
+Client Script Methods : 
+   set_intro() , is_new() , set_value() , add_child() , set_df_property() , toggle_reqd() , add_custom_button() 
+   
+Server Script Methods :
+   get_doc()  , get() , new_doc() , delete_doc(), Document Methods[insert(), append(), save(), delete() ,  db_set()], 
+  & get_list() , get_value(), set_value() , exists(), count(), sql() , frm.call() , frappe.call()   

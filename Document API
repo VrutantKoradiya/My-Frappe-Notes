@@ -1,0 +1,403 @@
+
+Document API ::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+here only syntax & info are available example is on code
+
+1 . frappe.get_doc >>>>>>>>>>>>>>>>>>.
+-> Fetch an existing document by name only(not by any other field name) Or create a new document object from a dict (needs .insert() to save).
+
+▶️ Fetch a document by its name
+doc = frappe.get_doc("Document API Methods", "DOC-0001")
+print(doc.name1)  # Access field
+
+▶️ get a single doctype , here name is not require
+doc = frappe.get_doc('System Settings')
+
+▶️ Create a new document object (not yet saved)
+doc = frappe.get_doc({
+    "doctype": "Document API Methods",
+    "name1": "John Doe",
+    "phone": "9876543210",
+    "email": "john@example.com",
+    "gender": "Male"
+})
+
+doc.insert()  # Save to database
+frappe.db.commit()  # Commit changes (optional in scripts)
+
+
+#############################################################################################################################################################################
+
+2 . frappe.get_last_doc >>>>>>>>>>>>>>>>>>
+
+▶️ basic usage
+task = frappe.get_last_doc('DOctype_name')
+
+▶️ doing filter
+task = frappe.get_last_doc('doctypenanme', filters={"field_name": "value"})
+
+
+▶️ set oerder_by (Orders the results by fieldname descending (latest fieldname first).)
+task = frappe.get_last_doc('doctypenanme', filters={"field_name": "value"}, order_by="fieldname desc")
+
+here , order_by="creation desc"
+   creation is a standard field in every DocType that stores when the document was created.
+   desc means descending order — newest first.
+   So by default, get_last_doc returns the most recently created document.
+
+
+#############################################################################################################################################################################
+
+
+
+3. frappe.get_cached_doc >>>>>>>>>>>>>>>>>>
+
+frappe.get_doc always goes to the database to fetch the document.
+
+frappe.get_cached_doc first checks if the document is already loaded in memory (cache).
+If it is in cache → it returns it immediately (faster).
+If it’s not in cache → it fetches from the database and stores it in cache for next time.
+
+✅ Key point: Using get_cached_doc is faster when you need the same document multiple times in the same request, because it avoids repeated database queries.
+
+
+Important: get_cached_doc is only for fetching existing docs, not creating new ones.
+For new documents, you still use frappe.get_doc.
+
+#############################################################################################################################################################################
+
+4. frappe.new_doc >>>>>>>>>>>>>>>>>>
+
+# create a new document
+doc = frappe.new_doc('DocTYpe Name')
+doc.fieldname = 'value'
+doc.fieldname = 'value'
+........
+doc.insert()
+
+#############################################################################################################################################################################
+
+
+5. frappe.delete_doc >>>>>>>>>>>>>>>> 
+Deletes the record and its children from the database. Also deletes other documents like Communication, Comments, etc linked to it.
+
+frappe.delete_doc('Doctypename', 'name of record which is unique(id name)')
+
+#############################################################################################################################################################################
+
+
+
+6. frappe.rename_doc >>>>>>>>>>>>>>>> 
+Change the name, and optionally merge if the new name exists
+
+frappe.rename_doc(doctype, old_name, new_name, merge=False)
+frappe.rename_doc('Task', 'TASK00002', 'TASK00012')
+
+Rename will only work if Allow Rename is set in the DocType Form.
+
+
+#############################################################################################################################################################################
+
+7. frappe.get_meta >>>>>>>>>>>>>>>> 
+
+frappe.get_meta(doctype)
+
+
+Returns meta information of doctype.
+
+Metadata includes things like:
+Fields, field types, options,Mandatory/optional fields , Default values ,Links to other DocTypes
+
+It also includes any customizations you made via custom fields or property setters, so you get the complete current structure of the DocType.
+
+✅ Basically: “It tells you everything about the structure and rules of a DocType.”
+
+ex. 
+
+meta = frappe.get_meta('Document API Doc')
+frappe.msgprint(str(meta.get_field("email").fieldtype)) # Get field type
+frappe.msgprint(" , ".join([field.fieldname for field in meta.fields])) # Access all fieldnames
+#meta.get_custom_fields() # [field1, field2, ..]
+
+#############################################################################################################################################################################
+
+
+ @@@@@@@@@@@@  Document Methods  @@@@@@@@@@@
+ 
+1. doc.insert  >>>>>>>>>
+
+
+doc.insert(
+    ignore_permissions=True, # ignore write permissions during insert
+    ignore_links=True, # ignore Link validation in the document
+    ignore_if_duplicate=True, # dont insert if DuplicateEntryError is thrown
+    ignore_mandatory=True # insert even if mandatory fields are not set
+)
+
+
+-This method inserts a new document into the database table. 
+-It will check for user permissions and execute before_insert, validate, on_update, after_insert 
+ methods if they are written in the controller.
+
+here , A controller in Frappe is the Python class that defines the rules and behavior of a DocType
+
+#task.py
+from frappe.model.document import Document
+
+class Task(Document):  # <-- This class is the controller
+    def before_insert(self):
+        print("Before inserting Task")
+        
+        
+#############################################################################################################################################################################   
+        
+2. doc.save  >>>>>>>>> 
+The save() method updates an existing document, checking permissions, running validate before saving, and executing on_update after saving the changes.
+it also create new document
+
+
+doc.save(
+    ignore_permissions=True, # ignore write permissions during insert
+    ignore_version=True # do not create a version record
+)
+
+here, 
+Version record means :
+This keeps track of what changed (old vs new values).
+It’s useful for audit logs and history tracking.
+        
+#############################################################################################################################################################################   
+  
+   
+3. doc.delete() >>>>>>>>>>>
+here first get an document
+
+doc.delete()
+
+#############################################################################################################################################################################
+
+4. doc.get_doc_before_save    >>>>>>>>>>>   (exapmple is on overrid.py for customer task where i use previous variable also in our all methods code)
+
+This method returns the state of the document as it was in the database before the current save.
+Useful when you want to compare old values with new values during validate or before_save 
+
+#############################################################################################################################################################################
+
+5. doc.has_value_changed  >>>>>>>>>>> 
+field = doc.has_value_changed("field_name")
+
+if field:
+    pass // code here
+
+#############################################################################################################################################################################
+
+6. doc.reload >>>>>>>>>>
+
+Fetches the latest values of the document from the database and updates the document object in memory.
+Why it’s useful: If someone else (or another process) changed the document directly in the database, your current doc object might have outdated values.
+
+#############################################################################################################################################################################
+        
+7. doc.check_permission(permtype) >>>>>>>>>>
+
+Checks if the current user has permission to perform a specific action (permtype) on the document.
+
+Behavior:
+If the user has permission, nothing happens.
+If the user does not have permission, it throws an error.
+
+#############################################################################################################################################################################
+
+
+8. doc.get_title >>>>>>>>>>>
+
+Returns the display title of a document.
+
+title = doc.get_title()
+
+#############################################################################################################################################################################
+
+9. doc.notify_update  >>>>>>>>>>
+Sends a real-time notification that the document has been updated.
+
+doc.notify_update()
+
+it does not print any message.
+It only sends a real-time event internally so that client-side forms or listeners can react.
+
+#############################################################################################################################################################################
+
+
+10.doc.db_set >>>>>>>>>>
+Updates a field’s value directly in the database for that document
+
+Important:
+Bypasses all controller methods (validate, before_save, on_update, etc.).
+Updates the modified timestamp automatically.
+
+sy: doc.db_set('price', 2300, update_modified=False) <- also have other sy watch on documentation
+
+#############################################################################################################################################################################
+
+
+11. doc.append >>>>>>>>
+Append a new item to a child table.
+
+doc.append(fieldname, {**kwargs})
+**kwargs → field values for the new child row.
+
+#############################################################################################################################################################################
+
+
+12. doc.get_url  >>>>>>>>>
+Returns the Desk URL (link) for that document in Frappe.
+The URL is the path you can open in the browser to directly view the document.
+
+
+#############################################################################################################################################################################
+
+
+13 . doc.add_comment 
+
+Adds a comment to the document.
+The comment will appear in the Timeline of the form (on the right side in Desk).
+Useful for notes, updates, or system messages.
+
+doc.add_comment("Comment", "This task needs to be completed by tomorrow.")
+doc.add_comment("Info", "Status changed to In Progress")
+
+
+#############################################################################################################################################################################
+
+
+14. doc.add_seen 
+
+What it does: 
+Marks the document as seen by a user.
+It updates the _seen column in the database, which is stored as a JSON array of user IDs.
+If no user is given, it uses the current logged-in user.
+
+
+This works only if Track Seen is enabled in the DocType.
+If Track Seen is disabled, the _seen column won’t be updated.
+
+#############################################################################################################################################################################
+
+
+15. doc.add_viewed >>>>>>>> 
+Logs that a user has viewed (opened) the document’s form.
+It records this in the View Log table.
+If no user is given, it uses the current logged-in user.
+
+#############################################################################################################################################################################
+
+
+16. doc.add_tag  >>>>>>>>>
+What it does: Adds a tag (a keyword/label) to the document.
+
+Tags help in grouping, filtering, and searching documents easily.
+
+
+#############################################################################################################################################################################
+
+
+17.doc.get_tags  >>>>>>>>>
+Returns all the tags linked with the document.
+Output is a list of tag strings.
+
+#############################################################################################################################################################################
+
+
+18. doc.run_method  >>>>>>>>>
+
+Runs a method defined in the document’s controller class (the doctype.py file).
+If any hooks are linked to that method, those hooks will also be triggered.
+
+#############################################################################################################################################################################
+
+
+19. doc.queue_action  >>>>>>>>>>>
+
+What it does: 
+Runs a controller method in the background queue instead of immediately.
+If the method has a special inner version (like _submit for submit), it will call that instead.
+Useful for long-running tasks that shouldn’t block the user.
+ 
+############################################################################################################################################################################# 
+ 
+20. doc.get_children() >>>>>>>>>>>
+
+What it does: 
+Works only for Tree DocTypes (those that use NestedSet, like Department, Item Group, Customer Group).
+Returns a generator that gives you each child node (record) under the current document.
+
+#############################################################################################################################################################################
+
+
+21. doc.get_parent()  >>>>>>>>>
+
+Works only for Tree DocTypes (those using NestedSet).
+Returns the parent document of the current tree node.
+Useful for navigating up the hierarchy in a tree.
+
+#############################################################################################################################################################################
+
+
+	
+22. doc.db_insert()
+
+What it does:
+Directly inserts a document into the database without running any controller methods or validations.
+
+Warning: 
+Skips hooks like before_insert, validate, on_update, after_insert.
+
+Should only be used for low-level operations or special cases.
+
+Safer alternative:
+ Use doc.insert() if you want validations and hooks to run.
+
+#############################################################################################################################################################################
+
+
+23. doc.db_update()  >>>>>>>>>>
+
+What it does: 
+Directly updates a document in the database without running any controller methods or validations.
+
+Warning:
+Skips hooks like validate, before_save, on_update, after_save.
+
+Safer alternative: 
+Use doc.save() if you want validations and hooks to run.
+
+
+
+
+#############################################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

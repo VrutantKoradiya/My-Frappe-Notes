@@ -1,0 +1,429 @@
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. valuation method(item) 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- It decides how ERPNext calculates the value (cost) of an item in stock when items are purchased, issued, or sold.
+
+default : FIFO
+
+FIFO (First In, First Out)
+- The system assumes that the oldest items (first purchased) are sold or issued first.
+- For example: You bought 10 units at ₹100, and then bought another 10 units at ₹120.
+- If you sell 10 units, ERPNext will value those issued items at ₹100 each, because the first batch purchased is considered sold first.
+
+MA (Moving Average)
+- In this method, each new purchase changes the average rate of the item. The issue rate is always the current average rate.
+- For example: You bought 10 units at ₹100, and then bought another 10 units at ₹120.
+- The average cost becomes ₹110.
+- If you sell 5 units, ERPNext will value those issued items at ₹110 each, which is the moving average rate.
+
+
+🧾 Where It Affects
+
+| **Area**                          | **Impact**                                             |
+| --------------------------------- | ------------------------------------------------------ |
+| **Stock Ledger**                  | Determines the cost of each stock movement (in/out).   |
+| **Stock Balance Report**          | Changes item valuation and total stock worth.          |
+| **Accounting (COGS & Inventory)** | Impacts expense and asset valuation in General Ledger. |
+
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. learn more about UOM ( Unit of Measure )
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Enabled :
+- If checked → this UOM can be used in transactions.
+- Helps you disable any unused UOM without deleting it
+
+
+UOM Name :
+- The actual name of the unit (e.g., Nos, Kg, Meter, Box, Litre).
+- Defines how quantity is measured across Buying, Selling, and Inventory.
+
+Must be Whole Number :
+- If checked → quantity must be whole (no decimals).
+- Used when partial quantity doesn’t make sense (like Nos or Pieces). Example: can’t buy 1.5 chairs
+
+
+| **UOM Name**           | **Meaning / Used For**                                      | **Example Use Case**                           |
+| ---------------------- | ----------------------------------------------------------- | ---------------------------------------------- |
+| **Nos** (Numbers)      | Count of individual items.                                  | Chairs, Mobile Phones, Laptops (e.g., 10 Nos). |
+| **Box**                | Used when items are packed in boxes.                        | 1 Box = 10 Bottles or 1 Box = 50 Units.        |
+| **Kg** (Kilogram)      | For measuring weight in kilograms.                          | Sugar, Cement, Steel Rods, Vegetables.         |
+| **Gram** (g)           | Smaller weight unit.                                        | Jewelry, Medicine, or Spices.                  |
+| **Litre** (Ltr)        | For liquid items.                                           | Oil, Milk, Paint.                              |
+| **Meter** (m)          | For measuring length.                                       | Cloth, Cable, Pipe.                            |
+| **Centimeter** (cm)    | Smaller unit for length.                                    | Wire, Rope.                                    |
+| **Square Meter** (sqm) | For area-based measurement.                                 | Tiles, Flooring, Fabric rolls.                 |
+| **Cubic Meter** (cum)  | For volume-based measurement.                               | Sand, Concrete, Water Tank capacity.           |
+| **Pair**               | Used for two-piece items.                                   | Shoes, Gloves, Socks.                          |
+| **Packet** (Pkt)       | Packaged items in small quantities.                         | Snacks, Medicine Strips.                       |
+| **Set**                | A combination of items.                                     | Tool Sets, Furniture Sets.                     |
+| **Roll**               | Items that come in rolls.                                   | Fabric, Paper Roll, Wire Roll.                 |
+| **Hour**               | For time-based services.                                    | Labor charge, Machine usage, Consultant fees.  |
+| **Day**                | For service durations.                                      | Room booking, Vehicle rental.                  |
+| **Piece**              | Similar to Nos — used interchangeably for individual items. | Furniture, Toys.                               |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. Auto re-order ( item -> inventory )
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+| **Field Name**            | **Simple Meaning / Use**                                                                                                      |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Check in (Group)**      | ERPNext checks the stock level in this warehouse (or warehouse group) to see if it falls below the reorder level.             |
+| **Request For**           | ERPNext will create a Material Request for this warehouse, meaning the new stock will be requested for this warehouse         |
+                              (not sent automatically, just requested).                                                                                     |
+| **Re-order Level**        | The **minimum stock quantity** at which ERPNext will **auto-create a Material Request**.                                      |
+| **Re-order Qty**          | The **quantity to request/purchase** when stock goes below the Re-order Level.                                                |
+| **Material Request Type** | Defines **what kind of Material Request** to create automatically (like *Purchase*, *Material Transfer*, or *Manufacture*).   |
+
+
+⚙️ Simple Example
+
+| **Scenario**                     | **Explanation**                                                        |
+| -------------------------------- | ---------------------------------------------------------------------- |
+| Re-order Level = 10              | When stock goes below **10 units**, ERPNext will trigger auto-reorder. |
+| Re-order Qty = 5                 | The system will create a Material Request for **5 units**.             |
+| Material Request Type = Purchase | The request will be sent to the **Buying Module** for **purchase**.    |
+
+
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. Reports & their usage/purpose
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- for suppliers quotation analysis ->  Supplier Quotation Comparison
+
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. what is Ladger, specially in reports
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- A Ledger is a detailed record of all financial transactions related to a particular Account (like “Cash”, “Debtors”, “Sales”, etc.).
+- Think of it as the complete history of how money moves in or out of that specific account.
+
+
+ex . 
+
+| Term                        | Meaning                                                     |
+| --------------------------- | ----------------------------------------------------------- |
+| **General Ledger (GL)**     | The master book containing *all* accounts and transactions. |
+| **Ledger (Account Ledger)** | Detailed record of transactions for *one specific account*. |
+| **Party Ledger**            | Ledger filtered for one customer/supplier.                  |
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. Buying Master Doctype
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Common Buying Masters in ERPNext :
+- Supplier
+- Supplier Group
+- Item
+- Item Group
+- Price List
+- Purchase Taxes and Charges Template
+- UOM (Unit of Measure)
+
+Transaction-Related Masters :
+- Material Request
+- Request for Quotation (RFQ)
+- Supplier Quotation
+- Purchase Order
+- Purchase Receipt
+- Purchase Invoice
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. Selling Master Doctype
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Key Selling Masters in ERPNext :
+- Customer
+- Customer Group
+- Item
+- Item Group
+- Territory
+- Price List
+- Sales Taxes and Charges Template
+- Sales Person / Sales Partner
+- UOM (Unit of Measure)
+
+Transaction-Related Masters :
+- Quotation
+- Sales Order
+- Delivery Note
+- Sales Invoice
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. By Krish & nisarg
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. is frozen, maintain stock, * selling all settings, Is Reverse Charge, Is Subcontracted, Apply Tax Withholding Amount
+2. blanket order, * buying setting, UOM(item), Valuation Method (Item), is customer provided , Allow alternate item, is internal supplier(supplier)
+
+Answers :
+
+A. Is Reverse Charge
+->
+This checkbox is used when you (the buyer) have to pay GST directly to the government instead of your supplier.
+dNormally, the supplier collects GST and pays it to the government.
+But under Reverse Charge Mechanism (RCM) — The buyer is responsible for paying GST to the government.
+
+-----------------------------
+
+B. Is Subcontracted
+->
+- Subcontracting in ERPNext means you send your raw materials or components to an external supplier (subcontractor), and they use those materials to manufacture 
+  or assemble a finished product for you.
+- So, you own the raw materials, but the subcontractor performs the work (like fabrication, coating, assembly, etc.).
+
+- Subcontracting materials are the raw materials or components that you supply to the subcontractor to make the final product.
+
+-----------------------------
+
+C. Apply Tax Withholding Amount
+->
+- In ERPNext, the “Apply Tax Withholding Amount” option is used to automatically deduct Tax Deducted at Source (TDS) or Withholding Tax from a transaction
+ (like a Purchase Invoice, Payment Entry, or Journal Entry) based on predefined rules.
+
+
+🧾 What is Tax Withholding?
+Tax Withholding (TDS) means that when you pay a supplier (or sometimes receive money from a customer), you deduct a percentage of the amount as tax and pay that to the government instead of paying the full amount to the other party.
+
+
+Example (India context):
+- You pay ₹100,000 to a consultant.
+- TDS @10% is applicable.
+- You pay ₹90,000 to the consultant and ₹10,000 to the government.
+ERPNext should automatically calculate and show that ₹10,000 was withheld.
+
+	
+🧮 Effect on Accounting
+- Expense (or income) is recorded in full.
+- A liability (TDS Payable) is created for the withheld amount.
+- Net payable/receivable is reduced by the TDS amount.
+
+
+-----------------------------
+
+
+D. is frozen
+->
+Prevents any new transactions for this supplier
+
+-----------------------------
+
+E. maintain stock
+->
+- If ✅ checked, ERPNext will track stock quantity and value for this item. If ❌ unchecked, ERPNext treats it as a non-stock item.
+
+| **Situation**                           | **Maintain Stock?** |
+| --------------------------------------- | ------------------- |
+| Raw Material / Finished Goods           | ✅ Yes               |
+| Consumables (tracked inventory)         | ✅ Yes               |
+| Labor / Service / Subcontract Charges   | ❌ No                |
+| Office Expenses (like Stationery, Rent) | ❌ No                |
+
+Maintain Stock = tells ERPNext whether to track inventory movement for that item or treat it as a non-stock (service/expense) item.
+
+-----------------------------
+
+
+D. blanket order
+->
+- Blanket Order is used when a customer or supplier agrees to buy or sell a specific quantity of items over a period of time 
+  — but they’ll send actual orders (Sales Orders or Purchase Orders) in parts, not all at once.
+
+- Think of it as a long-term contract between you and your customer (or supplier).
+
+🧾 Example (Sales side)
+
+Suppose a school says: “We’ll buy 100 computers this year, but we’ll order 20 each month.”
+
+You can:
+- Create a Blanket Order (Sales) for:
+     Customer: The school
+     Item: Computer
+     Total Quantity: 100
+     Rate: $500 each
+     Validity Period: Jan–Dec 2025
+
+- Each month, when they confirm, you create a Sales Order for 20 computers.
+- ERPNext automatically tracks how many items from the blanket order are fulfilled and how many are remaining.
+
+🔸 Purchase Example
+- If you’re buying from a supplier: “We’ll buy 1,000 keyboards this year at $10 each, delivered in batches of 200.”
+- You’d create a Blanket Order (Purchase), and later generate Purchase Orders from it.
+
+
+⚙️ ERPNext Behavior
+- Quotation = pricing and negotiation stage
+- Blanket Order = commitment stage (optional but helpful for recurring business)
+- Sales Order = execution stage (actual delivery + stock reservation)
+
+-----------------------------
+
+E. is customer provided
+-> 
+- If ✅ checked, it means this item is owned by the customer, not by your company.
+
+- You sometimes receive an item from your customer to repair, process, or modify,
+  but it still belongs to the customer — it’s not your company’s stock.
+
+used for - Used in Manufacturing, Service, and Subcontracting when the customer gives raw material or equipment for repair, processing, or assembly.
+
+-----------------------------
+
+F. Allow alternate item
+->
+- If ✅ checked, ERPNext allows this item to be replaced with another equivalent item in transactions.
+- Useful when the exact item is unavailable, and you want to use a substitute item instead
+
+- Sometimes the main item is out of stock, discontinued, or temporarily unavailable. Instead of blocking the order, ERPNext can suggest or allow an alternative item 
+ (defined under the same item or linked through “Item Alternative” Doctype).
+
+How works
+
+| **Step** | **What Happens**                                                                                                           |
+| -------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1️⃣       | You tick **Allow Alternative Item** in Item master.                                                                        |
+| 2️⃣       | You link related items under **Item Alternative** Doctype.                                                                 |
+| 3️⃣       | When that item is used in an order and stock is not available, ERPNext suggests available alternative items automatically. |
+
+-----------------------------
+
+1. 🧾 “Is Return (Credit Note)” — Meaning in ERPNext
+- In ERPNext, the checkbox “Is Return (Credit Note)” is used to mark a Sales Invoice (or Purchase Invoice) as a return document 
+  — meaning it’s being created to reverse or adjust a previous sale or purchase.
+  
+🧠 In Simple Terms: ✅ Tick this box when the customer is returning items and you need to issue a credit note (a negative invoice).
+
+📦 Example Scenario
+Let’s say you sold 10 laptops to a customer and created a Sales Invoice (SI-0001) for ₹100,000.
+A few days later, the customer returns 2 defective laptops.
+
+Here’s what you do:
+- Create a new Sales Invoice.
+- Tick “Is Return (Credit Note)”.
+- In the Return Against field, link it to the original Sales Invoice (SI-0001).
+- Add the 2 laptops as items with the same rate and taxes.
+- Save and submit the invoice.
+
+ERPNext will automatically:
+- Create a negative stock movement (if perpetual inventory is enabled).
+- Adjust the customer’s outstanding balance (reduce receivables).
+- Generate an accounting entry that reverses the original sale for those 2 laptops.
+
+----------------------
+
+2. Is Rate Adjustment Entry (Debit Note)
+- In ERPNext, the checkbox “Is Rate Adjustment Entry (Debit Note)” is used when you need to issue a Debit Note 
+  — not because of returned items, but because of a rate correction (price difference) after the original invoice was submitted.
+  
+🧠 In Simple Terms: ✅ Tick “Is Rate Adjustment Entry (Debit Note)” when the rate (price) in the original invoice was incorrect,
+                       nd you need to adjust the value — without affecting the quantity or stock movement.
+                       
+🔍 Example Scenario
+
+Let’s say you created a Sales Invoice for: 10 Laptops @ ₹50,000 each = ₹5,00,000
+Later, you realize the correct rate should have been ₹55,000.
+Now you need to increase the invoice amount by ₹50,000 (difference for 10 laptops × ₹5,000).
+
+Here’s how you handle it:
+- Create a new Sales Invoice.
+- Tick “Is Rate Adjustment Entry (Debit Note)”.
+- Link it to the original invoice in the Return Against field.
+- Add the same items — but only for the rate difference (not quantity).
+- Save and submit.    
+
+----------------------
+
+3. Hearts
+
+| Module            | Heart                                        | Purpose                                   |
+| ----------------- | -------------------------------------------- | ----------------------------------------- |
+| **Manufacturing** | **Bill of Materials (BOM)** + **Work Order** | Convert raw materials into finished goods |
+| **Buying**        | **Purchase Order (PO)**                      | Procure materials/services efficiently    |
+| **Selling**       | **Sales Order (SO)**                         | Manage customer sales and fulfillment     |
+
+
+----------------------
+
+4. valuation rate in Item
+->
+
+It is the default cost ERPNext uses to calculate stock value when no other valuation data exists.
+
+
+
+✅ Where is Valuation Rate used?
+
+ERPNext uses the valuation rate for:
+
+1. Opening stock entries
+- When you create an Opening Stock Entry, ERPNext takes valuation rate × quantity to calculate opening stock value.
+
+2. First purchase or manufacturing entry
+- If no purchase history exists, the system uses the valuation rate.
+
+3. Stock Ledger Valuation
+- It is used in FIFO, Average, or Moving Average costing to compute the value of inventory.
+
+4. Stock Reconciliation
+- If a reconciliation is done without entering a rate, valuation rate is applied.
+
+
+
+📌 Important note
+
+Valuation rate in the Item master is not always the actual stock valuation.
+Once your system has transactions, ERPNext starts calculating valuation rate automatically based on:
+Purchase Receipt rates
+Stock entries
+Manufacturing cost
+Additional costs (Landed Cost Voucher)
+
+So the Item’s valuation rate is mostly used: 👉 Only as a starting value, not the ongoing valuation.
+
+
+
+🎯 Example
+
+If Item X has valuation rate = 100 INR
+And you add opening stock of 10 qty:
+
+Stock Value = 10 × 100 = 1000 INR
+
+Later if you purchase at 120, the valuation rate will be updated automatically.
+
+in short,
+Valuation Rate = Default cost of the item used to calculate inventory value until real transactions set the cost.
+
+
+
+----------------------
+
+
+1. practical implementation
+-> while doing practical from material request(manufacture) for in production plan as a material request
+   - dont create work order from material request create work order always from production plan or  after creating work order from production plan material request status already 
+     change to  ordered
+     
+     
+     
+
+
+
+
+

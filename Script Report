@@ -1,0 +1,39 @@
+Script Reports questions ...... 
+
+1.  why we write _ like {"label": _("First Name"), "fieldname": "first_name", "fieldtype": "Data", "width": 150}, ? 
+-> _ is a function, not a variable or wildcard import. Its main purpose is translation.
+
+like : from frappe import _  , {"label": _("First Name"), "fieldname": "first_name", "fieldtype": "Data", "width": 150}
+
+
+
+How it works in your code:
+"label" → This is the text that appears at the top of the column in your report.
+_() → Tells Frappe: “This string can be translated into other languages if needed.”
+"First Name" → The text shown by default (in English).
+
+
+
+
+2. but in .js file it written like "label": __("Enable"), or in .py file  {"label": _("First Name"), "fieldname": "first_name", "fieldtype": "Data", "width": 150} , so my question 
+   is why  in .js it is 2(__) and in .py it  is 1(_)
+
+->  _() is a Python function imported from Frappe ,
+    Purpose: mark the string for translation.
+    Example: _('First Name') → If translations exist for other languages, Frappe will display them; otherwise, shows "First Name".
+    In JavaScript (.js file) →  __() is the JS equivalent of _() in Python.  
+
+It’s a global function in Frappe JS that handles translations.
+
+Why different names?
+
+Python and JS are different languages, so Frappe defines different functions for the same purpose.
+Python: _()
+JavaScript: __()
+
+Functionality: exactly the same → mark strings for translation.
+
+
+💡 So remember:
+Python → single underscore _
+JS → double underscore __

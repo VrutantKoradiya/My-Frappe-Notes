@@ -1,0 +1,228 @@
+
+general :
+step -1 buying & selling documentation with cycle
+- byting cycle image - https://docs.frappe.io/erpnext/user/manual/en/material-request
+- selling cycle image - https://docs.frappe.io/erpnext/user/manual/en/quotation
+
+documenatation:
+- https://docs.frappe.io/erpnext/introduction
+
+step-2 understading fields of master doctype of both buying & selling + also doing practical of that master doctype
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Buying :
+byting cycle image - https://docs.frappe.io/erpnext/user/manual/en/material-request (look other tips)
+
+learning flow:
+step-1 video(main) + documentation(i think dont need to look doc. just watch it )
+  read documenatation fast - https://docs.frappe.io/erpnext/introduction , understand cycle properly
+  video link - https://school.frappe.io/lms/courses/erpnext-training/learn/4-1 
+  
+step-2 
+understading fields of master doctype of  buying + also doing practical of that master doctype by creating records
+
+
+what i dont need to do means i need to just look out :
+1. settings category -> all( but buying setting need to do ... ) , dont need to lookout if time have then just look out
+2. all reports -> just look out
+
+
+
+final what to do(only category mention here, so if category mention without any () then do it all otherwise fillow () )
+1. Buying
+2. Items & Pricing
+3. Settings(only do Buying Settings)
+4. Supplier
+5. Supplier Scorecard
+
+
+main thing to know - cycle, all master doctypes also with field usage/purpose
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Selling :
+selling cycle image - https://docs.frappe.io/erpnext/user/manual/en/quotation (look other tips)
+
+learning flow:
+step-1 video(main) + documentation(i think dont need to look doc. just watch it )
+   video link - https://school.frappe.io/lms/courses/erpnext-training/learn/4-1 
+   read documenatation fast - https://docs.frappe.io/erpnext/introduction , understand cycle properly
+
+step-2 
+understading fields of master doctype of  selling + also doing practical of that master doctype by creating records.
+
+
+
+what i dont need to do means i need to just look out :
+1. settings -> all( but selling setting need to do ... ) , dont need to lookout if time have then just look out 
+2. all reports -> just look out
+3. Regional
+
+
+
+final what to do(only category mention here, so if category mention without any () then do it all otherwise fillow () )
+1. Selling
+2. Point of Sale
+3. Items and Pricing
+4. Items and Pricing( only do Selling Settings )
+
+
+
+main thing to know - cycle, all master doctypes also with field usage/purpose
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+Doctypes i coverd to learn this above modules: ( doing that doctype which is part of that cycle or doctype whihc needed to run that cycle for e.g for buying we need item,supplier ..... )
+
+Buying----
+
+1. Material Request
+2. Request for Quotation
+3. Supplier Quotation
+4. Purchase Order
+5. Purchase Receipt
+6. Purchase Invoice
+7. Payment Entry
+
+
+8. Item
+9. Price List
+10. Pricing Rule
+11. supplier
+12. Supplier Group
+13. Buying Settings 
+
+not mandatory - ( This is not done mark it)
+14. BOM(Bill Of Material)
+15. Sales Order
+16. Product Bundle
+17. Quotation
+18. Payment Request
+
+
+Selling----- some important is done on before so read on that but here also mentioned
+
+1. Blanket Order
+2. Quotation
+3. Sales Order
+4. Delivery Note
+5. Sales Invoice
+6. Payement entry ( done in buying )
+
+
+7. Selling Settings
+8. Customer
+9. Sales Partner
+10. Sales Person
+10. Loyalty Program
+12. Loyalty Point Entry ( not shown ad button ... )
+11. Item Price
+12. Item Group
+13. Product Bundle
+14. Shipping Rule
+15. Coupon Code
+
+
+
+Mnaufacturing ----------------
+
+learning sequence in chagpt :
+1. understaing module first
+2. then understand all required doctype in depth (no need to learn cycle because we have in confustion solution )
+3. go with understanding each image.
+
+
+- prduction section : full 
+- Bill of Materials:  all ( routing not need to do )
+- reports ( just look out )
+- settings
+- Tools ( just look out )
+- please make sure you coverd all option of Stock Entry 
+
+
+practical implementation  : 
+note :
+1. create work order form production plan /done
+
+WORK ORDER :
+1. option SKIP MATERIAL TRASFTER TO WIP / done
+2. TWO PRACTICAL
+  -  1 FOR MATERIAL REQUEST, 1 FOR SALES ORDER IN WORK ORDER. / done
+3. they say ensure some Cost rate  while doing practical / may be done
+
+
+4. another practical for sub-assembalies .... 
+
+
+
+
+
+
+
+
+
+
+very important : after done learn all fields(all doctype), do practical for all docype not just an cycle ...  
+               : creating one chat for all module or ask them for practical implementation of each all doctypes also include Its cycle doctype. or  
+                 i need to know for all each doctype ( like technical question, some scenario ...  )... 
+
+
+
+
+
+
+
+	
+
+
+other important tip :
+- for cycle first preferece to ERPNext video(in that they show cycle)
+  https://school.frappe.io/lms/courses/erpnext-training/learn/4-1 
+- i think we dont need to read documentation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Chagpt different propmpts : 
+
+1. 
+
+hello brother i want to learn Selling module in erpnext so my journey will be like
+1. first i want to learn liitle bit important description for Selling Module
+2. second, i want to understand full cycle of that module so i will give you image of cycle so you need to explain me in simple and best way(also give again but in just simple details)  or i also need to flow summary in like scss format but i want exact same as mine image(if A gone for B & C also then also describe 2 arrow for that where 1 go to B & another go to c) - i hope you understand
+3. after that i will come & i will give you master doctype name explain that in simple terms then i will give you its all field images, after then you need to explain that field in 
+   simple and easy way which i can understand & remeber properly   
+
+so this is mine learning journy of selling module
+
+
+
+
+
+
+2. Hey Brother currently i have knowlege of Buying & Selling Module, now i want to do practical implementation of each all doctypes also include Its cycle doctype(doctypes i will give you if you know what is my purpose). or one thing after done all doctype practical, i need to know some technical question, some scenarios for all each doctype or its cycle related( currently i done cycle practcal but i dont go to deep dive on different scenario )
+
+
+
+

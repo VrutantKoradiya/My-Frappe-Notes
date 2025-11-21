@@ -1,0 +1,461 @@
+
+REST API ::::::::::::::::::::::::::::::::::::::::::::  ( API Secret: 56d80968282e7d7, API Key - b63474683fa4c56)
+
+
+
+REST API -
+- Frappe automatically creates a REST API for every Doctype in your system —
+- so you don’t need to manually write backend API code to access, create, update, or delete records.
+
+This means:
+- Every Doctype you make = instantly gets its own ready-to-use API endpoints 🚀
+
+
+
+1. Call Normal API
+/api/resource/{Doctype}
+
+-Auto-generated CRUD API for every Doctype
+-Manage data records
+
+2. “Run arbitrary Python methods”
+Frappe also allows you to call backend Python methods using REST API.
+These are defined functions with the @frappe.whitelist() decorator.
+
+- Run custom Python functions (with @frappe.whitelist)
+- Run logic beyond CRUD
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+Authentication methods :
+
+1. Token based — Authorization: token api_key:api_secret (API Key + Secret) : 
+a pair — API Key + API Secret for a user. Secret is shown once when generated; store safely.
+
+
+2. Password (session/cookie) based — call .../api/method/login, keep cookie/session and use it for subsequent requests
+
+3. Bearer / Access token —> Not Used ......
+
+4. normal & special for Postman ->  ..../api/method/login?usr=vrutantpatel999@gmail.com&pwd=frappe2004
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+1) Token Based Authentication — (recommended for scripts & Postman)
+a pair — API Key + API Secret for a user. Secret is shown once when generated; store safely.
+
+
+
+How to generate (UI)
+1. Go to Users list in Desk.
+2. Open the user you want to use for API calls (or create a new “api_user”).
+3. Open Settings tab → API Access → Generate Keys.
+4. Copy the API Secret shown (store in password manager). Note the API Key shown in the record.
+
+
+How to use (header) :
+
+header --- Authorization: token <api_key>:<api_secret>
+
+
+GET http://demosite1.com:8001/api/method/frappe.auth.get_logged_user
+headers :
+
+Authorization: token abcd1234:secretXYZ
+Accept: application/json
+
+
+
+Notes
+
+- Every request is executed with the permissions of that user (roles, permissions, document rules).
+- Good practice: create a dedicated API user with minimum required roles for automation.
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+2) Password / Session (Cookie) Based Authentication — (useful for interactive sessions)
+
+What it is: you POST credentials to ../api/method/login. The server returns a session cookie. Subsequent requests which include that cookie are authenticated.
+
+
+How to login (Postman):
+
+
+POST http://demosite1.com:8001/api/method/login
+
+Headers:
+Content-Type: application/json
+Accept: application/json
+
+
+Body:
+{
+  "usr": "your_username@example.com",
+  "pwd": "your_password"
+}
+
+
+When to use: 
+- good for browser-like flows or when your HTTP client manages cookies automatically. For scripts, token-based is more reliable.
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+Practical Postman checklist (copy-paste) ::
+
+Token method (recommended for scripts) :
+- In Postman set header Authorization: token <api_key>:<api_secret>
+- Set Accept: application/json and Content-Type: application/json for POST/PUT.
+
+Session method (interactive) :
+- POST login body to /api/method/login. Postman will save cookies.
+- Use subsequent requests without an Authorization header (cookie handles auth).
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Note :
+1. for params in URL use ? (params looks like an variable a=10 -> ?a=10)
+2. for multiple params use & ( ?a=10&b=10)
+
+Listing Documents  :
+
+
+1️⃣ Basic GET Request (Fetch List)
+Purpose: Fetch all documents of a Doctype.
+
+Syntax:
+
+GET /api/resource/:doctype
+
+👉 By default:
+
+- Only 20 records are returned.
+- Only the name field is shown.
+
+-------------------------------------------------------------------------------------
+
+2️⃣ Fetch Specific Fields
+If you want to see custom fields (like name1, age, email, location):
+
+Syntax:
+
+GET /api/resource/:doctype?fields=["field1", "field2"]
+
+
+ex:
+http://demosite1.com:8001/api/resource/REST API?fields=["name","name1","age","email","location"]
+
+
+This helps reduce payload size and improves performance.
+
+
+-------------------------------------------------------------------------------------
+
+3️⃣ Apply Filters (WHERE clause)
+
+Syntax:
+
+GET /api/resource/:doctype?filters=[["field", "operator", "value"]]
+
+ex:
+http://demosite1.com:8001/api/resource/REST API?filters=[["location","=","surat"]]
+
+
+👉 You can combine multiple filters:
+
+filters=[["location","=","surat"],["age",">",17]]
+   
+   Filters are combined using AND by default.
+
+
+If you want OR, use:
+
+or_filters=[["location","=","surat"],["age","=",20]]
+
+
+-------------------------------------------------------------------------------------
+
+🧩 4️⃣ Sorting (ORDER BY)
+
+Syntax:
+
+GET /api/resource/:doctype?order_by=fieldname%20desc
+
+
+✅ Your Example:
+
+http://demosite1.com:8001/api/resource/REST%20API?order_by=age%20desc
+or
+http://demosite1.com:8001/api/resource/REST API?order_by=age desc
+
+
+- %20 is URL encoding for space.
+
+-------------------------------------------------------------------------------------
+
+🧩 5️⃣ Pagination (LIMIT / OFFSET)
+To fetch limited data for large lists:
+
+Syntax:
+
+GET /api/resource/:doctype?limit_start=0&limit_page_length=10
+
+
+✅ Example:
+
+http://demosite1.com:8001/api/resource/REST%20API?limit_start=0&limit_page_length=5
+or
+http://demosite1.com:8001/api/resource/REST API?limit_start=0&limit_page_length=5
+
+
+OR (shortcut):
+
+http://demosite1.com:8001/api/resource/REST%20API?limit_start=0&limit=5
+or
+http://demosite1.com:8001/api/resource/REST API?limit_start=0&limit=5
+
+
+-------------------------------------------------------------------------------------
+
+🧩 6️⃣ Return as List (not Dict)
+By default, Frappe returns:
+"data": [{"name":"REST-API-0001"}]
+
+
+If you add as_dict=False, it returns:
+
+"data": [["REST-API-0001"], ["REST-API-0002"]]
+
+
+✅ Example:
+
+http://demosite1.com:8001/api/resource/REST%20API?limit=5&as_dict=False
+or
+http://demosite1.com:8001/api/resource/REST API?limit=5&as_dict=False
+
+-------------------------------------------------------------------------------------
+
+
+🧩 7️⃣ Debug Query
+
+If you want to see the SQL query that Frappe runs internally 👇
+
+✅ Example:
+
+http://demosite1.com:8001/api/resource/REST%20API?limit=5&debug=True
+or
+http://demosite1.com:8001/api/resource/REST API?limit=5&debug=True
+
+
+{
+  "data": [{"name":"REST-API-0001"}, {"name":"REST-API-0002"}],
+  "exc": [
+    "select `tabREST API`.`name` from `tabREST API` order by `tabREST API`.`modified` desc limit 5 offset 0",
+    "Execution time: 0.02 sec"
+  ]
+}
+
+This is super useful for debugging backend performance or permission issues.
+
+-------------------------------------------------------------------------------------
+
+💡 Summary Table
+
+| Feature        | Query Param                    | Example                        |
+| -------------- | ------------------------------ | ------------------------------ |
+| Limit records  | `limit` or `limit_page_length` | `?limit=5`                     |
+| Start position | `limit_start`                  | `?limit_start=10`              |
+| Sort results   | `order_by`                     | `?order_by=age%20desc`         |
+| Select fields  | `fields`                       | `?fields=["name","age"]`       |
+| Filter records | `filters`                      | `?filters=[["age",">",18]]`    |
+| OR filter      | `or_filters`                   | `?or_filters=[["age",">",18]]` |
+| Raw SQL info   | `debug`                        | `?debug=True`                  |
+
+
+Note: for any space in the URL use -> %20  for space
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+CRUD Operations 
+
+CRUD = the 4 main actions you can perform on any Frappe Doctype record using REST API.
+Frappe automatically creates these endpoints for every Doctype — no extra code needed.
+
+
+All endpoints use the same format:
+..../api/resource/:doctype
+
+
+⚙️ Common Setup for All CRUD Calls
+Headers (always required):
+
+{
+  "Accept": "application/json",
+  "Content-Type": "application/json",
+  "Authorization": "token api_key:api_secret"
+}
+
+
+
+you can learn more about in Chatgpt chat called REST API in frappe
+
+
+Quick Recap Table :
+
+| Operation  | Method | Endpoint                                    | Example          |
+| ---------- | ------ | ----------------------------------------    | ---------------- |
+| **Create** | POST   | `.../api/resource/REST%20API`               | Add new document |
+| **Read**   | GET    | `.../api/resource/REST%20API/REST-API-0005` | Fetch one record |
+| **Update** | PUT    | `.../api/resource/REST%20API/REST-API-0005` | Modify field     |
+| **Delete** | DELETE | `.../api/resource/REST%20API/REST-API-0005` | Remove record    |
+
+
+Tips : 
+
+- All CRUD APIs check user roles and permissions — only authorized users can create/update/delete.
+- Using Token Authentication (api key/secret) is safest for automation. ( Authorization: token <api_key>:<api_secret> )
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Remote Method Calls  :
+
+Normally, /api/resource/:doctype is used for CRUD — means direct Doctype-level operations.
+
+
+But sometimes, you need to run custom business logic — something beyond CRUD.
+Example:
+
+Send OTP ,Validate data, Calculate discount, Update multiple doctypes at once
+
+For that, Frappe gives —
+👉 /api/method/{dotted_path_of_python_function}
+
+
+🔹 Basic Syntax:
+
+GET /api/method/{module_path}.{function_name}
+
+
+Example:
+
+GET /api/method/frappe.auth.get_logged_user
+
+Here:
+- frappe.auth → Python module path
+- get_logged_user → Function name
+
+
+🔹 Important Rule:
+
+1. ✅ The method must be whitelisted
+Only whitelisted methods are accessible via REST.
+
+import frappe
+
+@frappe.whitelist()
+def get_logged_user():
+    return frappe.session.user
+
+2.
+✅ Use method type correctly:
+GET → when just fetching info (no DB change)
+
+POST 
+→ when modifying DB (insert/update/delete)
+→ auto calls frappe.db.commit() internally after success.
+
+-------------------------------------------------------------------------------------
+
+Example 1 — GET request (Fetch data)
+
+GET /api/method/frappe.auth.get_logged_user 
+-> {
+  "message": "Administrator"
+}
+Means the function returned "Administrator".
+
+-------------------------------------------------------------------------------------
+
+
+Example 2 — POST request (Custom write logic)
+
+import frappe
+
+@frappe.whitelist()
+def make_email():
+      records = frappe.get_all("REST API")
+      for t in records:
+            frappe.db.set_value("REST API", t.name, "email", "python@gmail.com")
+      return f"gmail python@gmail.com is set to  {len(records)} Records"
+
+
+{
+  "Content-Type": "application/json",
+  "Accept": "application/json"
+}
+
+-------------------------------------------------------------------------------------
+
+Example 3 — Method with parameters
+
+@frappe.whitelist()
+def greet_user(name):
+    return f"Hello, {name}!"
+
+
+response:
+{
+  "message": "Hello, Vrutant!"
+}
+
+
+-------------------------------------------------------------------------------------
+
+🧠 Summary
+
+| Concept            | Description                   |
+| ------------------ | ----------------------------- |
+| **Endpoint**       | `/api/method/{python.path}`   |
+| **GET**            | For fetching data             |
+| **POST**           | For writing/updating data     |
+| **Auto Commit**    | Done automatically after POST |
+| **Return Value**   | Sent in `message` key         |
+| **Error Handling** | Sent in `exc` and `exc_type`  |
+
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+Custom Api = calling from python
+
+- you can first go to code file( read code for CRUD) then check postman for their usage , also can read from CHAGPT CHAT
+
+
+IMPORTANT:
+
+1.   method = frappe.request.method
+we can access method in .py file using frappe.request.method
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,42 @@
+
+
+A Custom DocType exists only in your DB (unless you export it into an app).
+
+
+Example: School Management App
+Suppose you installed an app called School Management.
+
+This app comes with standard DocTypes like:
+
+
+-Student
+
+
+-Teacher
+
+
+-Course
+
+
+These are standard DocTypes — they live in the app’s code. Anyone installing the app will get them.
+
+
+Now you create a Custom DocType
+Let’s say, in your system you want to track School Buses 🚍.
+You go to Desk > Developer > DocType > New, and you create a DocType called School Bus.
+
+
+-This School Bus DocType is only in your database, not in the app’s code.
+
+
+-If another person installs the School Management app on their own site, they won’t have your School Bus DocType.
+
+
+-It lives only in your current site’s DB, because you made it as a Custom DocType.
+
+
+
+
+- export kariye tyare bijane male .(action ma option aave export no ....  + also we can export from using doctype called 'Data Export')
+
+

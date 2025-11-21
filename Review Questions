@@ -1,0 +1,692 @@
+WEEK 5: 
+
+1. Doctype should not searchable in global search
+-> in doctype setting -> below Restrict To Domain -> enable the option : User Cannot Search
+
+#######################################################################################################################################################################################
+
+2. record shuold not be created(add new record option : hide)
+->  in doctype setting -> below Restrict To Domain -> enable the option : User Cannot Create
+
+#######################################################################################################################################################################################
+
+3. method is not whitelisted ,not in any event controller , even not in any class te how we can override . ( monkey patching )
+-> left to do practical ........
+
+# my_app/utils.py    //orginal one
+def my_function():
+    return "Original Function"
+    
+    
+# my_app/monkey_patch.py //changing original one
+import frappe
+import my_app.utils
+
+def custom_my_function():
+    frappe.msgprint(" This is the patched version!")
+    return "Patched Function"
+
+def apply_patch():
+    # Monkey patch: replace original with custom
+    my_app.utils.my_function = custom_my_function 
+    
+
+You want your monkey patch to load automatically on every bench start,
+For that, the best place is your app’s __init__.py, because it gets imported whenever the app is loaded with Frappe.
+
+so in , my_app/__init__.py ->
+             from . import monkey_patch
+             monkey_patch.apply_patch()   
+             
+             her the dot (.) means “import from the current package (same folder)”.
+
+#######################################################################################################################################################################################
+
+4. which event is trigger after submit the Record ?
+-> on_update()
+
+#######################################################################################################################################################################################
+
+
+5. how to change color of status from UI
+-> in doctype setting -> Document States -> Add row with your status value also set color .
+
+#######################################################################################################################################################################################
+
+
+6. what if i want to overide any core function but also want core function is running with our new overriden function .
+->
+
+1. for whitelisted : 
+
+import core function , where you write your override method -> then call it .... from overide function
+
+ex.
+
+import demoapp1.demo_module.doctype.client_script_doc.client_script_doc as CoreFunction
+
+@frappe.whitelist()
+def CustomWHITELISTexample(msg):
+      a = CoreFunction.say_hellow(msg)
+      frappe.msgprint("hello from Override method in sever script doc doctype using override_whitelisted_methods ")
+      
+
+2. for class : 
+->  # Run core logic first like super().validate() 
+
+ex. 
+core function  - 
+    
+    class SalesOrder(Document):
+    def validate(self):
+        frappe.msgprint("Core: Validating Sales Order")
+
+    def on_submit(self):
+        frappe.msgprint("Core: Submitting Sales Order")
+
+    def on_cancel(self):
+        frappe.msgprint("Core: Cancelling Sales Order")
+        
+        
+        
+    override file -
+    
+from erpnext.selling.doctype.sales_order.sales_order import SalesOrder as CoreSalesOrder
+
+ class CustomSalesOrder(CoreSalesOrder):
+    def validate(self):
+    
+        # Run core logic first
+        super().validate()             <- same like this for submit cancel & other methods ....  
+ 
+        # Add your extra feature
+        frappe.msgprint("Custom: Extra check added in validation")   
+        
+        
+3. in doc_events , you dont need to do anythig, your core & new function both gonna work.
+4. in doctype_js , you dont need to do anythig, your core & new function both gonna work. 
+
+
+#######################################################################################################################################################################################
+     
+     
+WEEK 6:
+
+
+
+1. How to add child table fields in Web from .... according to my question(mine)
+
+
+2. calender view not visible in particular doctype where listview & others are available. ( link - https://discuss.frappe.io/t/how-to-show-the-calendar-view-in-the-list-view-dropdown-button/103576/2)
+
+frappe.views.calendar['Doctype Name'] = {
+    field_map: {
+		start: "start_date",
+		end: "end_date",
+		id: "name",
+		title: "project",
+		allDay: 1,
+	}
+}
+
+You can define it in <doctype>_calendar.js
+demoapp1/demoapp1/doctype/meeting/meeting_calendar.js
+
+
+3. add custom field from .py & fixtures.
+
+1️⃣ Add Custom Field via .py file
+
+You can use Frappe’s API " frappe.custom.doctype.custom_field.custom_field.create_custom_field() "
+
+import frappe
+from frappe.custom.doctype.custom_field.custom_field import create_custom_field
+
+def add_custom_field_to_customer():
+    #  Create a new custom field in the "Customer" doctype
+    field = {
+        "fieldname": "custom_special_note",
+        "label": "Special Note",
+        "fieldtype": "Data",
+        "insert_after": "customer_group",  #Place after this field
+    }
+
+    create_custom_field("Customer", field)
+    frappe.msgprint("Custom field 'Special Note' added successfully!")
+
+
+Then run - 
+bench --site demosite1.com execute demoapp1.demo_module.api.add_custom_field_to_customer
+
+2️⃣ Add Custom Field via Fixtures
+hooks.py
+
+fixtures = [
+    {"doctype": "Custom Field",
+     "filters": [["name", "in", ["Customer-custom_special_note"]]]}
+]
+
+here, 
+Customer = DocType name
+custom_special_note = your Custom Field’s fieldname
+
+so, sy : <Doctype Name>-<Fieldname>
+
+
+Then -> bench export-fixtures
+
+
+https://github.com/resilient-tech/india-compliance
+
+4. what is link validation
+
+
+
+
+week 7 :
+
+1. if i override validate then core validate only override or whole class will override.( mine )
+
+
+2. in Print format -> i can't add another jinja in my existing Format( mine )
+
+
+3. database api
+4. connection Tab in Doctype ...
+
+
+week 8 :
+
+1. which hook for workflow ...( mine )ss
+
+
+
+left but not important :
+2. conncetion from code or ui 
+3. patch in rest api
+
+4. autocomplete 
+-> set option then you write first character all matches option will show
+
+5. has_permission & permission_query_condition
+-> has_permission for creating custom true/false cindition or permission_query_condition is used for set custom sql query when you do frappe.db.get_list()
+
+6.field will be adding but modified time must be not added.....
+-> set_value or db_set ( update_modified )
+
+7. uitility functions - https://docs.frappe.io/framework/user/en/api/utils
+- on chat
+
+8. bootinfro practical
+-> After a user logs in, Frappe prepares a dictionary of values called bootinfo.
+  -This dictionary is sent from the server to the client (browser) during Desk loading.
+  -On the client side, it is accessible as frappe.boot
+
+
+9. concept : bench build , migrate , js data need to be reflect.
+bench build -> Compile all frontend assets (JS, CSS, etc.) 
+            -> updates your assets 
+            -> reflect js, css
+
+
+bench migrate -> Apply all code and metadata changes to the database
+              -> This command syncs your app code (Python + JSON) with your database schema and metadata.
+              -> reflect .json
+
+command :
+bench --site sitename migrate
+bench build
+
+
+
+
+10. how to enable scheduler event ... 
+-> bench --site sitename enable-scheduler
+
+11. change admin pass using command.
+-> bench --site sitename set-admin-password newpassword
+
+12. website settings, navbar setting all practical.
+-> no need to done
+
+13. github app push.. after creating repo. ( after then get that app in site means doing process of get or install app )
+-> done (as a gym management system )
+
+14. generator in python
+->
+A generator is a special kind of iterator that lets you generate values one at a time, instead of storing everything in memory at once.
+
+You can think of it like a lazy list — it gives you the next value only when you ask for it.
+
+normal function :
+def numbers_list():
+    return [1, 2, 3]
+
+print(numbers_list())
+# Output: [1, 2, 3]
+
+✅ This function returns all values at once — they all stay in memory.
+
+
+Generator Function
+def numbers_generator():
+    for i in [1, 2, 3]:
+        yield i
+
+print(numbers_generator())
+
+# Output: <generator object numbers_generator at 0x000...>
+
+- Here, the function doesn’t return a list — it returns a generator object.
+
+You can then get values one by one:
+
+for num in numbers_generator():
+    print(num)
+
+
+
+
+other :
+
+1. frappe.render_template() in page is used for 
+-> our html content will be render here, so we give our HTML file name .... 
+
+2. where is entry of background job
+-> RQ Job
+
+3. where is entry of scheduler job
+-> Scheduled Job Type
+
+4. permission_query_condition where to see data
+-> in list view we can see all data but in each record not shown( which is not match the current user )
+
+
+
+
+
+
+
+
+
+
+important question for final review : ( do practical )
+
+1. has batch no. practical, has serial no.
+So when you enable has batch no.
+
+-> available Create New Batch Automatically, Batch Number Series, Has Expiry Date field
+-> Field Becomes Active in Transactions ( purchase reciept, delivery note, stock entry...)
+-> The item is now linked to the Batch Doctype.
+-> Batch Tracking in Stock Ledger : In Stock Ledger Entries (SLE), you’ll now see an additional field: Batch No
+-> You Get Access to “Batch-wise Balance
+-> Impact on Accounting
+   Stock valuation and FIFO are now calculated per batch.
+   Reports like “Stock Ledger”, “Stock Balance”, and “Valuation Rate” will reflect quantities by batch number.
+
+
+So when you enable has serial no.
+-> “Serial Nos” Field Appears in Transactions ( purchase reciept, delivery note, stock entry...)
+-> New Doctype Relationship: “Serial No”
+-> Serial Tracking in Stock Ledger Every Stock Ledger Entry (SLE) now includes: Serial No
+-> Extra Settings : Serial No Series, Warranty expiry date
+
+
+other -> 
+A batch number identifies a group of products made together, while a serial number uniquely identifies a single product unit
+
+2. practical of box UOM
+-> 
+| Field                 | Value         |
+| --------------------- | ------------- |
+| **Item**              | Chocolate Bar |
+| **Qty**               | 5             |
+| **UOM**               | Box           |
+| **Conversion Factor** | 12            |
+| **Rate**              | ₹300 per Box  |
+
+FORMULA : 5 Box × 12 Nos/Box = 60 Nos (Stock Qty)
+
+
+3. payment terms ( practical, check how it works )
+-> Grand Total = ₹10,000
+
+| Term          | invoice_portion (%)   | payment_amount (₹) |
+| ------------- | -------------------   | ------------------ |
+| On Order      | 30                    | 3,000              |
+| On Delivery   | 40                    | 4,000              |
+| After 30 Days | 30                    | 3,000              |
+| **Total**     | 100 %                 | **10,000** ✅      |
+
+
+4. property setters (DOctype ), custom fields, also visit DocField doctype
+- done
+
+
+5. is subcontracted ( practical, check how it works )
+step-1 Create Purchase Order → Purchase Receipt → Purchase Invoice for supplier Tata Steel. | ✅ Do NOT tick “Is Subcontracted”.
+
+step-2 Now, you want to send these materials to ABC Fabricators for job work.
+Here, you create a new Purchase Order and:
+- Tick ✅ Is Subcontracted
+- Select Supplier = ABC Fabricators
+- Select the finished item you expect to receive (e.g., Machined Shafts)
+- Link the BOM for that item (which lists Steel Rods as a raw material)
+
+step-3 Send Raw Material to the Job Worker
+create : Stock Entry → Purpose: Send to Subcontractor
+
+step-4 Receive Finished Goods Back
+- Once ABC Fabricators completes the job:
+- You create a Purchase Receipt linked to the subcontracting PO
+- ERPNext automatically:
+    Adds finished goods into your stock
+    Consumes Steel Rods from the Supplier Warehouse
+Then you make a Purchase Invoice for job work charges only.
+
+🧠 If you’re buying materials → Don’t tick “Is Subcontracted”.
+If you’re sending your materials for job work → Tick “Is Subcontracted” in that new Purchase Order for the subcontractor.
+
+
+5. error handling in frappe both py/js, TypeError *******
+python error :
+
+     try:
+        frappe.delete_doc("REST API", name)
+        frappe.db.commit()
+        return {"message": "Record deleted successfully"} , {f"method is {method}"}
+    except frappe.DoesNotExistError:
+        return {"error": f"Record with name {name} not found"}
+    except Exception as e:
+        return {"error": str(e)} 
+
+js error :
+
+try {
+  let x = prompt("Enter a number:");
+  console.log(10 / x);
+} catch (error) {
+  console.log("❌ Something went wrong:", error.message);
+} finally {
+  console.log("🔚 This will always run.");
+}
+
+Different error :
+1. Python error : how to write -> except TypeError as e
+errors are -> 
+
+| ❌ Error Type                              | 💬 What It Means                                              | 🧩 Example                                   |
+| ----------------------------------------- | ------------------------------------------------------------- | -------------------------------------------- |
+| **`SyntaxError`**                         | Your code is written incorrectly (Python can’t even read it). | `if True print("Hi")` → missing colon        |
+| **`IndentationError`**                    | Bad indentation / spacing in your code.                       | `  print("Hi")` (extra spaces)               |
+| **`NameError`**                           | You used a variable that hasn’t been defined.                 | `print(x)` before defining `x`               |
+| **`TypeError`**                           | You used the wrong data type in an operation.                 | `"5" + 2`                                    |
+| **`ValueError`**                          | You gave a valid type but invalid value.                      | `int("abc")`                                 |
+| **`KeyError`**                            | You tried to access a dictionary key that doesn’t exist.      | `data["age"]` when `"age"` not in `data`     |
+| **`IndexError`**                          | You tried to access a list index that doesn’t exist.          | `mylist[10]` when list is too short          |
+| **`AttributeError`**                      | You tried to use a property/method that doesn’t exist.        | `"hello".push()` (no push method for string) |
+| **`ImportError`** / `ModuleNotFoundError` | Python can’t find or import a module.                         | `import some_random_module`                  |
+| **`ZeroDivisionError`**                   | You divided by zero.                                          | `10 / 0`                                     |
+| **`FileNotFoundError`**                   | File you tried to open doesn’t exist.                         | `open("abc.txt")`                            |
+| **`OSError`**                             | System-related error (file, network, etc.)                    | Disk or permission error                     |
+| **`RuntimeError`**                        | Something unexpected happened during execution.               | Raised manually or by some libraries         |
+
+how to use ->
+try:
+    print("5" + 5)
+except TypeError as e:
+    print("⚠️ TypeError caught:", e)
+
+
+
+2. js error : how to write -> 
+errors are ->
+
+how to use ->
+
+try {
+  console.log(x); // ❌ ReferenceError
+} catch (e) {
+  if (e instanceof ReferenceError) {
+    console.log("⚠️ ReferenceError:", e.message);
+  }
+}
+
+
+| ❌ Error Type         | 💬 What It Means                                          | 🧩 Example                            |
+| -------------------- | --------------------------------------------------------- | ------------------------------------- |
+| **`SyntaxError`**    | The JS code syntax is invalid.                            | `if true console.log("hi")`           |
+| **`ReferenceError`** | You used a variable that’s not defined.                   | `console.log(x)` before declaring `x` |
+| **`TypeError`**      | You used a value of the wrong type.                       | `null.name`, `5()`                    |
+| **`RangeError`**     | A number or index is out of range.                        | `new Array(-1)`                       |
+| **`EvalError`**      | Problem with the `eval()` function.                       | Rare nowadays                         |
+| **`URIError`**       | Problem with malformed URI functions (`decodeURI`, etc.). | `decodeURI("%")`                      |
+| **`AggregateError`** | Multiple errors in a `Promise.allSettled()` or similar.   | Used in async code                    |
+| **`InternalError`**  | Internal JS engine issue (rare).                          | Deep recursion loop                   |
+  
+ 
+ 
+
+6. what is developer mode
+-> 
+- Normally (in user mode), when you create or edit a DocType, Field, Workflow, Report, etc., Frappe stores that info only in the database — which means:
+- It’s not version-controlled (you can’t track changes in Git)
+- You can’t easily move it to another system (like staging → production)
+- But with Developer Mode ON, Frappe also writes your changes to JSON and Python files inside your app folder. 
+
+in short developer mode on :  writes your changes to JSON and Python files
+
+
+7. git stash( stashing concept )
+->  git stash(move your local changes in other directory) -> git pull(geting remote changes) -> git stash apply (get back local changes)
+
+8. how to use error log doctype , means how to use in code instead of msgprint or where is entry of 
+-> 
+- error log -> frappe.log_error(message, title=None)
+- frappe.logger("GYM").info() -> sites/<your-site-name>/logs/GYM.log
+
+9. maintanance mode
+->
+enable - bench --site <your-site-name> set-maintenance-mode on
+disable - bench --site <your-site-name> set-maintenance-mode off
+                             or
+          bench --site <your-site-name> clear-maintenance-mode
+
+
+
+10. set_query
+-> it is used to apply filter in specific link field, so only filterd data will show not all
+
+11. freeze = True ? in the code frm.call / frappe.call ( practical is available in server_scriot_doc )
+-> freeze = True, freeze_message = "your message" || in python code : time.sleep(3)
+
+12. in list view id must be not visible in first cloumn( make visible in aother column ) by code
+->  we can do this by creating doctype_list.js file in that doctype,or create colums by columns : []
+
+13. reports( also included filter in query report )
+-> done
+
+14. git comands
+-> done
+
+15. use Stock Entry doctype means practical
+-> 
+It records any movement of items within your company’s warehouses, including:
+- 🔄 Material Transfer – move stock from one warehouse to another.
+- 🏭 Manufacture – consume raw materials and create a finished good.
+- 🧰 Material Issue – issue stock for internal use or testing.
+- 📦 Material Receipt – add stock manually (e.g., physical stock adjustments).
+- ♻️ Repack – combine or split items into different forms.
+- Send to Subcontractor - Used when you send raw materials to a supplier for processing.
+- Disassemble - Used when you break a finished item into its components.
+
+
+
+16. dilog.show, frappe.ui.dialog or diloag.hide -> ex available in supplier.js
+-> 
+- new frappe.ui.Dialog({...}) → Creates a popup window.
+- the dialog is closed (dialog.hide())
+- actually opens (displays) the dialog popup on the screen.
+
+17. watch table multiselect, dynamic link, autocomplete
+-> done
+
+18. has_permission vs permission_query_condition
+-> has_permission for creating custom true/false cindition or permission_query_condition is used for set condition when you do frappe.db.get_list()
+
+19. what is sql group by
+-> Used to combine rows having same values in a column, then apply aggregate functions (like SUM, COUNT, AVG)
+
+
+
+
+
+final review question :
+1. why frappe is the best
+->
+
+- Frappe is a full-stack, low-code web framework, built on Python and JavaScript. 
+- it allows us to rapidly build, customize, and scale enterprise-grade applications with less code and strong backend logic. It provides everything out of the box 
+  — ORM, Role-based permissions, REST API, Web UI, and DocType system — which saves a lot of development time.
+  
+  
+2. why we have .json file when we create doctype
+->
+
+.json :
+
+- The .json file stores the metadata of the Doctype — meaning all the structure and configurations like field names, field types, labels, permissions, and settings.
+- It contains the schema or definition of the Doctype (like a blueprint).
+- When you migrate or install an app, Frappe reads this .json file to create or update the database table for that Doctype.
+
+ex. 
+- Suppose you create a Doctype “Task”.
+- Frappe saves its structure in task.json.
+- During bench migrate, Frappe uses this file to create a table tabTask in the database.
+
+
+But, but interview say database is already created so why we need that(json)...
+- Even though the database table is created, the .json file is still required because it is the source of truth (metadata) for that Doctype 
+  — not the database itself.
+- Frappe doesn’t read the database structure directly to know field names or properties — it reads the .json file to understand how the Doctype 
+  is defined and behaves inside the framework.
+
+because:
+- Frappe follows “metadata-driven architecture”
+- During migration and app sync : 
+     If you move your app to another site or server, the .json file is used to recreate the same database table structure automatically.
+
+
+| Aspect         | `.json` file                                                        | Database Table                                 |
+| -------------- | ------------------------------------------------------------------- | ---------------------------------------------- |
+| **Role**       | Defines the **structure (metadata)** of the Doctype                 | Stores the **actual data (records)**           |
+| **Created by** | Frappe when you create a Doctype                                    | Frappe when you run `bench migrate`            |
+| **Contains**   | Field names, field types, labels, permissions, autoname rules, etc. | Columns (fields) and data values               |
+| **Used for**   | UI rendering, form generation, migrations, app export/import        | CRUD operations (insert, read, update, delete) |
+| **Example**    | `"fieldname": "customer_name", "fieldtype": "Data"`                 | `customer_name = "John Doe"`                   |
+
+
+.json = defines what the table should look like
+Database = actually stores the data in that table     
+
+so ,
+- “Yes, the .json file is related to the database because it defines the structure from which the database table is created. Frappe reads the .json file 
+  to know what fields to create, their types, and other properties. So while the database stores the actual data, the .json file defines how that data is organized.”  
+   
+   
+   
+
+3. how to hide some field to specific user
+step.1 - make that field permlavel 1(in field property )
+step-2 go to role permission manager doctype select permlavel 1 then add condition according to the requirement.  
+   
+   
+4. overloading and overriding 
+A. overloading :
+- In many languages (like Java or C++), method overloading means having multiple methods with the same name but different parameters.
+
+✅ But in Python…
+True method overloading does NOT exist.
+
+ex.1 
+
+class Example:
+    def add(self, a, b=0, c=0):
+        return a + b + c
+
+obj = Example()
+print(obj.add(5))        # 5
+print(obj.add(5, 10))    # 15
+print(obj.add(5, 10, 15))# 30
+
+
+ex.2
+
+class Example:
+    def add(self, *args):
+        return sum(args)
+
+obj = Example()
+print(obj.add(1, 2))
+print(obj.add(1, 2, 3, 4))
+
+
+- So, Python supports overloading behavior, but not true overloading.
+
+
+
+
+B. overriding   
+- when a child class defines a method with the same name and parameters as the parent class so that the child’s version replaces the parent’s version.
+
+- the function (method) name must be the SAME in method overriding.  
+   
+ex. 
+
+class Parent:
+    def greet(self):
+        print("Hello from parent")
+
+class Child(Parent):
+    def greet(self):
+        print("Hello from child")
+
+c = Child()
+c.greet()   # Output: Hello from child
+
+
+
+5. how many fields are available in frappe
+-> more than 30 
+
+
+6. get current user
+-> frappe.session.user
+
+
+7. 
+some hooks
+-> ignore_links_on_delete
+-> auto_cancel_exempted_doctypes
+
+form API :
+-> ignore_doctypes_on_cancel_all 
+
+
+
+
+8. rest api 
+-> frappe.request.method : get which method is triggered
+
+
+
+Final review suggestion :
+1. More focus on ERPNext like whihc feature we have already in erpnext so we dont need to create from scratch
+2. apply debugging skills like from where is come this feature in ERPNext.....
+
+
+
+
+
+
+

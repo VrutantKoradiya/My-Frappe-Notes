@@ -1,0 +1,53 @@
+Client Script Eevent(Form Event)::::::::::::
+
+setup
+before_load
+onload
+refresh
+onload_post_render
+my_table_field_on_form_rendered <-child table event  ex. family_members_on_form_rendered
+field value changed  <-user edit fields
+validate
+before_save
+after_save
+refresh
+before_submit
+validate
+before_save
+after_save
+timeline_refresh
+on_submit
+refresh
+before_cancel
+timeline_refresh
+after_cancel
+refresh
+
+
+
+server Script Eevent(Document Event):::::::::::::::
+
+before_insert
+before_validate
+validate
+before_save
+after insert
+on_update
+before_submit (if submittable)
+on_update
+on_submit (if submittable)
+before_cancel (if cancelling)
+on_cancel (if cancelling)
+on_trash (before deletion)
+after_delete (after deletion)
+before_print
+
+
+
+#after_save is not available
+#after_submit is not available
+#after_cancel is not available
+#befor_delete is not available
+
+
+

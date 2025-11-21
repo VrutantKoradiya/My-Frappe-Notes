@@ -1,0 +1,234 @@
+frm.call() method >>>>>>>>>>
+
+
+✅ What is frm.call()?
+-It’s used in client scripts to call server-side methods from the browser (client).
+-Allows you to send data to the server, run some logic there, and get the result back.
+-It’s a way to connect the client (form) with the server without refreshing the page.
+
+
+syntax :
+
+frm.call({
+    method: "app.module.doctype.method_name",
+    args: {
+        key1: value1,
+        key2: value2
+    },
+    callback: function(r) {
+        if(r.message) {
+            frappe.msgprint(r.message);
+        }
+    }
+});
+
+
+
+example : 
+✅ Example
+
+-Imagine you have a server method to greet a user:
+
+Python (server-side method):
+
+@frappe.whitelist()
+def greet_user(name):
+    return f"Hello, {name}!"
+
+
+
+-JavaScript (client-side using frm.call()):
+
+enable: function(frm) {
+        frm.call({
+            method: "my_app.my_module.doctype.mydoctype.greet_user",
+            args: {
+                name: frm.doc.first_name
+            },
+            callback: function(r) {
+                if(r.message){
+                    frappe.msgprint(r.message);
+                }
+            }
+        });
+    }
+
+
+✔ This sends first_name from the form to the server, runs greet_user(), and shows the result as a popup.
+
+
+
+
+
+✅ Important Notes
+✔ The server method must be whitelisted using @frappe.whitelist()
+✔ Data is passed through args and the result is handled inside callback
+✔ Used to perform tasks like fetching related data, validating fields, or executing actions
+
+
+
+
+another detials :::::::
+frm.call({
+    doc: frm.doc,
+    method: 'say_hello',
+    args:{
+      msg: "hello from client side"
+    },
+    freeze:true,
+    freeze_message:"processing",
+    callback: function(r){
+        frappe.msgprint(r.message)
+    }
+});
+
+
+
+✅ What is doc: frm.doc?
+frm.doc refers to the current document’s data — all the fields and values you see in the form.
+By passing doc: frm.doc, you’re sending the entire document to the server-side method.
+On the server, this document is available as self inside the method.
+
+✅ Important things to know about doc: frm.doc
+✔ It’s used when the server-side method needs access to the full document
+✔ Makes it easier to work with data without sending each field separately
+✔ Only works if the method is designed to accept self (i.e., it's a class method in that Doctype’s Python file)
+✔ Ensure the method is whitelisted with @frappe.whitelist()
+✔ Be cautious — sending the whole document can expose sensitive fields if not handled properly
+
+
+
+
+
+
+
+frappe.call() method >>>>>>>>>>
+
+✅ What is frappe.call()?
+
+It’s a general-purpose method in client-side scripts to call any server-side function.
+You can use it anywhere — not just within forms (frm), but in pages, scripts, buttons, etc.
+It allows sending data (args) and receiving results (callback) from the server.
+
+
+
+syntax : 
+
+frappe.call({
+    method: "app.module.path.to_method",
+    args: {
+        key1: value1,
+        key2: value2
+    },
+    freeze: true,
+    freeze_message: "Please wait...",
+    callback: function(r) {
+        if(r.message) {
+            frappe.msgprint(r.message);
+        }
+    }
+});
+
+
+
+example : 
+
+@frappe.whitelist()
+def greet(msg):
+    return f"Server says: {msg}"
+
+/
+
+frappe.call({
+    method: "my_app.my_module.doctype.mydoctype.greet",
+    args: {
+        msg: "Hello from client!"
+    },
+    freeze: true,
+    freeze_message: "Processing...",
+    callback: function(r) {
+        if(r.message) {
+            frappe.msgprint(r.message);
+        }
+    }
+});
+
+
+
+
+✅ Important notes
+✔ Always whitelist server methods with @frappe.whitelist()
+✔ Use frappe.call() when you need server interaction outside of forms
+✔ You can send as many arguments as needed in args
+✔ Handle the response inside callback
+✔ Use freeze and freeze_message to show loading indicators
+
+
+
+
+✅ Final takeaway
+✔ frappe.call() is a flexible, general way to interact with the server from the client
+✔ It’s widely used in buttons, pages, or utilities — not just in forms
+✔ Ensure server methods are properly exposed and secure
+
+
+
+
+
+
+
+
+########################################
+❌ Problem: give path error like method not found .... in frappe.call()
+
+You defined your_function() inside the class ClientScriptDoc or ServerScriptDoc. So it's an object method, not a standalone function.
+Frappe searched for your_function() as a global function in the module but couldn’t find it because it's inside the class.
+
+✅ The solution you applied
+
+You moved the method outside the class(so its become standalone funcgtion) like this :
+
+# client_script_doc.py
+
+
+import frappe
+from frappe.model.document import Document
+
+class ClientScriptDoc(Document):
+	pass
+
+@frappe.whitelist()
+def say_hellow(msg):
+	import time
+	time.sleep(3)
+	#frappe.msgprint(msg)
+	return "Hello from client script .py file"
+    
+
+✔ Now it's a standalone function
+✔ Decorated with @frappe.whitelist() so Frappe can access it
+✔ The file structure and method path now match what Frappe expects    
+
+
+
+✅ Correct Key Takeaway (for both frm.call() and frappe.call())
+
+✔ Functions called via frm.call() and frappe.call() must be top-level functions, not inside classes.
+✔ This is because Frappe looks for functions at the module level, not within class instances (objects).
+✔ The same Python rules apply for both methods when calling server functions.
+✔ The difference between frm.call() and frappe.call() is where you use them — not how Python accesses the server function.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
