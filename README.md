@@ -62,6 +62,7 @@ Files are updated regularly, so stay connected! 🚀
 ────────────────────────────────────────────
 
 📬 CONTACT
+
 📧 Email: vrutantpatel999@gmail.com  
 🔗 LinkedIn: https://www.linkedin.com/in/vrutantkoradiya/
 
