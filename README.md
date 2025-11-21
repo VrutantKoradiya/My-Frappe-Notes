@@ -13,13 +13,13 @@ Files are updated regularly, so stay connected! 🚀
 
 ────────────────────────────────────────────
 
-🐍 PYTHON BASICS
-For complete Python notes and code:  
+🐍 PYTHON BASICS:  
 🔗 https://github.com/VrutantKoradiya/Python-Code
 
 ────────────────────────────────────────────
 
 🧱 FRAPPE FRAMEWORK NOTES
+
 • 📄 Document API  
 • 🧩 Form API  
 • 🗄️ Database API  
@@ -33,6 +33,7 @@ For complete Python notes and code:
 ────────────────────────────────────────────
 
 🏭 ERPNEXT NOTES
+
 🛒 Buying Module  
    – Full cycle explanation  
    – All doctypes in depth  
